@@ -5,24 +5,32 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
-  Linking,
+  RefreshControl,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Search, Phone, MapPin, Building2 } from "lucide-react-native";
+import { useIsFocused } from "@react-navigation/native";
+import { Search, Building2, ChevronRight, Star } from "lucide-react-native";
 import { router } from "expo-router";
 import { supabase } from "../../utils/supabase";
+import { useTheme } from "../../contexts/ThemeProvider";
 
 export default function CompagniesScreen() {
   const insets = useSafeAreaInsets();
+  const { theme, isDark } = useTheme();
+  const isFocused = useIsFocused();
   const [searchQuery, setSearchQuery] = useState("");
   const [compagnies, setCompagnies] = useState([]);
   const [filteredCompagnies, setFilteredCompagnies] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
+  // Recharge les compagnies quand l'onglet reçoit le focus
   useEffect(() => {
-    loadCompagnies();
-  }, []);
+    if (isFocused) {
+      loadCompagnies();
+    }
+  }, [isFocused]);
 
   useEffect(() => {
     filterCompagnies();
@@ -33,16 +41,28 @@ export default function CompagniesScreen() {
       setLoading(true);
       const { data, error } = await supabase
         .from("compagnies")
-        .select("id, nom, logo_url, trajets:trajets(arrivee)");
+        .select("id, nom, logo_url, telephone, trajets:trajets(arrivee, note, nb_avis)");
       if (error) throw error;
-      const mapped = (data ?? []).map((c) => ({
-        id: c.id,
-        nom: c.nom,
-        logo_url: c.logo_url,
-        adresse: c.adresse ?? undefined,
-        telephone: c.telephone ?? undefined,
-        destinations: Array.from(new Set((c.trajets ?? []).map((t) => t.arrivee))).filter(Boolean),
-      }));
+      
+      const mapped = (data ?? []).map((c) => {
+        const trajets = c.trajets ?? [];
+        const trajetsAvecNote = trajets.filter(t => t.nb_avis > 0);
+        const noteMoyenne = trajetsAvecNote.length > 0
+          ? (trajetsAvecNote.reduce((sum, t) => sum + (t.note || 0), 0) / trajetsAvecNote.length).toFixed(1)
+          : 0;
+        const totalAvis = trajets.reduce((sum, t) => sum + (t.nb_avis || 0), 0);
+        
+        return {
+          id: c.id,
+          nom: c.nom,
+          logo_url: c.logo_url,
+          telephone: c.telephone ?? undefined,
+          destinations: Array.from(new Set(trajets.map((t) => t.arrivee))).filter(Boolean),
+          nbTrajets: trajets.length,
+          noteMoyenne,
+          totalAvis,
+        };
+      });
       setCompagnies(mapped);
     } catch (error) {
       console.error("Error fetching compagnies:", error);
@@ -69,17 +89,10 @@ export default function CompagniesScreen() {
     setFilteredCompagnies(filtered);
   };
 
-  const handleCall = (telephone) => {
-    Linking.openURL(`tel:${telephone}`);
-  };
-
-  const handleWhatsApp = (telephone) => {
-    const cleanPhone = telephone.replace(/[^0-9]/g, "");
-    const message =
-      "Bonjour, je souhaite avoir des informations sur vos trajets.";
-    Linking.openURL(
-      `whatsapp://send?phone=${cleanPhone}&text=${encodeURIComponent(message)}`,
-    );
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadCompagnies();
+    setRefreshing(false);
   };
 
   if (loading) {
@@ -89,17 +102,17 @@ export default function CompagniesScreen() {
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: "#F9FAFB",
+          backgroundColor: theme.backgroundSecondary,
         }}
       >
-        <Text style={{ fontSize: 16, color: "#6B7280" }}>Chargement...</Text>
+        <Text style={{ fontSize: 16, color: theme.textSecondary }}>Chargement...</Text>
       </View>
     );
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#F9FAFB" }}>
-      <StatusBar style="dark" />
+    <View style={{ flex: 1, backgroundColor: theme.backgroundSecondary }}>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
 
       <ScrollView
         style={{ flex: 1 }}
@@ -108,6 +121,9 @@ export default function CompagniesScreen() {
           paddingBottom: insets.bottom + 80,
         }}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.primary]} tintColor={theme.primary} />
+        }
       >
         {/* Header */}
         <View style={{ paddingHorizontal: 20, marginBottom: 20 }}>
@@ -115,7 +131,7 @@ export default function CompagniesScreen() {
             style={{
               fontSize: 24,
               fontWeight: "600",
-              color: "#1F2937",
+              color: theme.text,
               marginBottom: 8,
             }}
           >
@@ -124,7 +140,7 @@ export default function CompagniesScreen() {
           <Text
             style={{
               fontSize: 14,
-              color: "#6B7280",
+              color: theme.textSecondary,
             }}
           >
             {filteredCompagnies.length} compagnie
@@ -139,28 +155,28 @@ export default function CompagniesScreen() {
             style={{
               flexDirection: "row",
               alignItems: "center",
-              backgroundColor: "#FFFFFF",
+              backgroundColor: theme.surface,
               borderRadius: 12,
               borderWidth: 1,
-              borderColor: "#D1D5DB",
+              borderColor: theme.borderLight,
               paddingHorizontal: 16,
               paddingVertical: 12,
-              shadowColor: "#000",
+              shadowColor: theme.shadow,
               shadowOffset: { width: 0, height: 1 },
-              shadowOpacity: 0.05,
+              shadowOpacity: theme.shadowOpacity,
               shadowRadius: 4,
               elevation: 2,
             }}
           >
-            <Search size={20} color="#6B7280" style={{ marginRight: 12 }} />
+            <Search size={20} color={theme.textSecondary} style={{ marginRight: 12 }} />
             <TextInput
               style={{
                 flex: 1,
                 fontSize: 16,
-                color: "#1F2937",
+                color: theme.text,
               }}
               placeholder="Rechercher une compagnie ou destination..."
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={theme.textTertiary}
               value={searchQuery}
               onChangeText={setSearchQuery}
             />
@@ -173,14 +189,14 @@ export default function CompagniesScreen() {
             <View style={{ alignItems: "center", paddingVertical: 40 }}>
               <Building2
                 size={48}
-                color="#9CA3AF"
+                color={theme.textTertiary}
                 style={{ marginBottom: 16 }}
               />
               <Text
                 style={{
                   fontSize: 18,
                   fontWeight: "600",
-                  color: "#1F2937",
+                  color: theme.text,
                   marginBottom: 8,
                 }}
               >
@@ -189,7 +205,7 @@ export default function CompagniesScreen() {
               <Text
                 style={{
                   fontSize: 14,
-                  color: "#6B7280",
+                  color: theme.textSecondary,
                   textAlign: "center",
                   lineHeight: 20,
                 }}
@@ -199,16 +215,18 @@ export default function CompagniesScreen() {
             </View>
           ) : (
             filteredCompagnies.map((compagnie) => (
-              <View
+              <TouchableOpacity
                 key={compagnie.id}
+                onPress={() => router.push(`/compagnie/${compagnie.id}`)}
+                activeOpacity={0.7}
                 style={{
-                  backgroundColor: "#FFFFFF",
+                  backgroundColor: theme.surface,
                   borderRadius: 12,
                   padding: 20,
                   marginBottom: 16,
-                  shadowColor: "#000",
+                  shadowColor: theme.shadow,
                   shadowOffset: { width: 0, height: 1 },
-                  shadowOpacity: 0.05,
+                  shadowOpacity: theme.shadowOpacity,
                   shadowRadius: 4,
                   elevation: 2,
                 }}
@@ -226,7 +244,7 @@ export default function CompagniesScreen() {
                       width: 48,
                       height: 48,
                       borderRadius: 8,
-                      backgroundColor: "#1E88E5",
+                      backgroundColor: theme.primary,
                       alignItems: "center",
                       justifyContent: "center",
                       marginRight: 16,
@@ -239,25 +257,27 @@ export default function CompagniesScreen() {
                       style={{
                         fontSize: 18,
                         fontWeight: "600",
-                        color: "#1F2937",
-                        marginBottom: 4,
+                        color: theme.text,
+                        marginBottom: 8,
                       }}
                     >
                       {compagnie.nom}
                     </Text>
-                    <View
-                      style={{ flexDirection: "row", alignItems: "center" }}
-                    >
-                      <MapPin
-                        size={14}
-                        color="#6B7280"
-                        style={{ marginRight: 4 }}
-                      />
-                      <Text style={{ fontSize: 14, color: "#6B7280" }}>
-                        {compagnie.adresse}
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+                      <Text style={{ fontSize: 12, color: theme.textSecondary }}>
+                        {compagnie.nbTrajets} trajet{compagnie.nbTrajets > 1 ? 's' : ''}
                       </Text>
+                      {compagnie.totalAvis > 0 && (
+                        <View style={{ flexDirection: "row", alignItems: "center" }}>
+                          <Star size={12} color={theme.warning} fill={theme.warning} style={{ marginRight: 2 }} />
+                          <Text style={{ fontSize: 12, color: theme.textSecondary }}>
+                            {compagnie.noteMoyenne} ({compagnie.totalAvis})
+                          </Text>
+                        </View>
+                      )}
                     </View>
                   </View>
+                  <ChevronRight size={20} color={theme.textTertiary} />
                 </View>
 
                 {/* Destinations */}
@@ -268,7 +288,7 @@ export default function CompagniesScreen() {
                         style={{
                           fontSize: 14,
                           fontWeight: "600",
-                          color: "#1F2937",
+                          color: theme.text,
                           marginBottom: 8,
                         }}
                       >
@@ -279,7 +299,7 @@ export default function CompagniesScreen() {
                           <View
                             key={index}
                             style={{
-                              backgroundColor: "#EBF8FF",
+                              backgroundColor: theme.primaryLight,
                               paddingHorizontal: 12,
                               paddingVertical: 6,
                               borderRadius: 16,
@@ -290,7 +310,7 @@ export default function CompagniesScreen() {
                             <Text
                               style={{
                                 fontSize: 12,
-                                color: "#1E88E5",
+                                color: theme.commun,
                                 fontWeight: "500",
                               }}
                             >
@@ -302,76 +322,7 @@ export default function CompagniesScreen() {
                     </View>
                   )}
 
-                {/* Contact Actions */}
-                {compagnie.telephone && (
-                  <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <TouchableOpacity
-                      style={{
-                        flex: 1,
-                        backgroundColor: "#1E88E5",
-                        borderRadius: 8,
-                        paddingVertical: 12,
-                        alignItems: "center",
-                        flexDirection: "row",
-                        justifyContent: "center",
-                        marginRight: 8,
-                      }}
-                      onPress={() => handleCall(compagnie.telephone)}
-                      activeOpacity={0.8}
-                    >
-                      <Phone
-                        size={16}
-                        color="#FFFFFF"
-                        style={{ marginRight: 6 }}
-                      />
-                      <Text
-                        style={{
-                          fontSize: 14,
-                          fontWeight: "600",
-                          color: "#FFFFFF",
-                        }}
-                      >
-                        Appeler
-                      </Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      style={{
-                        flex: 1,
-                        backgroundColor: "#10B981",
-                        borderRadius: 8,
-                        paddingVertical: 12,
-                        alignItems: "center",
-                        flexDirection: "row",
-                        justifyContent: "center",
-                        marginLeft: 8,
-                      }}
-                      onPress={() => handleWhatsApp(compagnie.telephone)}
-                      activeOpacity={0.8}
-                    >
-                      <Text
-                        style={{
-                          fontSize: 14,
-                          fontWeight: "600",
-                          color: "#FFFFFF",
-                          marginRight: 6,
-                        }}
-                      >
-                        💬
-                      </Text>
-                      <Text
-                        style={{
-                          fontSize: 14,
-                          fontWeight: "600",
-                          color: "#FFFFFF",
-                        }}
-                      >
-                        WhatsApp
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </View>
+              </TouchableOpacity>
             ))
           )}
         </View>

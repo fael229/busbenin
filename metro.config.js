@@ -87,6 +87,7 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
 };
 
 const cacheDir = path.join(__dirname, 'caches');
+try { fs.mkdirSync(cacheDir, { recursive: true }); } catch {}
 
 config.cacheStores = () => [
   new FileStore({
@@ -94,7 +95,6 @@ config.cacheStores = () => [
   }),
 ];
 config.resetCache = false;
-config.fileMapCacheDirectory = cacheDir;
 config.reporter = {
   ...config.reporter,
   update: (event) => {

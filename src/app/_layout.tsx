@@ -1,6 +1,7 @@
 import { Slot, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 import { SessionProvider, useSession } from "../contexts/SessionProvider";
+import { ThemeProvider } from "../contexts/ThemeProvider";
 
 const InitialLayout = () => {
   const { session, loading } = useSession();
@@ -14,7 +15,8 @@ const InitialLayout = () => {
     const inAuthGroup = segments[0] === "(auth)";
 
     if (session && !inTabsGroup) {
-      router.replace("/(tabs)/trajets");
+      // Rediriger vers l'accueil (index) au lieu de trajets
+      router.replace("/(tabs)");
     } else if (!session && !inAuthGroup) {
       router.replace("/(auth)/login");
     }
@@ -25,8 +27,10 @@ const InitialLayout = () => {
 
 export default function RootLayout() {
   return (
-    <SessionProvider>
-      <InitialLayout />
-    </SessionProvider>
+    <ThemeProvider>
+      <SessionProvider>
+        <InitialLayout />
+      </SessionProvider>
+    </ThemeProvider>
   );
 }

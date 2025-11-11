@@ -2,14 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ArrowLeft, UserCog, ShieldCheck } from 'lucide-react-native';
+import { useIsFocused } from '@react-navigation/native';
+import { UserCog, ShieldCheck } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { supabase } from '../../../utils/supabase';
+import BackButton from '../../../components/BackButton';
 import { useSession } from '../../../contexts/SessionProvider';
 
 export default function ManageUsers() {
   const insets = useSafeAreaInsets();
   const { session } = useSession();
+  const isFocused = useIsFocused();
   const [users, setUsers] = useState([]);
 
   const load = async () => {
@@ -18,7 +21,9 @@ export default function ManageUsers() {
     if (!error) setUsers((data ?? []).map(p => ({ id: p.id, email: p.email, admin: p.admin })));
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { 
+    if (isFocused) load(); 
+  }, [isFocused]);
 
   const toggleAdmin = async (userId, current) => {
     try {
@@ -34,12 +39,11 @@ export default function ManageUsers() {
     <View style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
       <StatusBar style="dark" />
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingTop: insets.top + 12, paddingBottom: insets.bottom + 40 }}>
-        <View style={{ paddingHorizontal: 16, marginBottom: 12, flexDirection: 'row', alignItems: 'center' }}>
-          <TouchableOpacity onPress={() => router.back()} style={{ padding: 8, marginRight: 8 }}>
-            <ArrowLeft size={22} color="#1F2937" />
-          </TouchableOpacity>
-          <Text style={{ fontSize: 20, fontWeight: '700', color: '#1F2937' }}>Gérer les utilisateurs</Text>
-        </View>
+        <BackButton 
+          title="Gérer les utilisateurs"
+          fallback="/(tabs)/admin/dashboard"
+          style={{ paddingHorizontal: 16, paddingVertical: 0, marginBottom: 12 }}
+        />
 
         <View style={{ paddingHorizontal: 16 }}>
           {users.map((u) => (

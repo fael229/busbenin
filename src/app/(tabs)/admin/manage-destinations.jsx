@@ -2,14 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ArrowLeft, Plus, Trash2, MapPin } from 'lucide-react-native';
+import { useIsFocused } from '@react-navigation/native';
+import { MapPin, Plus, Trash2 } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { supabase } from '../../../utils/supabase';
+import BackButton from '../../../components/BackButton';
 import { useSession } from '../../../contexts/SessionProvider';
 
 export default function ManageDestinations() {
   const insets = useSafeAreaInsets();
   const { session } = useSession();
+  const isFocused = useIsFocused();
   const [items, setItems] = useState([]);
   const [nom, setNom] = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,7 +22,9 @@ export default function ManageDestinations() {
     if (!error) setItems(data ?? []);
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { 
+    if (isFocused) load(); 
+  }, [isFocused]);
 
   const addDestination = async () => {
     if (!nom.trim()) return;
@@ -53,12 +58,11 @@ export default function ManageDestinations() {
     <View style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
       <StatusBar style="dark" />
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingTop: insets.top + 12, paddingBottom: insets.bottom + 40 }}>
-        <View style={{ paddingHorizontal: 16, marginBottom: 12, flexDirection: 'row', alignItems: 'center' }}>
-          <TouchableOpacity onPress={() => router.back()} style={{ padding: 8, marginRight: 8 }}>
-            <ArrowLeft size={22} color="#1F2937" />
-          </TouchableOpacity>
-          <Text style={{ fontSize: 20, fontWeight: '700', color: '#1F2937' }}>Gérer les destinations</Text>
-        </View>
+        <BackButton 
+          title="Gérer les destinations"
+          fallback="/(tabs)/admin/dashboard"
+          style={{ paddingHorizontal: 16, paddingVertical: 0, marginBottom: 12 }}
+        />
 
         <View style={{ paddingHorizontal: 16, marginBottom: 16 }}>
           <View style={{ backgroundColor: '#FFFFFF', borderRadius: 12, padding: 12, flexDirection: 'row', alignItems: 'center', borderColor: '#E5E7EB', borderWidth: 1 }}>
