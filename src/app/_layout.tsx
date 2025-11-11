@@ -2,6 +2,10 @@ import { Slot, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 import { SessionProvider, useSession } from "../contexts/SessionProvider";
 import { ThemeProvider } from "../contexts/ThemeProvider";
+import * as SplashScreen from 'expo-splash-screen';
+
+// Empêcher le splash screen de se cacher automatiquement
+SplashScreen.preventAutoHideAsync();
 
 const InitialLayout = () => {
   const { session, loading } = useSession();
@@ -20,6 +24,11 @@ const InitialLayout = () => {
     } else if (!session && !inAuthGroup) {
       router.replace("/(auth)/login");
     }
+
+    // Cacher le splash screen après la navigation
+    setTimeout(() => {
+      SplashScreen.hideAsync();
+    }, 500);
   }, [session, loading, segments, router]);
 
   return <Slot />;
