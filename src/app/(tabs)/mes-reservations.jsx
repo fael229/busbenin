@@ -20,12 +20,15 @@ import {
   XCircle,
   AlertCircle,
   RefreshCw,
+  Download,
+  Share,
 } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { supabase } from '../../utils/supabase';
 import { useSession } from '../../contexts/SessionProvider';
 import { useTheme } from '../../contexts/ThemeProvider';
 import { checkTransactionStatus } from '../../utils/fedapay';
+import { shareReservationPDF, downloadReservationPDF } from '../../utils/pdfGenerator';
 
 export default function MesReservationsScreen() {
   const insets = useSafeAreaInsets();
@@ -36,6 +39,7 @@ export default function MesReservationsScreen() {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [processingPDF, setProcessingPDF] = useState(null); // ID de la réservation en cours de génération PDF
 
   useEffect(() => {
     if (isFocused) {
@@ -58,6 +62,7 @@ export default function MesReservationsScreen() {
           id,
           nb_places,
           horaire,
+          date_voyage,
           montant_total,
           nom_passager,
           telephone_passager,
@@ -155,6 +160,38 @@ export default function MesReservationsScreen() {
         },
       ]
     );
+  };
+
+  const handleSharePDF = async (reservation) => {
+    if (reservation.statut_paiement !== 'approved') {
+      Alert.alert('Information', 'La facture n\'est disponible que pour les paiements approuvés');
+      return;
+    }
+
+    setProcessingPDF(reservation.id);
+    try {
+      await shareReservationPDF(reservation);
+    } catch (error) {
+      console.error('Erreur partage PDF:', error);
+    } finally {
+      setProcessingPDF(null);
+    }
+  };
+
+  const handleDownloadPDF = async (reservation) => {
+    if (reservation.statut_paiement !== 'approved') {
+      Alert.alert('Information', 'La facture n\'est disponible que pour les paiements approuvés');
+      return;
+    }
+
+    setProcessingPDF(reservation.id);
+    try {
+      await downloadReservationPDF(reservation);
+    } catch (error) {
+      console.error('Erreur téléchargement PDF:', error);
+    } finally {
+      setProcessingPDF(null);
+    }
   };
 
   const getStatutLabel = (statut) => {
@@ -306,6 +343,14 @@ export default function MesReservationsScreen() {
                     {reservation.horaire}
                   </Text>
                 </View>
+                {reservation.date_voyage && (
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Calendar size={14} color={theme.textSecondary} />
+                    <Text style={{ fontSize: 13, color: theme.textSecondary, marginLeft: 4 }}>
+                      {new Date(reservation.date_voyage).toLocaleDateString('fr-FR')}
+                    </Text>
+                  </View>
+                )}
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <DollarSign size={14} color={theme.success} />
                   <Text style={{ fontSize: 13, fontWeight: '600', color: theme.success, marginLeft: 2 }}>
@@ -343,12 +388,13 @@ export default function MesReservationsScreen() {
               </View>
 
               {/* Actions */}
-              <View style={{ flexDirection: 'row', gap: 8 }}>
+              <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
                 {reservation.statut_paiement === 'pending' && (
                   <TouchableOpacity
                     onPress={() => verifierStatutPaiement(reservation)}
                     style={{
                       flex: 1,
+                      minWidth: 120,
                       flexDirection: 'row',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -363,11 +409,59 @@ export default function MesReservationsScreen() {
                     </Text>
                   </TouchableOpacity>
                 )}
+                
+                {reservation.statut_paiement === 'approved' && (
+                  <>
+                    <TouchableOpacity
+                      onPress={() => handleSharePDF(reservation)}
+                      disabled={processingPDF === reservation.id}
+                      style={{
+                        flex: 1,
+                        minWidth: 120,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: theme.successLight,
+                        padding: 10,
+                        borderRadius: 8,
+                        opacity: processingPDF === reservation.id ? 0.5 : 1,
+                      }}
+                    >
+                      <Share size={16} color={theme.success} />
+                      <Text style={{ fontSize: 13, fontWeight: '600', color: theme.success, marginLeft: 6 }}>
+                        {processingPDF === reservation.id ? 'Génération...' : 'Partager PDF'}
+                      </Text>
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity
+                      onPress={() => handleDownloadPDF(reservation)}
+                      disabled={processingPDF === reservation.id}
+                      style={{
+                        flex: 1,
+                        minWidth: 120,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: theme.primaryLight,
+                        padding: 10,
+                        borderRadius: 8,
+                        opacity: processingPDF === reservation.id ? 0.5 : 1,
+                      }}
+                    >
+                      <Download size={16} color={theme.primary} />
+                      <Text style={{ fontSize: 13, fontWeight: '600', color: theme.primary, marginLeft: 6 }}>
+                        {processingPDF === reservation.id ? 'Sauvegarde...' : 'Télécharger'}
+                      </Text>
+                    </TouchableOpacity>
+                  </>
+                )}
+                
                 {reservation.statut === 'en_attente' && (
                   <TouchableOpacity
                     onPress={() => annulerReservation(reservation.id)}
                     style={{
                       flex: 1,
+                      minWidth: 120,
                       flexDirection: 'row',
                       alignItems: 'center',
                       justifyContent: 'center',

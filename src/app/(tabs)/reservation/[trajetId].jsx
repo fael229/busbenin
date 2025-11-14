@@ -20,6 +20,7 @@ import {
   Phone,
   Mail,
   User,
+  Calendar,
 } from 'lucide-react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { supabase } from '../../../utils/supabase';
@@ -44,6 +45,7 @@ export default function ReservationScreen() {
   // Formulaire
   const [nbPlaces, setNbPlaces] = useState('1');
   const [horaireSelectionne, setHoraireSelectionne] = useState('');
+  const [dateVoyage, setDateVoyage] = useState('');
   const [nomPassager, setNomPassager] = useState('');
   const [telephonePassager, setTelephonePassager] = useState('');
   const [emailPassager, setEmailPassager] = useState('');
@@ -111,6 +113,21 @@ export default function ReservationScreen() {
       return false;
     }
 
+    if (!dateVoyage) {
+      Alert.alert('Erreur', 'Veuillez sélectionner une date de voyage');
+      return false;
+    }
+
+    // Vérifier que la date n'est pas dans le passé
+    const selectedDate = new Date(dateVoyage);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    if (selectedDate < today) {
+      Alert.alert('Erreur', 'La date de voyage ne peut pas être dans le passé');
+      return false;
+    }
+
     const places = parseInt(nbPlaces);
     if (!places || places < 1 || places > 10) {
       Alert.alert('Erreur', 'Le nombre de places doit être entre 1 et 10');
@@ -165,6 +182,7 @@ export default function ReservationScreen() {
           p_trajet_id: trajetId,
           p_nb_places: parseInt(nbPlaces),
           p_horaire: horaireSelectionne,
+          p_date_voyage: dateVoyage,
           p_nom_passager: nomPassager.trim(),
           p_telephone_passager: telephonePassager.trim(),
           p_email_passager: emailPassager.trim() || null,
@@ -351,6 +369,34 @@ export default function ReservationScreen() {
             </View>
           </View>
         )}
+
+        {/* Sélection de la date de voyage */}
+        <View style={{ backgroundColor: '#FFFFFF', padding: 20, marginBottom: 12 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+            <Calendar size={20} color="#1E88E5" />
+            <Text style={{ fontSize: 16, fontWeight: '600', color: '#1F2937', marginLeft: 8 }}>
+              Date de voyage *
+            </Text>
+          </View>
+          <TextInput
+            style={{
+              borderWidth: 1,
+              borderColor: dateVoyage ? '#1E88E5' : '#D1D5DB',
+              borderRadius: 8,
+              padding: 12,
+              fontSize: 16,
+              color: '#1F2937',
+              backgroundColor: '#FFFFFF',
+            }}
+            placeholder="AAAA-MM-JJ"
+            value={dateVoyage}
+            onChangeText={setDateVoyage}
+            keyboardType="default"
+          />
+          <Text style={{ fontSize: 12, color: '#6B7280', marginTop: 4 }}>
+            Format: AAAA-MM-JJ (exemple: 2024-12-25). La date ne peut pas être dans le passé.
+          </Text>
+        </View>
 
         {/* Sélection de l'opérateur Mobile Money */}
         <View style={{ backgroundColor: '#FFFFFF', padding: 20, marginBottom: 12 }}>
