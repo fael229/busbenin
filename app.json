@@ -23,7 +23,7 @@
         "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS"
       ],
-      "package": "xyz.create.CreateExpoEnvironment"
+      "package": "com.tonorganisation.busbenin"
     },
     "plugins": [
       [
@@ -38,7 +38,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#3BBFDB"
+          "backgroundColor": "#ffffff"
         }
       ],
       "expo-audio",
@@ -62,11 +62,16 @@
     },
     "extra": {
       "router": {
-        "origin": false
+        "origin": false,
+        "sitemap": false
+      },
+      "eas": {
+        "projectId": "5ea18e13-7608-47e8-b46d-4214d0097caa"
       }
     },
     "runtimeVersion": {
       "policy": "appVersion"
-    }
+    },
+    "owner": "krang229"
   }
 }

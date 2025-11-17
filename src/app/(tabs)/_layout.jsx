@@ -3,11 +3,13 @@ import { Tabs } from 'expo-router';
 import { Home, Navigation, Building2, Heart, Shield, Calendar, Settings } from 'lucide-react-native';
 import { useSession } from '../../contexts/SessionProvider';
 import { useTheme } from '../../contexts/ThemeProvider';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { supabase } from '../../utils/supabase';
 
 export default function TabLayout() {
   const { session } = useSession();
   const { theme } = useTheme();
+  const insets = useSafeAreaInsets();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isCompagnie, setIsCompagnie] = useState(false);
 
@@ -52,7 +54,8 @@ export default function TabLayout() {
           // Marge intérieure en haut de la barre d'onglets
           paddingTop: 4,
           // Hauteur de la barre d'onglets
-          height: 68,
+          height: 60 + insets.bottom,
+          paddingBottom: Math.max(insets.bottom, 6),
         },
         // Couleur du texte et de l'icône de l'onglet actif
         tabBarActiveTintColor: theme.primary,

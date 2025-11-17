@@ -661,7 +661,7 @@ export default function ReservationScreen() {
                 fontSize: 16,
                 color: '#1F2937',
               }}
-              placeholder="+22997123456"
+              placeholder="+22901xxxxxxxx"
               placeholderTextColor="#808080"
 
               keyboardType="phone-pad"
