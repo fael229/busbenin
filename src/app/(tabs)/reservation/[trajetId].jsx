@@ -7,6 +7,7 @@ import {
   TextInput,
   Alert,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -27,6 +28,8 @@ import { supabase } from '../../../utils/supabase';
 import { useSession } from '../../../contexts/SessionProvider';
 import { useTheme } from '../../../contexts/ThemeProvider';
 import { createTransaction, getPaymentUrl } from '../../../utils/fedapay';
+import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import { format } from 'date-fns';
 import BackButton from '../../../components/BackButton';
 
 export default function ReservationScreen() {
@@ -50,6 +53,51 @@ export default function ReservationScreen() {
   const [telephonePassager, setTelephonePassager] = useState('');
   const [emailPassager, setEmailPassager] = useState('');
   const [operateurMobile, setOperateurMobile] = useState('');
+  const [showIOSDatePicker, setShowIOSDatePicker] = useState(false);
+
+  const formatISODate = (date) => {
+    if (!date) return '';
+    const local = new Date(date.getTime());
+    local.setMinutes(local.getMinutes() - local.getTimezoneOffset());
+    return local.toISOString().split('T')[0];
+  };
+
+  const formatDisplayDate = (isoString) => {
+    if (!isoString) return 'Sélectionnez une date';
+    try {
+      return format(new Date(isoString), 'dd/MM/yyyy');
+    } catch (error) {
+      return isoString;
+    }
+  };
+
+  const openDatePicker = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const currentDate = dateVoyage ? new Date(dateVoyage) : today;
+
+    const onChange = (_event, selectedDate) => {
+      if (!selectedDate) {
+        if (Platform.OS === 'ios') setShowIOSDatePicker(false);
+        return;
+      }
+
+      const iso = formatISODate(selectedDate);
+      setDateVoyage(iso);
+      if (Platform.OS === 'ios') setShowIOSDatePicker(false);
+    };
+
+    if (Platform.OS === 'android') {
+      DateTimePickerAndroid.open({
+        value: currentDate,
+        mode: 'date',
+        minimumDate: today,
+        onChange,
+      });
+    } else {
+      setShowIOSDatePicker(true);
+    }
+  };
 
   useEffect(() => {
     if (isFocused && trajetId) {
@@ -218,13 +266,16 @@ export default function ReservationScreen() {
 
       if (updateError) throw updateError;
 
-      // 4. Naviguer vers la page de paiement intégrée
-      // Utiliser payment_url si disponible, sinon construire avec le token
-      const paymentUrl = transactionResult.paymentUrl || getPaymentUrl(transactionResult.token);
-      
+      // 4. Construire l'URL de paiement FedaPay (avec fallback si /menu)
+      let paymentUrl = transactionResult.paymentUrl;
+      if (!paymentUrl || paymentUrl.includes('/menu')) {
+        paymentUrl = getPaymentUrl(transactionResult.token);
+      }
+
       setProcessing(false);
 
       // Rediriger vers la page de paiement dans l'app
+      // Le groupe (tabs) ne fait pas partie de l'URL publique, on utilise donc simplement /paiement/[transactionId]
       router.push({
         pathname: '/paiement/[transactionId]',
         params: {
@@ -378,24 +429,59 @@ export default function ReservationScreen() {
               Date de voyage *
             </Text>
           </View>
-          <TextInput
+          <TouchableOpacity
+            onPress={openDatePicker}
+            activeOpacity={0.7}
             style={{
               borderWidth: 1,
               borderColor: dateVoyage ? '#1E88E5' : '#D1D5DB',
               borderRadius: 8,
               padding: 12,
-              fontSize: 16,
-              color: '#1F2937',
               backgroundColor: '#FFFFFF',
             }}
-            placeholder="AAAA-MM-JJ"
-            value={dateVoyage}
-            onChangeText={setDateVoyage}
-            keyboardType="default"
-          />
+          >
+            <Text
+              style={{
+                fontSize: 16,
+                color: dateVoyage ? '#1F2937' : '#9CA3AF',
+              }}
+            >
+              {formatDisplayDate(dateVoyage)}
+            </Text>
+          </TouchableOpacity>
           <Text style={{ fontSize: 12, color: '#6B7280', marginTop: 4 }}>
-            Format: AAAA-MM-JJ (exemple: 2024-12-25). La date ne peut pas être dans le passé.
+            La date ne peut pas être dans le passé. Appuyez pour sélectionner.
           </Text>
+          {Platform.OS === 'ios' && showIOSDatePicker && (
+            <View style={{ marginTop: 12 }}>
+              <DateTimePicker
+                value={dateVoyage ? new Date(dateVoyage) : new Date()}
+                mode="date"
+                display="spinner"
+                minimumDate={new Date()}
+                onChange={(_event, selectedDate) => {
+                  if (!selectedDate) {
+                    setShowIOSDatePicker(false);
+                    return;
+                  }
+                  const iso = formatISODate(selectedDate);
+                  setDateVoyage(iso);
+                }}
+                style={{ backgroundColor: '#FFFFFF' }}
+              />
+              <TouchableOpacity
+                onPress={() => setShowIOSDatePicker(false)}
+                style={{
+                  marginTop: 8,
+                  padding: 12,
+                  borderRadius: 8,
+                  backgroundColor: '#1E88E5',
+                }}
+              >
+                <Text style={{ color: '#FFFFFF', textAlign: 'center', fontWeight: '600' }}>Fermer</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
 
         {/* Sélection de l'opérateur Mobile Money */}
@@ -576,6 +662,8 @@ export default function ReservationScreen() {
                 color: '#1F2937',
               }}
               placeholder="+22997123456"
+              placeholderTextColor="#808080"
+
               keyboardType="phone-pad"
               value={telephonePassager}
               onChangeText={setTelephonePassager}

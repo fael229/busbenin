@@ -1,16 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ActivityIndicator, StyleSheet, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet, SafeAreaView, TouchableOpacity, Alert, Linking } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
-import { WebView } from 'react-native-webview';
 import { ArrowLeft, CheckCircle, XCircle } from 'lucide-react-native';
 import { supabase } from '../../../utils/supabase';
 import { checkTransactionStatus } from '../../../utils/fedapay';
 
 export default function PaiementScreen() {
   const { transactionId, reservationId, paymentUrl } = useLocalSearchParams();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState(null); // 'success', 'failed', 'pending'
   const [checking, setChecking] = useState(false);
+
+  const [hasOpened, setHasOpened] = useState(false);
+
+  // Ouvrir la page FedaPay dans le navigateur externe (comme sur le web)
+  useEffect(() => {
+    if (!paymentUrl || hasOpened) return;
+
+    setHasOpened(true);
+
+    Linking.openURL(paymentUrl).catch((error) => {
+      console.error('Erreur ouverture FedaPay:', error);
+      Alert.alert('Erreur', "Impossible d'ouvrir la page de paiement FedaPay");
+    });
+  }, [paymentUrl, hasOpened]);
 
   // Vérifier le statut de la transaction
   const verifierPaiement = async () => {
@@ -19,23 +32,34 @@ export default function PaiementScreen() {
       const result = await checkTransactionStatus(transactionId);
       
       if (result.success) {
-        const status = result.status;
-        
+        const status = result.status; // 'pending', 'approved', 'declined', 'canceled'
+
+        // Préparer les données de mise à jour (alignées sur la version web)
+        const updateData = {
+          statut_paiement: status,
+        };
+
+        if (status === 'approved') {
+          updateData.statut = 'confirmee';
+        } else if (status === 'declined' || status === 'canceled') {
+          updateData.statut = 'annulee';
+        }
+
         // Mettre à jour le statut dans Supabase
         const { error } = await supabase
           .from('reservations')
-          .update({ 
-            statut_paiement: status === 'approved' ? 'complete' : status 
-          })
+          .update(updateData)
           .eq('id', reservationId);
 
         if (error) {
           console.error('Erreur mise à jour réservation:', error);
         }
 
-        // Mettre à jour l'état local
+        // Mettre à jour l'état local et rediriger si paiement approuvé
         if (status === 'approved') {
           setPaymentStatus('success');
+          // Redirection automatique vers mes réservations
+          router.replace('/(tabs)/mes-reservations');
         } else if (status === 'declined' || status === 'canceled') {
           setPaymentStatus('failed');
         } else {
@@ -47,21 +71,6 @@ export default function PaiementScreen() {
       Alert.alert('Erreur', 'Impossible de vérifier le statut du paiement');
     } finally {
       setChecking(false);
-    }
-  };
-
-  // Gérer la navigation dans la WebView
-  const handleNavigationStateChange = (navState) => {
-    const { url } = navState;
-    console.log('WebView URL:', url);
-
-    // Détecter si le paiement est terminé (page de succès ou échec)
-    if (url.includes('/success') || url.includes('/approved')) {
-      setPaymentStatus('success');
-      verifierPaiement();
-    } else if (url.includes('/failed') || url.includes('/declined') || url.includes('/canceled')) {
-      setPaymentStatus('failed');
-      verifierPaiement();
     }
   };
 
@@ -137,41 +146,21 @@ export default function PaiementScreen() {
         <Text style={styles.headerTitle}>Paiement Mobile Money</Text>
         <View style={{ width: 24 }} />
       </View>
+      {/* Informations sur le paiement sans redirection */}
+      <View style={styles.loadingContainer}>
+        <Text style={styles.resultTitle}>Paiement Mobile Money en cours</Text>
+        <Text style={styles.resultMessage}>
+          Une demande de paiement a été envoyée à votre opérateur Mobile Money.
+          {'\n'}
+          Validez l'opération sur votre téléphone, puis appuyez sur "Vérifier le paiement" ci-dessous.
+        </Text>
+      </View>
 
-      {/* WebView */}
-      {paymentUrl ? (
-        <WebView
-          source={{ uri: paymentUrl }}
-          onLoadStart={() => setLoading(true)}
-          onLoadEnd={() => setLoading(false)}
-          onNavigationStateChange={handleNavigationStateChange}
-          style={styles.webview}
-          startInLoadingState={true}
-          renderLoading={() => (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#1E88E5" />
-              <Text style={styles.loadingText}>Chargement du paiement...</Text>
-            </View>
-          )}
-        />
-      ) : (
-        <View style={styles.errorContainer}>
-          <XCircle size={60} color="#EF4444" />
-          <Text style={styles.errorText}>URL de paiement invalide</Text>
-          <TouchableOpacity
-            style={[styles.button, styles.errorButton]}
-            onPress={retourReservations}
-          >
-            <Text style={styles.buttonText}>Retour</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {/* Bouton de vérification */}
+      {/* Bouton de vérification manuel en bas (en plus de la détection automatique) */}
       {!paymentStatus && !loading && (
         <View style={styles.footer}>
           <Text style={styles.footerText}>
-            Paiement en cours ? Vérifiez le statut
+            Paiement en cours ? Vous pouvez vérifier le statut
           </Text>
           <TouchableOpacity
             style={[styles.button, styles.checkButton]}

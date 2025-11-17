@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Mail, Lock, Eye, EyeOff, Bus, ArrowRight } from 'lucide-react-native';
 import { supabase } from '../../utils/supabase';
 import { useTheme } from '../../contexts/ThemeProvider';
+import * as SecureStore from 'expo-secure-store';
 
 export default function Login() {
   const { theme, isDark } = useTheme();
@@ -16,9 +17,12 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({ email: '', password: '' });
 
-  // Vérifier si l'utilisateur est déjà connecté
+  const LAST_LOGIN_EMAIL_KEY = 'last_login_email';
+
+  // Vérifier si l'utilisateur est déjà connecté et charger le dernier email
   useEffect(() => {
     checkSession();
+    loadLastEmail();
   }, []);
 
   const checkSession = async () => {
@@ -30,6 +34,17 @@ export default function Login() {
       }
     } catch (error) {
       console.error('Erreur vérification session:', error);
+    }
+  };
+
+  const loadLastEmail = async () => {
+    try {
+      const storedEmail = await SecureStore.getItemAsync(LAST_LOGIN_EMAIL_KEY);
+      if (storedEmail) {
+        setEmail(storedEmail);
+      }
+    } catch (error) {
+      console.error('Erreur chargement dernier email:', error);
     }
   };
 
@@ -70,6 +85,11 @@ export default function Login() {
       if (error) {
         Alert.alert('Erreur de connexion', error.message);
       } else {
+        try {
+          await SecureStore.setItemAsync(LAST_LOGIN_EMAIL_KEY, email.trim().toLowerCase());
+        } catch (e) {
+          console.error('Erreur enregistrement dernier email:', e);
+        }
         router.replace('/(tabs)/index' as any);
       }
     } catch (error: any) {

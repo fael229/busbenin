@@ -138,19 +138,99 @@ export const createTransaction = async ({
       hasUrl: !!transaction?.payment_url,
       status: transaction?.status,
     });
-    
+
+    // Construire l'URL de paiement comme sur le web
+    const paymentUrl = getPaymentUrl(transaction?.payment_url || transaction?.payment_token);
+
     return {
       success: true,
       transaction: transaction,
       transactionId: transaction?.id,
-      token: transaction?.payment_token, // FedaPay utilise "payment_token" pas "token"
-      paymentUrl: transaction?.payment_url, // URL de paiement directe
+      token: transaction?.payment_token,
+      paymentUrl,
     };
   } catch (error) {
     console.error('Erreur création transaction FedaPay:', error);
     return {
       success: false,
       error: error.message || 'Erreur lors de la création de la transaction',
+    };
+  }
+};
+
+/**
+ * Déclencher un paiement sans redirection à partir d'un token
+ * @param {Object} params
+ * @param {string} params.mode - Méthode de paiement ('mtn', 'moov', 'celtiis', etc.)
+ * @param {string} params.token - Token de paiement FedaPay
+ * @param {{ number: string, country: string }} [params.phoneNumber] - Numéro de téléphone local + pays
+ */
+export const sendPaymentWithToken = async ({ mode, token, phoneNumber }) => {
+  try {
+    if (!mode || !token) {
+      throw new Error('Mode de paiement ou token manquant pour le paiement sans redirection');
+    }
+
+    // D'après la doc "Send payment to user":
+    // Base URL: https://sandbox-api.fedapay.com/v1
+    // Endpoint:  /transactions/{mode}  (mode = 'mtn', 'moov', ...)
+    const url = `${getBaseUrl()}/transactions/${mode}`;
+
+    const body = {
+      token,
+    };
+
+    if (phoneNumber?.number && phoneNumber?.country) {
+      body.phone_number = {
+        number: phoneNumber.number,
+        country: phoneNumber.country,
+      };
+    }
+
+    console.log('FedaPay sendPaymentWithToken Request:', {
+      url,
+      mode,
+      body,
+    });
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(body),
+    });
+
+    const rawText = await response.text();
+    let data = null;
+
+    if (rawText) {
+      try {
+        data = JSON.parse(rawText);
+      } catch (e) {
+        // Réponse non JSON, on garde le texte brut pour debug
+        data = { raw: rawText };
+      }
+    }
+
+    console.log('FedaPay sendPaymentWithToken Response:', {
+      status: response.status,
+      ok: response.ok,
+      data,
+    });
+
+    if (!response.ok) {
+      const errorMessage = (data && (data.message || data.error)) || 'Erreur lors du déclenchement du paiement';
+      throw new Error(`${errorMessage} (Status: ${response.status})`);
+    }
+
+    return {
+      success: true,
+      data,
+    };
+  } catch (error) {
+    console.error('Erreur sendPaymentWithToken FedaPay:', error);
+    return {
+      success: false,
+      error: error.message,
     };
   }
 };
@@ -212,4 +292,5 @@ export default {
   createTransaction,
   getPaymentUrl,
   checkTransactionStatus,
+  sendPaymentWithToken,
 };
