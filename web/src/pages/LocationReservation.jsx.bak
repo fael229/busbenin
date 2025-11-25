@@ -1,0 +1,642 @@
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { supabase } from "../utils/supabase";
+import { useSession } from "../contexts/SessionProvider";
+import {
+  Car,
+  Calendar,
+  ArrowLeft,
+  Info,
+  User,
+  Phone,
+  Mail,
+  CreditCard,
+  CheckCircle,
+  Shield,
+  Loader,
+} from "lucide-react";
+import {
+  createTransaction,
+  openPaymentUrl,
+  formatAmount,
+  checkTransactionStatus,
+} from "../utils/fedapay";
+
+export default function LocationReservation() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { session } = useSession();
+
+  const [vehicule, setVehicule] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [processing, setProcessing] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState(""); // '', 'mtn', 'moov', 'celtiis'
+
+  const [dates, setDates] = useState({
+    date_debut: "",
+    date_fin: "",
+  });
+  const [totalPrice, setTotalPrice] = useState(0);
+
+  // Formulaire locataire
+  const [formData, setFormData] = useState({
+    nom_locataire: "",
+    telephone_locataire: "",
+    email_locataire: session?.user?.email || "",
+  });
+
+  useEffect(() => {
+    fetchVehicule();
+  }, [id]);
+
+  useEffect(() => {
+    // Pré-remplir avec les infos du profil
+    const loadProfile = async () => {
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("nom, telephone, email")
+          .eq("id", session.user.id)
+          .single();
+
+        if (profile) {
+          setFormData({
+            nom_locataire: profile.nom || "",
+            telephone_locataire: profile.telephone || "",
+            email_locataire: profile.email || session.user.email || "",
+          });
+        }
+      }
+    };
+    loadProfile();
+  }, [session]);
+
+  useEffect(() => {
+    if (dates.date_debut && dates.date_fin && vehicule) {
+      const start = new Date(dates.date_debut);
+      const end = new Date(dates.date_fin);
+
+      if (end >= start) {
+        const diffTime = Math.abs(end - start);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        setTotalPrice(diffDays * vehicule.prix_par_jour);
+      } else {
+        setTotalPrice(0);
+      }
+    }
+  }, [dates, vehicule]);
+
+  const fetchVehicule = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("vehicules_location")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (error) throw error;
+      setVehicule(data);
+    } catch (error) {
+      console.error("Erreur:", error);
+      navigate("/location");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!session) {
+      navigate("/login");
+      return;
+    }
+
+    // Validation
+    if (!paymentMethod) {
+      alert("⚠️ Veuillez sélectionner votre opérateur Mobile Money");
+      return;
+    }
+
+    if (!formData.telephone_locataire.match(/^\+229\d{8,10}$/)) {
+      alert("⚠️ Le numéro de téléphone doit être au format +229XXXXXXXX");
+      return;
+    }
+
+    if (!formData.nom_locataire.trim()) {
+      alert("⚠️ Veuillez entrer votre nom");
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      // 1. Créer la réservation
+      const { data: reservation, error } = await supabase
+        .from("reservations_location")
+        .insert([
+          {
+            vehicule_id: id,
+            user_id: session.user.id,
+            date_debut: dates.date_debut,
+            date_fin: dates.date_fin,
+            montant_total: totalPrice,
+            statut: "en_attente",
+            statut_paiement: "pending",
+            nom_locataire: formData.nom_locataire,
+            telephone_locataire: formData.telephone_locataire,
+            email_locataire: formData.email_locataire,
+          },
+        ])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // 2. Lancer le paiement
+      await handlePayment(reservation, totalPrice);
+    } catch (error) {
+      console.error("Erreur réservation:", error);
+      alert("Une erreur est survenue lors de la création de la réservation");
+      setSubmitting(false);
+    }
+  };
+
+  const handlePayment = async (reservation, amount) => {
+    setProcessing(true);
+
+    try {
+      console.log("🚀 Starting payment process...");
+
+      // Créer la transaction FedaPay avec l'opérateur sélectionné
+      const result = await createTransaction({
+        amount: formatAmount(amount),
+        description: `Location ${vehicule.marque} ${vehicule.modele}`,
+        customerId: session.user.id,
+        customerEmail: formData.email_locataire || session.user.email,
+        customerName: formData.nom_locataire,
+        customerPhone: formData.telephone_locataire,
+        mobileMoneyOperator: paymentMethod,
+      });
+
+      if (!result.success) {
+        throw new Error(
+          result.error || "Erreur lors de la création de la transaction"
+      const continueProcess = confirm(
+        "💳 Une fenêtre de paiement FedaPay s'est ouverte.\n\n" +
+          "Veuillez compléter votre paiement dans cette fenêtre.\n\n" +
+          '✅ Après avoir payé, cliquez sur "OK" pour vérifier votre paiement.\n' +
+          '❌ Si vous n\'avez pas payé, cliquez sur "Annuler".'
+      );
+
+      if (continueProcess) {
+        // L'utilisateur dit avoir payé, vérifier le statut
+        console.log("🔍 Vérification du paiement...");
+
+        // Attendre un peu que FedaPay traite le paiement
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        const statusCheck = await checkTransactionStatus(result.transactionId);
+
+        console.log("📊 Statut reçu:", statusCheck);
+
+        if (statusCheck.success) {
+          if (statusCheck.status === "approved") {
+            // Paiement confirmé
+            await updateReservationStatus(
+              reservation.id,
+              "approved",
+              result.transactionId
+            );
+            alert("✅ Paiement confirmé !\n\nVotre location est validée.");
+            navigate("/location");
+          } else if (statusCheck.status === "pending") {
+            // Toujours en attente
+            alert(
+              "⏳ Paiement en cours de traitement...\n\n" +
+                "Nous vérifions votre paiement. Cela peut prendre quelques minutes.\n\n" +
+                "Vous pouvez vérifier le statut dans votre profil."
+            );
+            navigate("/location");
+          } else {
+            // Décliné ou annulé
+            alert(
+              "❌ Paiement non confirmé.\n\n" +
+                `Statut: ${statusCheck.status}\n\n` +
+                "Vous pouvez réessayer plus tard."
+            );
+            navigate("/location");
+          }
+        } else {
+          // Erreur de vérification
+          alert(
+            "⚠️ Impossible de vérifier le paiement pour le moment.\n\n" +
+              "Veuillez vérifier le statut dans votre profil dans quelques instants."
+          );
+          navigate("/location");
+        }
+      } else {
+        // L'utilisateur n'a pas payé
+        alert(
+          "ℹ️ Paiement non effectué.\n\n" +
+            "Votre réservation est sauvegardée.\n" +
+            "Vous pouvez la payer plus tard."
+        );
+        navigate("/location");
+      }
+    } catch (error) {
+      console.error("❌ Payment error:", error);
+      alert(
+        `❌ Erreur : ${error.message}\n\nLa réservation est sauvegardée, vous pouvez payer plus tard.`
+      );
+      navigate("/location");
+    } finally {
+      setProcessing(false);
+      setSubmitting(false);
+    }
+  };
+
+  const updateReservationStatus = async (
+    reservationId,
+    status,
+    transactionId
+  ) => {
+    try {
+      await supabase
+        .from("reservations_location")
+        .update({
+          statut_paiement: status,
+          statut: status === "approved" ? "confirmee" : "annulee",
+          transaction_id: transactionId,
+        })
+        .eq("id", reservationId);
+    } catch (error) {
+      console.error("Error updating reservation:", error);
+    }
+  };
+
+  if (loading) return <div className="p-8 text-center">Chargement...</div>;
+  if (!vehicule) return null;
+
+  return (
+    <div className="container mx-auto px-4 py-8 max-w-6xl">
+      <button
+        onClick={() => navigate(-1)}
+        className="flex items-center text-gray-600 hover:text-gray-900 mb-6"
+      >
+        <ArrowLeft size={20} className="mr-2" />
+        Retour
+      </button>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* Détails Véhicule */}
+        <div className="md:col-span-1 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden h-fit sticky top-24">
+          <div className="h-64 bg-gray-200 relative">
+            {vehicule.photo_url ? (
+              <img
+                src={vehicule.photo_url}
+                alt={`${vehicule.marque} ${vehicule.modele}`}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+                <Car size={64} />
+              </div>
+            )}
+          </div>
+          <div className="p-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              {vehicule.marque} {vehicule.modele}
+            </h2>
+            <p className="text-gray-500 mb-4">{vehicule.annee}</p>
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <span className="text-gray-600">Prix par jour</span>
+              <span className="text-xl font-bold text-primary">
+                {vehicule.prix_par_jour.toLocaleString()} FCFA
+              </span>
+            </div>
+            <div className="mt-4">
+              <h3 className="font-semibold mb-2">Description</h3>
+              <p className="text-gray-600 text-sm">{vehicule.description}</p>
+            </div>
+
+            {totalPrice > 0 && (
+              <div className="mt-6 bg-primary/5 border border-primary/20 rounded-lg p-4">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-gray-700 font-semibold">
+                    Total estimé
+                  </span>
+                  <span className="text-2xl font-bold text-primary">
+                    {totalPrice.toLocaleString()} FCFA
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 flex items-center">
+                  <Info size={14} className="mr-1" />
+                  Le paiement sera effectué à l'étape suivante via FedaPay.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Formulaire Réservation */}
+        <div className="md:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-6">
+            Réserver ce véhicule
+          </h2>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <Calendar size={16} className="inline mr-1" />
+                  Date de début
+                </label>
+                <input
+                  type="date"
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  value={dates.date_debut}
+                  min={new Date().toISOString().split("T")[0]}
+                  onChange={(e) =>
+                    setDates((prev) => ({
+                      ...prev,
+                      date_debut: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <Calendar size={16} className="inline mr-1" />
+                  Date de fin
+                </label>
+                <input
+                  type="date"
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  value={dates.date_fin}
+                  min={
+                    dates.date_debut || new Date().toISOString().split("T")[0]
+                  }
+                  onChange={(e) =>
+                    setDates((prev) => ({ ...prev, date_fin: e.target.value }))
+                  }
+                />
+              </div>
+            </div>
+
+            {/* Informations du locataire */}
+            <div>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">
+                Informations du locataire
+              </h3>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Nom complet *
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      type="text"
+                      value={formData.nom_locataire}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          nom_locataire: e.target.value,
+                        })
+                      }
+                      placeholder="Jean Dupont"
+                      required
+                      className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Téléphone (Mobile Money) *
+                  </label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      type="tel"
+                      value={formData.telephone_locataire}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          telephone_locataire: e.target.value,
+                        })
+                      }
+                      placeholder="+22997123456"
+                      required
+                      className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-600 mt-1">
+                    Format: +229XXXXXXXX (ce numéro sera utilisé pour le
+                    paiement Mobile Money)
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Email
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <input
+                      type="email"
+                      value={formData.email_locataire}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          email_locataire: e.target.value,
+                        })
+                      }
+                      placeholder="email@example.com"
+                      className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Sélection de l'opérateur Mobile Money */}
+            <div>
+              <div className="flex items-center space-x-2 mb-4">
+                <CreditCard className="h-5 w-5 text-primary" />
+                <h3 className="text-lg font-bold text-gray-900">
+                  Opérateur Mobile Money
+                </h3>
+                <span className="text-red-500">*</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {/* MTN Mobile Money */}
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod("mtn")}
+                  className={`p-4 rounded-xl border-2 transition-all ${
+                    paymentMethod === "mtn"
+                      ? "border-[#FFCC00] bg-[#FFF9E6]"
+                      : "border-gray-200 hover:border-[#FFCC00]"
+                  }`}
+                >
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={`w-12 h-12 rounded-full bg-[#FFCC00] flex items-center justify-center mb-2 ${
+                        paymentMethod === "mtn"
+                          ? "ring-4 ring-[#FFCC00]/30"
+                          : ""
+                      }`}
+                    >
+                      <span className="text-lg font-bold text-black">MTN</span>
+                    </div>
+                    <p
+                      className={`text-sm font-semibold text-center ${
+                        paymentMethod === "mtn"
+                          ? "text-gray-900"
+                          : "text-gray-600"
+                      }`}
+                    >
+                      MTN Mobile Money
+                    </p>
+                    {paymentMethod === "mtn" && (
+                      <CheckCircle className="h-5 w-5 text-[#FFCC00] mt-2" />
+                    )}
+                  </div>
+                </button>
+
+                {/* Moov Money */}
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod("moov")}
+                  className={`p-4 rounded-xl border-2 transition-all ${
+                    paymentMethod === "moov"
+                      ? "border-[#009CDE] bg-[#E6F7FF]"
+                      : "border-gray-200 hover:border-[#009CDE]"
+                  }`}
+                >
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={`w-12 h-12 rounded-full bg-[#009CDE] flex items-center justify-center mb-2 ${
+                        paymentMethod === "moov"
+                          ? "ring-4 ring-[#009CDE]/30"
+                          : ""
+                      }`}
+                    >
+                      <span className="text-base font-bold text-white">
+                        moov
+                      </span>
+                    </div>
+                    <p
+                      className={`text-sm font-semibold text-center ${
+                        paymentMethod === "moov"
+                          ? "text-gray-900"
+                          : "text-gray-600"
+                      }`}
+                    >
+                      Moov Money
+                    </p>
+                    {paymentMethod === "moov" && (
+                      <CheckCircle className="h-5 w-5 text-[#009CDE] mt-2" />
+                    )}
+                  </div>
+                </button>
+
+                {/* Celtiis Cash */}
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod("celtiis")}
+                  className={`p-4 rounded-xl border-2 transition-all ${
+                    paymentMethod === "celtiis"
+                      ? "border-[#FF6B00] bg-[#FFF3E6]"
+                      : "border-gray-200 hover:border-[#FF6B00]"
+                  }`}
+                >
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={`w-12 h-12 rounded-full bg-[#FF6B00] flex items-center justify-center mb-2 ${
+                        paymentMethod === "celtiis"
+                          ? "ring-4 ring-[#FF6B00]/30"
+                          : ""
+                      }`}
+                    >
+                      <span className="text-sm font-bold text-white">
+                        Celtiis
+                      </span>
+                    </div>
+                    <p
+                      className={`text-sm font-semibold text-center ${
+                        paymentMethod === "celtiis"
+                          ? "text-gray-900"
+                          : "text-gray-600"
+                      }`}
+                    >
+                      Celtiis Cash
+                    </p>
+                    {paymentMethod === "celtiis" && (
+                      <CheckCircle className="h-5 w-5 text-[#FF6B00] mt-2" />
+                    )}
+                  </div>
+                </button>
+              </div>
+
+              <p className="text-xs text-gray-600 mt-3">
+                Le numéro de téléphone doit correspondre à votre compte Mobile
+                Money
+              </p>
+            </div>
+
+            {/* Message de sécurité */}
+            <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+              <div className="flex items-start space-x-3">
+                <Shield className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                <div className="text-sm text-blue-800">
+                  <p className="font-semibold mb-1">Paiement 100% sécurisé</p>
+                  <p className="text-xs">
+                    Vos données bancaires sont cryptées et sécurisées par
+                    FedaPay. Nous ne stockons jamais vos informations de
+                    paiement.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={
+                submitting || processing || totalPrice <= 0 || !paymentMethod
+              }
+              className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+            >
+              {submitting || processing ? (
+                <>
+                  <Loader className="h-5 w-5 animate-spin" />
+                  <span>
+                    {processing
+                      ? "Paiement en cours..."
+                      : "Réservation en cours..."}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <CreditCard className="h-5 w-5" />
+                  <span>Payer {totalPrice.toLocaleString()} FCFA</span>
+                </>
+              )}
+            </button>
+            <p className="text-xs text-gray-600 text-center mt-2">
+              Paiement sécurisé par FedaPay (Mobile Money)
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
