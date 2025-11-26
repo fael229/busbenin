@@ -32,6 +32,8 @@ import LocationReservation from "./pages/LocationReservation";
 import LocationPayment from "./pages/LocationPayment";
 import MesVehiculesLocation from "./pages/MesVehiculesLocation";
 import AdminLocation from "./pages/AdminLocation";
+import Wallet from "./pages/Wallet";
+import AdminWallets from "./pages/admin/Wallets";
 
 function ProtectedRoute({ children }) {
   const { session, loading } = useSession();
@@ -152,6 +154,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="wallet"
+          element={
+            <ProtectedRoute>
+              <Wallet />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Routes Admin */}
         <Route
@@ -159,6 +169,14 @@ function App() {
           element={
             <AdminRoute>
               <AdminDashboard />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="admin/wallets"
+          element={
+            <AdminRoute>
+              <AdminWallets />
             </AdminRoute>
           }
         />

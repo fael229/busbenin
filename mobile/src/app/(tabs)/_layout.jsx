@@ -170,6 +170,8 @@ export default function TabLayout() {
       <Tabs.Screen name="admin/manage-compagnies" options={{ href: null }} />
       <Tabs.Screen name="admin/manage-reservations" options={{ href: null }} />
       <Tabs.Screen name="admin/manage-locations" options={{ href: null }} />
+      <Tabs.Screen name="admin/manage-wallets" options={{ href: null }} />
+      <Tabs.Screen name="wallet" options={{ href: null }} />
     </Tabs>
   );
 }

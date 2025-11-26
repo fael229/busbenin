@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bus Bénin – Récapitulatif du projet</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="description" content="Présentation du projet Bus Bénin : utilité pour les voyageurs et compagnies, modèle économique et fonctionnalités de l'application." />
+</head>
+<body class="bg-slate-50 text-slate-900">
+  <div class="min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-sky-600 text-white">
+      <div class="max-w-5xl mx-auto px-4 py-5 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-white text-xl">
+           <a href='https://postimg.cc/LJD4N1w2' target='_blank'><img src='https://i.postimg.cc/N0qyG8x9/adaptive-icon.png' alt='adaptive-icon'></a>
+          </div>
+          <div>
+            <h1 class="text-xl font-bold leading-tight">Bus Bénin</h1>
+            <p class="text-xs text-sky-100">Plateforme de réservation de bus interurbains</p>
+          </div>
+        </div>
+        <span class="hidden sm:inline text-xs font-medium bg-white/10 px-3 py-1 rounded-full border border-white/20">Dossier projet</span>
+      </div>
+    </header>
+
+    <!-- Main -->
+    <main class="flex-1">
+      <section class="bg-gradient-to-b from-sky-50 to-slate-50">
+        <div class="max-w-5xl mx-auto px-4 py-10 grid gap-8 md:grid-cols-5 md:items-center">
+          <div class="md:col-span-3">
+            <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 mb-3">
+              Récapitulatif du projet
+            </h2>
+            <p class="text-sm md:text-base text-slate-700 mb-4 leading-relaxed">
+              Bus Bénin est une application mobile et web qui centralise l'offre de transport interurbain
+              (compagnies de bus) pour faciliter la vie des voyageurs et moderniser la gestion des compagnies.
+              Elle permet de rechercher un trajet, comparer les prix et horaires, réserver et payer
+              directement depuis son téléphone.
+            </p>
+            <div class="flex flex-wrap gap-2 text-xs">
+              <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-sky-100 text-sky-800 font-medium">🔎 Recherche de trajets</span>
+              <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 font-medium">💳 Paiement en ligne (FedaPay / Mobile Money)</span>
+              <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-violet-100 text-violet-800 font-medium">📍 Carte & géolocalisation</span>
+            </div>
+          </div>
+          <div class="md:col-span-2">
+            <div class="bg-white rounded-2xl shadow-lg border border-slate-100 p-4 space-y-3">
+              <p class="text-xs uppercase font-semibold text-slate-500 tracking-wide">En un coup d'œil</p>
+              <div class="grid grid-cols-2 gap-3 text-xs">
+                <div class="p-3 rounded-xl bg-sky-50">
+                  <p class="font-semibold text-slate-900">Voyageurs</p>
+                  <p class="text-slate-600 mt-1">Réservation 100% digitale, comparaison des compagnies, suivi des réservations.</p>
+                </div>
+                <div class="p-3 rounded-xl bg-emerald-50">
+                  <p class="font-semibold text-slate-900">Compagnies</p>
+                  <p class="text-slate-600 mt-1">Gestion des trajets, remplissage optimisé, encaissement sécurisé.</p>
+                </div>
+                <div class="p-3 rounded-xl bg-amber-50 col-span-2">
+                  <p class="font-semibold text-slate-900">Fondateurs</p>
+                  <p class="text-slate-600 mt-1">Plateforme scalable avec plusieurs leviers de monétisation (commissions, abonnements, services B2B).</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Utilité -->
+      <section class="max-w-5xl mx-auto px-4 py-10 grid gap-8 md:grid-cols-2">
+        <div class="space-y-4">
+          <h3 class="text-xl font-bold text-slate-900">Utilité pour les voyageurs</h3>
+          <ul class="space-y-2 text-sm text-slate-700 leading-relaxed">
+            <li><span class="font-semibold">• Recherche centralisée :</span> toutes les compagnies partenaires sur une seule plateforme (trajets, horaires, prix).</li>
+            <li><span class="font-semibold">• Réservation simplifiée :</span> réservation en quelques étapes avec confirmation immédiate.</li>
+            <li><span class="font-semibold">• Paiement sécurisé :</span> intégration FedaPay / Mobile Money pour payer directement depuis le téléphone.</li>
+            <li><span class="font-semibold">• Historique & billets :</span> accès à ses réservations passées et futures, preuve de paiement et détails du trajet.</li>
+            <li><span class="font-semibold">• Notifications :</span> rappels avant le départ, informations sur les changements éventuels.</li>
+          </ul>
+        </div>
+        <div class="space-y-4">
+          <h3 class="text-xl font-bold text-slate-900">Utilité pour les compagnies de bus</h3>
+          <ul class="space-y-2 text-sm text-slate-700 leading-relaxed">
+            <li><span class="font-semibold">• Visibilité digitale :</span> présence sur une plateforme consultée par de nombreux voyageurs.</li>
+            <li><span class="font-semibold">• Remplissage amélioré :</span> optimisation du taux de remplissage grâce aux réservations anticipées.</li>
+            <li><span class="font-semibold">• Gestion centralisée :</span> interface de suivi des trajets, réservations, encaissements et statistiques.</li>
+            <li><span class="font-semibold">• Réduction du cash :</span> plus de paiements digitalisés, moins de manipulation de liquidités en agence.</li>
+            <li><span class="font-semibold">• Données & décisions :</span> reporting (lignes les plus demandées, périodes de pointe, etc.) pour ajuster l'offre.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Business model -->
+      <section class="bg-white border-y border-slate-100">
+        <div class="max-w-5xl mx-auto px-4 py-10 grid gap-8 md:grid-cols-2">
+          <div>
+            <h3 class="text-xl font-bold text-slate-900 mb-3">Résultante financière & modèle économique</h3>
+            <p class="text-sm text-slate-700 mb-4 leading-relaxed">
+              Le projet est conçu comme une plateforme <span class="font-semibold">B2C/B2B</span> avec plusieurs sources de revenus
+              qui permettent de rentabiliser l'investissement initial et de financer l'évolution du produit.
+            </p>
+            <ul class="space-y-2 text-sm text-slate-700 leading-relaxed">
+              <li><span class="font-semibold">1. Commission sur chaque billet :</span> pourcentage sur le montant payé par le voyageur, reversé automatiquement à la compagnie.</li>
+              <li><span class="font-semibold">2. Abonnements pour les compagnies :</span> formule mensuelle/annuelle incluant : gestion avancée, statistiques, support prioritaire.</li>
+              <li><span class="font-semibold">3. Services premium B2B :</span> intégration avec les systèmes internes des grandes compagnies, export comptable, API dédiée.</li>
+              <li><span class="font-semibold">4. Partenariats & publicité ciblée :</span> espaces sponsorisés (assurance voyage, services touristiques, etc.).</li>
+            </ul>
+          </div>
+          <div class="space-y-3 text-sm text-slate-700 leading-relaxed">
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+              <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">Exemple de potentiel (scénario indicatif)</p>
+              <ul class="space-y-1">
+                <li>• 20 compagnies partenaires</li>
+                <li>• 300 billets vendus / jour via l'application</li>
+                <li>• Montant moyen d'un billet : 7 000 FCFA</li>
+                <li>• Commission plateforme : 5–10 %</li>
+              </ul>
+              <p class="mt-2 text-xs text-slate-500">
+                Ces chiffres sont donnés à titre d'exemple pour illustrer le potentiel économique.
+                Le modèle reste ajustable en fonction des partenariats et de la stratégie des fondateurs.
+              </p>
+            </div>
+            <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-100">
+              <p class="text-sm font-semibold text-emerald-900 mb-1">Pour les fondateurs</p>
+              <p class="text-xs text-emerald-900/80">
+                La plateforme crée un actif numérique scalable : une fois l'application en place, chaque nouvelle
+                compagnie et chaque nouveau billet ajouté augmente la valeur du projet sans coûts proportionnels.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Fonctionnalités -->
+      <section class="max-w-5xl mx-auto px-4 py-10">
+        <h3 class="text-xl font-bold text-slate-900 mb-4">Fonctionnalités principales de l'application</h3>
+        <div class="grid gap-4 md:grid-cols-3 text-sm">
+          <div class="bg-white rounded-2xl border border-slate-100 p-4">
+            <p class="font-semibold mb-1">Recherche & comparaison</p>
+            <ul class="space-y-1 text-slate-700">
+              <li>• Recherche par ville de départ / arrivée, date, nombre de places.</li>
+              <li>• Affichage des horaires, prix, compagnie et notation.</li>
+              <li>• Filtres (compagnie, heure, prix, confort).</li>
+            </ul>
+          </div>
+          <div class="bg-white rounded-2xl border border-slate-100 p-4">
+            <p class="font-semibold mb-1">Réservation & paiement</p>
+            <ul class="space-y-1 text-slate-700">
+              <li>• Formulaire de réservation (passager, contact, date de voyage).</li>
+              <li>• Intégration FedaPay / Mobile Money pour le paiement.</li>
+              <li>• Suivi du statut de paiement et mise à jour de la réservation.</li>
+            </ul>
+          </div>
+          <div class="bg-white rounded-2xl border border-slate-100 p-4">
+            <p class="font-semibold mb-1">Espace voyageur</p>
+            <ul class="space-y-1 text-slate-700">
+              <li>• Historique des réservations.</li>
+              <li>• Accès rapide aux prochains départs.</li>
+              <li>• Possibilité de laisser des avis sur les trajets.</li>
+            </ul>
+          </div>
+          <div class="bg-white rounded-2xl border border-slate-100 p-4">
+            <p class="font-semibold mb-1">Espace compagnie</p>
+            <ul class="space-y-1 text-slate-700">
+              <li>• Gestion des trajets, horaires et tarifs.</li>
+              <li>• Visualisation des réservations et remplissage des bus.</li>
+              <li>• Statistiques de performance (par ligne, par période).</li>
+            </ul>
+          </div>
+          <div class="bg-white rounded-2xl border border-slate-100 p-4">
+            <p class="font-semibold mb-1">Administration</p>
+            <ul class="space-y-1 text-slate-700">
+              <li>• Gestion des compagnies, utilisateurs et droits d'accès.</li>
+              <li>• Contrôle qualité des trajets et contenus.</li>
+              <li>• Supervision globale de la plateforme.</li>
+            </ul>
+          </div>
+          <div class="bg-white rounded-2xl border border-slate-100 p-4">
+            <p class="font-semibold mb-1">Sécurité & fiabilité</p>
+            <ul class="space-y-1 text-slate-700">
+              <li>• Authentification sécurisée (Supabase).</li>
+              <li>• Intégration de prestataires de paiement reconnus.</li>
+              <li>• Architecture prête pour la montée en charge.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Maps de navigation (site web & app mobile) -->
+      <section class="bg-white border-y border-slate-100">
+        <div class="max-w-5xl mx-auto px-4 py-10 grid gap-8 md:grid-cols-2">
+          <!-- Map du site web -->
+          <div>
+            <h3 class="text-xl font-bold text-slate-900 mb-3">Map du site web</h3>
+            <p class="text-sm text-slate-700 mb-3 leading-relaxed">
+              Structure indicative des pages pour une version web publique de Bus Bénin.
+              Elle peut servir de base pour un futur site marketing ou portail de réservation.
+            </p>
+            <div class="text-sm text-slate-800">
+              <div class="mb-2 font-semibold">Accueil</div>
+              <div class="pl-4 border-l border-slate-200 space-y-1 mb-3">
+                <p>• Hero (recherche rapide de trajets)</p>
+                <p>• Avantages pour les voyageurs & compagnies</p>
+                <p>• Témoignages, compagnies partenaires</p>
+              </div>
+
+              <div class="mb-2 font-semibold">Recherche & réservation</div>
+              <div class="pl-4 border-l border-slate-200 space-y-1 mb-3">
+                <p>• Page de recherche (formulaire : villes, date, passagers)</p>
+                <p>• Page de résultats (liste des trajets, filtres)</p>
+                <p>• Détail du trajet (informations détaillées, conditions)</p>
+                <p>• Page de réservation (coordonnées, récapitulatif, paiement)</p>
+              </div>
+
+              <div class="mb-2 font-semibold">Compagnies</div>
+              <div class="pl-4 border-l border-slate-200 space-y-1 mb-3">
+                <p>• Liste des compagnies partenaires</p>
+                <p>• Fiche compagnie (lignes, notation, infos pratiques)</p>
+              </div>
+
+              <div class="mb-2 font-semibold">Espace client</div>
+              <div class="pl-4 border-l border-slate-200 space-y-1 mb-3">
+                <p>• Connexion / inscription</p>
+                <p>• Mes réservations</p>
+                <p>• Profil & moyens de contact</p>
+              </div>
+
+              <div class="mb-2 font-semibold">Espace compagnie & Admin</div>
+              <div class="pl-4 border-l border-slate-200 space-y-1">
+                <p>• Dashboard compagnie (trajets, réservations, statistiques)</p>
+                <p>• Dashboard admin (gestion des compagnies, utilisateurs, contenus)</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Map de l'app mobile -->
+          <div>
+            <h3 class="text-xl font-bold text-slate-900 mb-3">Map de l'app mobile</h3>
+            <p class="text-sm text-slate-700 mb-3 leading-relaxed">
+              Vue d'ensemble des principaux écrans et des flux de navigation dans l'application mobile.
+            </p>
+            <div class="text-sm text-slate-800 space-y-3">
+              <div>
+                <p class="font-semibold mb-1">1. Onboarding & authentification</p>
+                <div class="pl-4 border-l border-slate-200 space-y-1">
+                  <p>• Écran de connexion (email, mot de passe, dernier compte mémorisé)</p>
+                  <p>• Écran d'inscription (création de compte avec nom, email, mot de passe)</p>
+                </div>
+              </div>
+
+              <div>
+                <p class="font-semibold mb-1">2. Navigation principale (barre d'onglets)</p>
+                <div class="pl-4 border-l border-slate-200 space-y-1">
+                  <p>• Accueil : recherche rapide, trajets mis en avant, compagnies recommandées</p>
+                  <p>• Trajets : exploration des lignes disponibles, filtres, promotions</p>
+                  <p>• Compagnies : liste et fiches des compagnies partenaires</p>
+                  <p>• Mes réservations : réservations à venir et passées</p>
+                  <p>• Favoris : trajets / compagnies enregistrés</p>
+                  <p>• Paramètres : profil, langue, préférences de notifications</p>
+                </div>
+              </div>
+
+              <div>
+                <p class="font-semibold mb-1">3. Flux de réservation</p>
+                <div class="pl-4 border-l border-slate-200 space-y-1">
+                  <p>• Sélection du trajet (liste de résultats)</p>
+                  <p>• Écran de réservation (date de voyage, nombre de places, coordonnées)</p>
+                  <p>• Paiement (intégration FedaPay / navigateur externe si nécessaire)</p>
+                  <p>• Confirmation & suivi de la réservation</p>
+                </div>
+              </div>
+
+              <div>
+                <p class="font-semibold mb-1">4. Espace compagnie / admin (mobile)</p>
+                <div class="pl-4 border-l border-slate-200 space-y-1">
+                  <p>• Dashboard (résumé des réservations du jour / semaine)</p>
+                  <p>• Gestion des trajets et horaires</p>
+                  <p>• Consultation des statistiques clés</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Plan d'action détaillé -->
+      <section class="max-w-5xl mx-auto px-4 py-10">
+        <h3 class="text-xl font-bold text-slate-900 mb-4">Plan d'action détaillé</h3>
+        <div class="grid gap-4 md:grid-cols-3 text-sm">
+          <div class="bg-white rounded-2xl border border-slate-100 p-4 flex flex-col h-full">
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1">Phase 1</p>
+            <p class="font-semibold mb-2">Cadrage & produit minimum viable (MVP)</p>
+            <ul class="space-y-1 text-slate-700 flex-1">
+              <li>• Finaliser le périmètre fonctionnel du MVP (trajets, réservation, paiement, espace voyageur).</li>
+              <li>• Stabiliser les flux existants (Supabase, FedaPay, navigation mobile).</li>
+              <li>• Valider l'UX sur un panel restreint d'utilisateurs (tests sur 1–2 lignes principales).</li>
+            </ul>
+            <p class="mt-3 text-xs text-slate-500">Objectif : disposer d'une première version fiable pour tester le marché.</p>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-100 p-4 flex flex-col h-full">
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1">Phase 2</p>
+            <p class="font-semibold mb-2">Lancement & acquisition de partenaires</p>
+            <ul class="space-y-1 text-slate-700 flex-1">
+              <li>• Signer les premières compagnies pilotes (contrats simples, commissions définies).</li>
+              <li>• Mettre en place un support opérationnel (hotline WhatsApp, FAQ, tutoriels).</li>
+              <li>• Lancer une campagne ciblée (réseaux sociaux, gares routières, points de vente).</li>
+              <li>• Suivre les indicateurs clés : réservations/jour, taux de conversion, retours utilisateurs.</li>
+            </ul>
+            <p class="mt-3 text-xs text-slate-500">Objectif : démontrer l'usage réel et ajuster le produit.</p>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-100 p-4 flex flex-col h-full">
+            <p class="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1">Phase 3</p>
+            <p class="font-semibold mb-2">Scale & diversification des revenus</p>
+            <ul class="space-y-1 text-slate-700 flex-1">
+              <li>• Étendre le réseau de compagnies et de lignes (autres villes / pays voisins).</li>
+              <li>• Proposer des abonnements compagnies (fonctionnalités avancées, reporting).</li>
+              <li>• Développer des services B2B (API, intégrations comptables, exports).</li>
+              <li>• Affiner le pricing (commissions, options premium) selon la traction réelle.</li>
+            </ul>
+            <p class="mt-3 text-xs text-slate-500">Objectif : transformer la plateforme en acteur de référence régional.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Map -->
+      <section class="bg-slate-900">
+        <div class="max-w-5xl mx-auto px-4 py-10 grid gap-8 md:grid-cols-2 items-center">
+          <div>
+            <h3 class="text-xl font-bold text-white mb-3">Carte & géolocalisation</h3>
+            <p class="text-sm text-slate-200 mb-3 leading-relaxed">
+              L'application peut intégrer une carte interactive pour visualiser les
+              grandes lignes de bus, les gares routières et les principaux axes.
+              Cette carte facilite la compréhension de l'offre de transport et
+              permet d'imaginer de nouvelles lignes à ouvrir.
+            </p>
+            <ul class="space-y-2 text-sm text-slate-200/90 leading-relaxed">
+              <li>• Affichage des gares et points de départ/arrivée sur une carte (Google Maps ou OpenStreetMap).</li>
+              <li>• Visualisation des principaux axes (ex : Cotonou → Parakou, Cotonou → Natitingou, etc.).</li>
+              <li>• Possibilité future de suivi en temps réel (bus connectés / GPS).</li>
+            </ul>
+          </div>
+          <div class="relative">
+            <div class="aspect-[4/3] rounded-2xl border border-slate-700 bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 overflow-hidden flex items-center justify-center">
+              <div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_10%_20%,#38bdf8,transparent_60%),radial-gradient(circle_at_80%_80%,#22c55e,transparent_60%)]"></div>
+              <div class="relative z-10 text-center px-4">
+                <p class="text-xs uppercase tracking-wide text-slate-400 mb-2">Vue illustrée</p>
+                <p class="text-sm text-slate-100 mb-3">Carte conceptuelle des liaisons interurbaines au Bénin</p>
+                <div class="flex flex-wrap justify-center gap-2 text-[11px]">
+                  <span class="px-2 py-1 rounded-full bg-slate-800/80 text-slate-100">Cotonou ▸ Parakou</span>
+                  <span class="px-2 py-1 rounded-full bg-slate-800/80 text-slate-100">Cotonou ▸ Natitingou</span>
+                  <span class="px-2 py-1 rounded-full bg-slate-800/80 text-slate-100">Abomey ▸ Cotonou</span>
+                  <span class="px-2 py-1 rounded-full bg-slate-800/80 text-slate-100">Porto‑Novo ▸ Cotonou</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-200 bg-white">
+      <div class="max-w-5xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-2">
+        <p class="text-xs text-slate-500">© <span id="year"></span> Bus Bénin – Document de présentation du projet.</p>
+        <p class="text-xs text-slate-400">Version de travail – contenu ajustable selon la stratégie des fondateurs.</p>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Met à jour automatiquement l'année dans le footer
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

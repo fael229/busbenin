@@ -1,82 +1,85 @@
-import { useState, useEffect } from 'react'
-import { User, Mail, Phone, Edit2, Save, X, Car } from 'lucide-react'
-import { supabase } from '../utils/supabase'
-import { useSession } from '../contexts/SessionProvider'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from "react";
+import { User, Mail, Phone, Edit2, Save, X, Car } from "lucide-react";
+import { supabase } from "../utils/supabase";
+import { useSession } from "../contexts/SessionProvider";
+import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
-  const { session } = useSession()
-  const navigate = useNavigate()
-  const [profile, setProfile] = useState(null)
-  const [editing, setEditing] = useState(false)
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
+  const { session } = useSession();
+  const navigate = useNavigate();
+  const [profile, setProfile] = useState(null);
+  const [editing, setEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
-    username: '',
-    full_name: '',
-    email: '',
-  })
+    username: "",
+    full_name: "",
+    email: "",
+    phone: "",
+  });
 
   useEffect(() => {
-    loadProfile()
-  }, [session])
+    loadProfile();
+  }, [session]);
 
   const loadProfile = async () => {
-    if (!session?.user?.id) return
+    if (!session?.user?.id) return;
 
     try {
       const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', session.user.id)
-        .single()
+        .from("profiles")
+        .select("*")
+        .eq("id", session.user.id)
+        .single();
 
-      if (error) throw error
+      if (error) throw error;
 
-      setProfile(data)
+      setProfile(data);
       setFormData({
-        username: data.username || '',
-        full_name: data.full_name || '',
+        username: data.username || "",
+        full_name: data.full_name || "",
         email: data.email || session.user.email,
-      })
+        phone: data.phone || "",
+      });
     } catch (error) {
-      console.error('Error loading profile:', error)
+      console.error("Error loading profile:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleSave = async () => {
-    setSaving(true)
+    setSaving(true);
     try {
       const { error } = await supabase
-        .from('profiles')
+        .from("profiles")
         .update({
           username: formData.username,
           full_name: formData.full_name,
           email: formData.email,
+          phone: formData.phone,
           updated_at: new Date().toISOString(),
         })
-        .eq('id', session.user.id)
+        .eq("id", session.user.id);
 
-      if (error) throw error
+      if (error) throw error;
 
-      await loadProfile()
-      setEditing(false)
+      await loadProfile();
+      setEditing(false);
     } catch (error) {
-      console.error('Error updating profile:', error)
-      alert('Une erreur est survenue lors de la mise à jour')
+      console.error("Error updating profile:", error);
+      alert("Une erreur est survenue lors de la mise à jour");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
-    )
+    );
   }
 
   return (
@@ -98,12 +101,13 @@ export default function Profile() {
             <div className="flex space-x-2">
               <button
                 onClick={() => {
-                  setEditing(false)
+                  setEditing(false);
                   setFormData({
-                    username: profile.username || '',
-                    full_name: profile.full_name || '',
-                    email: profile.email || '',
-                  })
+                    username: profile.username || "",
+                    full_name: profile.full_name || "",
+                    email: profile.email || "",
+                    phone: profile.phone || "",
+                  });
                 }}
                 className="btn-secondary flex items-center space-x-2"
               >
@@ -116,7 +120,7 @@ export default function Profile() {
                 className="btn-primary flex items-center space-x-2 disabled:opacity-50"
               >
                 <Save className="h-4 w-4" />
-                <span>{saving ? 'Enregistrement...' : 'Enregistrer'}</span>
+                <span>{saving ? "Enregistrement..." : "Enregistrer"}</span>
               </button>
             </div>
           )}
@@ -127,7 +131,9 @@ export default function Profile() {
           <div className="flex justify-center mb-8">
             <div className="w-32 h-32 bg-primary-light rounded-full flex items-center justify-center">
               <span className="text-5xl font-bold text-primary">
-                {formData.username?.[0]?.toUpperCase() || formData.full_name?.[0]?.toUpperCase() || 'U'}
+                {formData.username?.[0]?.toUpperCase() ||
+                  formData.full_name?.[0]?.toUpperCase() ||
+                  "U"}
               </span>
             </div>
           </div>
@@ -143,7 +149,9 @@ export default function Profile() {
                 <input
                   type="text"
                   value={formData.full_name}
-                  onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, full_name: e.target.value })
+                  }
                   disabled={!editing}
                   className="input-field pl-10 dark:bg-gray-700 dark:text-white dark:border-gray-600 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
                 />
@@ -159,7 +167,9 @@ export default function Profile() {
                 <input
                   type="text"
                   value={formData.username}
-                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, username: e.target.value })
+                  }
                   disabled={!editing}
                   minLength={3}
                   className="input-field pl-10 dark:bg-gray-700 dark:text-white dark:border-gray-600 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
@@ -176,32 +186,62 @@ export default function Profile() {
                 <input
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   disabled={!editing}
                   className="input-field pl-10 dark:bg-gray-700 dark:text-white dark:border-gray-600 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
                 />
               </div>
             </div>
 
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Numéro de téléphone
+              </label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
+                  disabled={!editing}
+                  placeholder="+229 XX XX XX XX"
+                  className="input-field pl-10 dark:bg-gray-700 dark:text-white dark:border-gray-600 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
+                />
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Requis pour publier des annonces et recevoir vos paiements
+              </p>
+            </div>
+
             {profile && (
               <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
                 <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
                   <p>
-                    <strong>Compte créé:</strong>{' '}
-                    {new Date(session.user.created_at).toLocaleDateString('fr-FR', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
+                    <strong>Compte créé:</strong>{" "}
+                    {new Date(session.user.created_at).toLocaleDateString(
+                      "fr-FR",
+                      {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      }
+                    )}
                   </p>
                   {profile.updated_at && (
                     <p>
-                      <strong>Dernière modification:</strong>{' '}
-                      {new Date(profile.updated_at).toLocaleDateString('fr-FR', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      })}
+                      <strong>Dernière modification:</strong>{" "}
+                      {new Date(profile.updated_at).toLocaleDateString(
+                        "fr-FR",
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }
+                      )}
                     </p>
                   )}
                 </div>
@@ -217,7 +257,7 @@ export default function Profile() {
           </h2>
           <div className="space-y-3">
             <button
-              onClick={() => navigate('/mes-vehicules-location')}
+              onClick={() => navigate("/mes-vehicules-location")}
               className="w-full flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors group"
             >
               <div className="flex items-center space-x-3">
@@ -233,13 +273,23 @@ export default function Profile() {
                   </p>
                 </div>
               </div>
-              <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              <svg
+                className="h-5 w-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
             </button>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

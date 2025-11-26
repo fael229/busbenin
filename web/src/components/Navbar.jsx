@@ -16,6 +16,7 @@ import {
   Shield,
   Building2,
   Car,
+  Wallet,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -152,6 +153,14 @@ export default function Navbar() {
                     >
                       <Heart className="h-4 w-4" />
                       <span className="text-sm">Favoris</span>
+                    </Link>
+                    <Link
+                      to="/wallet"
+                      className="flex items-center space-x-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      onClick={() => setIsProfileOpen(false)}
+                    >
+                      <Wallet className="h-4 w-4" />
+                      <span className="text-sm">Mon Portefeuille</span>
                     </Link>
                     {(isAdmin || isCompagnie) && (
                       <div className="border-t border-gray-200 dark:border-gray-700 my-2"></div>
@@ -292,6 +301,13 @@ export default function Navbar() {
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Favoris
+                  </Link>
+                  <Link
+                    to="/wallet"
+                    className="text-gray-700 dark:text-gray-300 hover:text-primary px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Mon Portefeuille
                   </Link>
                   {isAdmin && (
                     <Link

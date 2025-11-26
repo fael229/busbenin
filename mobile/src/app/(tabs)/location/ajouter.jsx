@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,14 +8,18 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import { useRouter } from "expo-router";
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system/legacy";
 import { supabase } from "../../../utils/supabase";
 import { useSession } from "../../../contexts/SessionProvider";
 import { useTheme } from "../../../contexts/ThemeProvider";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Car, ArrowLeft } from "lucide-react-native";
+import { Car, Upload, Image as ImageIcon, X } from "lucide-react-native";
 import BackButton from "../../../components/BackButton";
+import PhoneNumberModal from "../../../components/PhoneNumberModal";
 
 export default function LocationAddScreen() {
   const router = useRouter();
@@ -23,6 +27,11 @@ export default function LocationAddScreen() {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [checkingPhone, setCheckingPhone] = useState(true);
+  const [showPhoneModal, setShowPhoneModal] = useState(false);
+  const [hasPhone, setHasPhone] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
   const [formData, setFormData] = useState({
     marque: "",
     modele: "",
@@ -33,12 +42,131 @@ export default function LocationAddScreen() {
     photo_url: "",
   });
 
+  useEffect(() => {
+    checkPhoneNumber();
+  }, []);
+
+  const checkPhoneNumber = async () => {
+    if (!session?.user?.id) {
+      setCheckingPhone(false);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("phone")
+        .eq("id", session.user.id)
+        .single();
+
+      if (error) throw error;
+
+      if (!data?.phone || data.phone.trim() === "") {
+        setHasPhone(false);
+        setShowPhoneModal(true);
+      } else {
+        setHasPhone(true);
+      }
+    } catch (error) {
+      console.error("Erreur vérification téléphone:", error);
+    } finally {
+      setCheckingPhone(false);
+    }
+  };
+
   const handleChange = (name, value) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const pickImage = async () => {
+    try {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (status !== "granted") {
+        Alert.alert(
+          "Permission requise",
+          "Nous avons besoin de la permission d'accéder à vos photos"
+        );
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        setSelectedImage(result.assets[0]);
+        await uploadImage(result.assets[0]);
+      }
+    } catch (error) {
+      console.error("Erreur sélection image:", error);
+      Alert.alert("Erreur", "Impossible de sélectionner l'image");
+    }
+  };
+
+  const uploadImage = async (image) => {
+    if (!session?.user?.id) return;
+
+    setUploadingImage(true);
+    try {
+      const fileExt = image.uri.split('.').pop();
+      const fileName = `${session.user.id}-${Date.now()}.${fileExt}`;
+      const filePath = `vehicules/${fileName}`;
+      
+      // URL de l'API Storage de Supabase
+      const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || "https://aztjjcxaoqtchvvzgbpd.supabase.co";
+      const uploadUrl = `${supabaseUrl}/storage/v1/object/images/${filePath}`;
+
+      // Upload natif via FileSystem (plus robuste que fetch/blob en RN)
+      const response = await FileSystem.uploadAsync(uploadUrl, image.uri, {
+        httpMethod: 'POST',
+        uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          'Content-Type': image.mimeType || 'image/jpeg',
+        },
+      });
+
+      if (response.status !== 200) {
+        throw new Error(`Upload failed: ${response.body}`);
+      }
+
+      // Obtenir l'URL publique
+      const { data: { publicUrl } } = supabase.storage
+        .from('images')
+        .getPublicUrl(filePath);
+
+      setFormData(prev => ({ ...prev, photo_url: publicUrl }));
+      Alert.alert('Succès', 'Image uploadée avec succès !');
+    } catch (error) {
+      console.error('Erreur upload image:', error);
+      Alert.alert('Erreur', 'Impossible d\'uploader l\'image. ' + error.message);
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const removeImage = () => {
+    setSelectedImage(null);
+    setFormData((prev) => ({ ...prev, photo_url: "" }));
+  };
+
   const handleSubmit = async () => {
     if (!session) return;
+
+    // Vérifier à nouveau le téléphone avant soumission
+    if (!hasPhone) {
+      Alert.alert(
+        "Numéro requis",
+        "Vous devez enregistrer votre numéro de téléphone avant de publier une annonce."
+      );
+      setShowPhoneModal(true);
+      return;
+    }
 
     if (!formData.marque || !formData.modele || !formData.prix_par_jour) {
       Alert.alert(
@@ -74,6 +202,31 @@ export default function LocationAddScreen() {
       setLoading(false);
     }
   };
+
+  if (checkingPhone) {
+    return (
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: theme.background, paddingTop: insets.top },
+        ]}
+      >
+        <View style={styles.header}>
+          <BackButton />
+          <Text style={[styles.headerTitle, { color: theme.text }]}>
+            Proposer un véhicule
+          </Text>
+          <View style={{ width: 40 }} />
+        </View>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={theme.primary} />
+          <Text style={[styles.loadingText, { color: theme.textSecondary }]}>
+            Vérification...
+          </Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View
@@ -230,26 +383,59 @@ export default function LocationAddScreen() {
 
           <View style={styles.inputGroup}>
             <Text style={[styles.label, { color: theme.textSecondary }]}>
-              URL de la photo
+              Photo du véhicule
             </Text>
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  backgroundColor: theme.surface,
-                  color: theme.text,
-                  borderColor: theme.border,
-                },
-              ]}
-              value={formData.photo_url}
-              onChangeText={(text) => handleChange("photo_url", text)}
-              placeholder="https://..."
-              placeholderTextColor={theme.textSecondary}
-            />
-            <Text style={[styles.helperText, { color: theme.textSecondary }]}>
-              Pour l'instant, veuillez héberger l'image ailleurs et coller le
-              lien ici.
-            </Text>
+
+            {selectedImage || formData.photo_url ? (
+              <View style={styles.imagePreviewContainer}>
+                <Image
+                  source={{ uri: selectedImage?.uri || formData.photo_url }}
+                  style={styles.imagePreview}
+                />
+                <TouchableOpacity
+                  style={[
+                    styles.removeImageButton,
+                    { backgroundColor: theme.error },
+                  ]}
+                  onPress={removeImage}
+                >
+                  <X size={20} color="#FFF" />
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <TouchableOpacity
+                style={[
+                  styles.imagePickerButton,
+                  {
+                    backgroundColor: theme.surface,
+                    borderColor: theme.border,
+                  },
+                ]}
+                onPress={pickImage}
+                disabled={uploadingImage}
+              >
+                {uploadingImage ? (
+                  <ActivityIndicator color={theme.primary} />
+                ) : (
+                  <>
+                    <Upload size={32} color={theme.textSecondary} />
+                    <Text
+                      style={[styles.imagePickerText, { color: theme.text }]}
+                    >
+                      Appuyez pour sélectionner une photo
+                    </Text>
+                    <Text
+                      style={[
+                        styles.helperText,
+                        { color: theme.textSecondary },
+                      ]}
+                    >
+                      Format: JPG, PNG (max 5MB)
+                    </Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            )}
           </View>
 
           <TouchableOpacity
@@ -268,6 +454,18 @@ export default function LocationAddScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      <PhoneNumberModal
+        visible={showPhoneModal}
+        onClose={() => {
+          setShowPhoneModal(false);
+          router.back();
+        }}
+        onSuccess={() => {
+          setHasPhone(true);
+        }}
+        userId={session?.user?.id}
+      />
     </View>
   );
 }
@@ -345,5 +543,48 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 14,
+  },
+  imagePickerButton: {
+    borderWidth: 2,
+    borderStyle: "dashed",
+    borderRadius: 12,
+    padding: 32,
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: 200,
+  },
+  imagePickerText: {
+    marginTop: 12,
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  imagePreviewContainer: {
+    position: "relative",
+    borderRadius: 12,
+    overflow: "hidden",
+  },
+  imagePreview: {
+    width: "100%",
+    height: 200,
+    borderRadius: 12,
+  },
+  removeImageButton: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
