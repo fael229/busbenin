@@ -9,7 +9,7 @@ export const lightTheme = {
   primaryLight: '#42A5F5',
   
   // Couleurs d'arrière-plan
-  background: '#FFFFFF',
+  background: '#ffffff3d',
   backgroundSecondary: '#F9FAFB',
   backgroundCard: '#FFFFFF',
   
