@@ -23,6 +23,7 @@ import {
   Download,
   Share,
   Car,
+  Star,
 } from "lucide-react-native";
 import { router } from "expo-router";
 import { supabase } from "../../utils/supabase";
@@ -36,6 +37,7 @@ import {
   downloadLocationReservationPDF,
 } from "../../utils/pdfGenerator";
 import BackButton from "../../components/BackButton";
+import ValidationLivraisonModal from "../../components/ValidationLivraisonModal";
 
 export default function MesReservationsScreen() {
   const insets = useSafeAreaInsets();
@@ -49,6 +51,10 @@ export default function MesReservationsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [processingPDF, setProcessingPDF] = useState(null);
   const [filter, setFilter] = useState("all"); // 'all', 'trajets', 'locations'
+
+  // État pour le modal de validation
+  const [validationModalVisible, setValidationModalVisible] = useState(false);
+  const [selectedReservation, setSelectedReservation] = useState(null);
 
   useEffect(() => {
     if (isFocused) {
@@ -111,6 +117,10 @@ export default function MesReservationsScreen() {
           statut_paiement,
           transaction_id,
           created_at,
+          user_id,
+          vehicule_id,
+          livraison_validee,
+          livraison_validee_at,
           vehicules_location (
             id,
             marque,
@@ -123,6 +133,56 @@ export default function MesReservationsScreen() {
         .order("created_at", { ascending: false });
 
       if (locationsError) throw locationsError;
+
+      // DIAGNOSTIC TEMPORAIRE - À SUPPRIMER APRÈS RÉSOLUTION
+      console.log("=== DIAGNOSTIC RÉSERVATIONS ===");
+      console.log("Réservations de trajets:", trajetsData?.length || 0);
+      console.log("Réservations de location:", locationsData?.length || 0);
+
+      if (locationsData && locationsData.length > 0) {
+        console.log("\n--- Détail première réservation location ---");
+        const firstLocation = locationsData[0];
+        console.log("ID:", firstLocation.id);
+        console.log("Statut paiement:", firstLocation.statut_paiement);
+        console.log("Livraison validée:", firstLocation.livraison_validee);
+        console.log(
+          "Type livraison_validee:",
+          typeof firstLocation.livraison_validee
+        );
+        console.log("Véhicule:", firstLocation.vehicules_location);
+
+        // Vérifier si le champ existe
+        const hasLivraisonValidee = "livraison_validee" in firstLocation;
+        console.log("Le champ livraison_validee existe ?", hasLivraisonValidee);
+
+        if (!hasLivraisonValidee) {
+          console.error(
+            "❌ PROBLÈME: Le champ livraison_validee n'existe pas!"
+          );
+          console.log(
+            "📋 Solution: Exécutez le script ADD_SATISFACTION_SYSTEM.sql dans Supabase"
+          );
+        } else {
+          console.log("✅ Le champ existe");
+          console.log("Condition pour afficher le bouton:");
+          console.log('  - type === "location" ?', true);
+          console.log(
+            '  - statut_paiement === "approved" ?',
+            firstLocation.statut_paiement === "approved"
+          );
+          console.log(
+            "  - !livraison_validee ?",
+            !firstLocation.livraison_validee
+          );
+          console.log(
+            "  -> Afficher le bouton ?",
+            firstLocation.statut_paiement === "approved" &&
+              !firstLocation.livraison_validee
+          );
+        }
+      }
+      console.log("=== FIN DIAGNOSTIC ===\n");
+      // FIN DIAGNOSTIC
 
       setReservations(trajetsData || []);
       setLocationReservations(locationsData || []);
@@ -800,6 +860,70 @@ export default function MesReservationsScreen() {
 
                 {reservation.statut_paiement === "approved" && (
                   <>
+                    {/* Bouton de validation de livraison pour les locations non validées */}
+                    {reservation.type === "location" &&
+                      !reservation.livraison_validee && (
+                        <TouchableOpacity
+                          onPress={() => {
+                            setSelectedReservation(reservation);
+                            setValidationModalVisible(true);
+                          }}
+                          style={{
+                            flex: 1,
+                            minWidth: 120,
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            backgroundColor: "#FFF4E5",
+                            padding: 10,
+                            borderRadius: 8,
+                            borderWidth: 2,
+                            borderColor: "#FFA500",
+                          }}
+                        >
+                          <Star size={16} color="#FFA500" />
+                          <Text
+                            style={{
+                              fontSize: 13,
+                              fontWeight: "600",
+                              color: "#FFA500",
+                              marginLeft: 6,
+                            }}
+                          >
+                            Valider livraison
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+
+                    {/* Badge de livraison validée */}
+                    {reservation.type === "location" &&
+                      reservation.livraison_validee && (
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            backgroundColor: "#E8F5E9",
+                            paddingVertical: 6,
+                            paddingHorizontal: 12,
+                            borderRadius: 8,
+                            borderWidth: 1,
+                            borderColor: "#4CAF50",
+                          }}
+                        >
+                          <CheckCircle size={14} color="#4CAF50" />
+                          <Text
+                            style={{
+                              fontSize: 12,
+                              fontWeight: "600",
+                              color: "#4CAF50",
+                              marginLeft: 4,
+                            }}
+                          >
+                            Livraison validée
+                          </Text>
+                        </View>
+                      )}
+
                     <TouchableOpacity
                       onPress={() => handleSharePDF(reservation)}
                       disabled={processingPDF === reservation.id}
@@ -899,6 +1023,21 @@ export default function MesReservationsScreen() {
           ))
         )}
       </ScrollView>
+
+      {/* Modal de validation de livraison */}
+      {selectedReservation && (
+        <ValidationLivraisonModal
+          visible={validationModalVisible}
+          onClose={() => {
+            setValidationModalVisible(false);
+            setSelectedReservation(null);
+          }}
+          reservation={selectedReservation}
+          onSuccess={() => {
+            loadAllReservations();
+          }}
+        />
+      )}
     </View>
   );
 }

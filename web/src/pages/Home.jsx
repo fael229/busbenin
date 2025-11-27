@@ -75,12 +75,13 @@ export default function Home() {
 
     setLoadingWallet(true);
     try {
-      // Récupérer les réservations payées (revenus)
+      // Récupérer les réservations payées ET validées par le client (revenus)
       const { data: locationReservations } = await supabase
         .from("reservations_location")
         .select("montant_total, vehicules_location!inner(user_id)")
         .eq("vehicules_location.user_id", session.user.id)
-        .eq("statut_paiement", "approved");
+        .eq("statut_paiement", "approved")
+        .eq("livraison_validee", true); // Seulement les livraisons validées par le client
 
       const totalEarnings = (locationReservations || []).reduce(
         (sum, res) => sum + (res.montant_total || 0),
@@ -95,7 +96,7 @@ export default function Home() {
 
       const totalWithdrawals = (withdrawals || [])
         .filter((w) => w.statut !== "refusee")
-        .reduce((sum, w) => sum + (w.montant || 0), 0);
+        .reduce((sum, w) => w.montant + sum, 0);
 
       setWalletBalance(totalEarnings - totalWithdrawals);
     } catch (error) {
@@ -697,8 +698,8 @@ export default function Home() {
               Mon Portefeuille
             </h2>
           </div>
-          <div 
-            onClick={() => navigate('/wallet')}
+          <div
+            onClick={() => navigate("/wallet")}
             className="card bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-2 border-green-200 dark:border-green-700 hover:shadow-xl transition-all cursor-pointer"
           >
             <div className="flex items-center justify-between">
@@ -710,7 +711,7 @@ export default function Home() {
                   <div className="h-8 w-32 bg-gray-200 dark:bg-gray-700 animate-pulse rounded"></div>
                 ) : (
                   <p className="text-3xl font-bold text-green-600 dark:text-green-400">
-                    {walletBalance.toLocaleString('fr-FR')} FCFA
+                    {walletBalance.toLocaleString("fr-FR")} FCFA
                   </p>
                 )}
               </div>
@@ -737,8 +738,8 @@ export default function Home() {
               Véhicules en location
             </h2>
           </div>
-          <button 
-            onClick={() => navigate('/location')}
+          <button
+            onClick={() => navigate("/location")}
             className="text-primary hover:text-primary/80 font-semibold text-sm flex items-center gap-1"
           >
             Voir tout
@@ -752,15 +753,15 @@ export default function Home() {
         ) : vehiculesLocation.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {vehiculesLocation.map((vehicule) => (
-              <div 
+              <div
                 key={vehicule.id}
                 onClick={() => navigate(`/location/reserver/${vehicule.id}`)}
                 className="card hover:shadow-xl transition-all cursor-pointer"
               >
                 {vehicule.photo_url && (
                   <div className="w-full h-48 bg-gray-100 dark:bg-gray-700 rounded-lg mb-4 overflow-hidden">
-                    <img 
-                      src={vehicule.photo_url} 
+                    <img
+                      src={vehicule.photo_url}
                       alt={`${vehicule.marque} ${vehicule.modele}`}
                       className="w-full h-full object-cover"
                     />
@@ -782,15 +783,13 @@ export default function Home() {
                 <div className="flex items-center justify-between">
                   <div>
                     <span className="text-2xl font-bold text-primary">
-                      {vehicule.prix_par_jour.toLocaleString('fr-FR')}
+                      {vehicule.prix_par_jour.toLocaleString("fr-FR")}
                     </span>
                     <span className="text-sm text-gray-600 dark:text-gray-400 ml-1">
                       FCFA/jour
                     </span>
                   </div>
-                  <button className="btn-primary">
-                    Réserver
-                  </button>
+                  <button className="btn-primary">Réserver</button>
                 </div>
               </div>
             ))}
@@ -806,8 +805,8 @@ export default function Home() {
                 Aucun véhicule n'est actuellement disponible à la location.
               </p>
               {session && (
-                <button 
-                  onClick={() => navigate('/location/ajouter')}
+                <button
+                  onClick={() => navigate("/location/ajouter")}
                   className="btn-primary"
                 >
                   Proposer un véhicule

@@ -219,12 +219,13 @@ export default function AccueilScreen() {
     if (!session?.user?.id) return;
 
     try {
-      // Récupérer les réservations payées (revenus)
+      // Récupérer les réservations payées ET validées (revenus)
       const { data: locationReservations } = await supabase
         .from("reservations_location")
         .select("montant_total, vehicules_location!inner(user_id)")
         .eq("vehicules_location.user_id", session.user.id)
-        .eq("statut_paiement", "approved");
+        .eq("statut_paiement", "approved")
+        .eq("livraison_validee", true); // Seulement les livraisons validées
 
       const totalEarnings = (locationReservations || []).reduce(
         (sum, res) => sum + (res.montant_total || 0),

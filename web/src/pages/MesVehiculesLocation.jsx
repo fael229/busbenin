@@ -157,16 +157,50 @@ export default function MesVehiculesLocation() {
     a.click();
   };
 
+  // DIAGNOSTIC - À SUPPRIMER APRÈS
+  console.log("=== DIAGNOSTIC REVENUS ===");
+  console.log("Total réservations:", reservations.length);
+  if (reservations.length > 0) {
+    console.log("Première réservation:", {
+      id: reservations[0].id,
+      statut_paiement: reservations[0].statut_paiement,
+      livraison_validee: reservations[0].livraison_validee,
+      type_livraison: typeof reservations[0].livraison_validee,
+      montant_total: reservations[0].montant_total,
+    });
+
+    const approved = reservations.filter(
+      (r) => r.statut_paiement === "approved"
+    );
+    const validees = reservations.filter((r) => r.livraison_validee === true);
+    const approvedAndValidees = reservations.filter(
+      (r) => r.statut_paiement === "approved" && r.livraison_validee === true
+    );
+
+    console.log("Réservations approved:", approved.length);
+    console.log("Réservations validées:", validees.length);
+    console.log(
+      "Réservations approved ET validées:",
+      approvedAndValidees.length
+    );
+  }
+
   const stats = {
     totalVehicules: vehicules.length,
     totalReservations: reservations.length,
     revenuTotal: reservations
-      .filter((r) => r.statut_paiement === "approved")
+      .filter(
+        (r) => r.statut_paiement === "approved" && r.livraison_validee === true
+      ) // Seulement les livraisons validées
       .reduce((sum, r) => sum + (r.montant_total || 0), 0),
     reservationsEnAttente: reservations.filter(
       (r) => r.statut_paiement === "pending"
     ).length,
   };
+
+  console.log("Revenu total calculé:", stats.revenuTotal);
+  console.log("=== FIN DIAGNOSTIC ===");
+  // FIN DIAGNOSTIC
 
   if (loading) {
     return (
@@ -438,6 +472,9 @@ export default function MesVehiculesLocation() {
                           <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
                             Statut
                           </th>
+                          <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
+                            Livraison
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200">
@@ -485,6 +522,19 @@ export default function MesVehiculesLocation() {
                                   : reservation.statut_paiement === "pending"
                                   ? "En attente"
                                   : "Refusé"}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-sm">
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                                  reservation.livraison_validee === true
+                                    ? "bg-green-100 text-green-800"
+                                    : "bg-red-100 text-red-800"
+                                }`}
+                              >
+                                {reservation.livraison_validee === true
+                                  ? "Validé"
+                                  : "Non validé"}
                               </span>
                             </td>
                           </tr>

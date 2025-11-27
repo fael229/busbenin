@@ -133,7 +133,9 @@ export default function MesVehiculesScreen() {
     totalVehicules: vehicules.length,
     totalReservations: reservations.length,
     revenuTotal: reservations
-      .filter((r) => r.statut_paiement === "approved")
+      .filter(
+        (r) => r.statut_paiement === "approved" && r.livraison_validee === true
+      ) // Seulement les livraisons validées
       .reduce((sum, r) => sum + (r.montant_total || 0), 0),
   };
 
@@ -146,7 +148,7 @@ export default function MesVehiculesScreen() {
         ]}
       >
         <View style={[styles.header, { backgroundColor: theme.surface }]}>
-          <BackButton 
+          <BackButton
             title="Mes Véhicules"
             fallback="/(tabs)/parametres"
             style={{ paddingHorizontal: 0, paddingVertical: 0 }}
@@ -436,6 +438,38 @@ export default function MesVehiculesScreen() {
                     >
                       Client: {reservation.nom_locataire}
                     </Text>
+                    <Text
+                      style={[
+                        styles.reservationClient,
+                        { color: theme.textSecondary },
+                      ]}
+                    >
+                      Tél: {reservation.telephone_locataire}
+                    </Text>
+                    {reservation.livraison_validee && (
+                      <Text
+                        style={[
+                          styles.reservationDates,
+                          { color: theme.textSecondary },
+                        ]}
+                      >
+                        Livraison validée le{" "}
+                        {new Date(
+                          reservation.livraison_validee_at
+                        ).toLocaleDateString("fr-FR")}
+                      </Text>
+                    )}
+                    {!reservation.livraison_validee && (
+                      <Text
+                        style={[
+                          styles.reservationDates,
+                          { color: theme.textSecondary },
+                        ]}
+                      >
+                        Livraison non validée
+                      </Text>
+                    )}
+
                     <Text
                       style={[
                         styles.reservationDates,

@@ -44,7 +44,8 @@ export default function Wallet() {
 
       setUserPhone(profile?.phone);
 
-      // 2. Récupérer les réservations payées (Entrées)
+      // 2. Récupérer les réservations payées ET validées par le client (Entrées)
+      // IMPORTANT: Ne compter QUE les réservations validées par le client
       // Pour les locations de véhicules (si l'utilisateur est propriétaire)
       const { data: locationReservations, error: locError } = await supabase
         .from("reservations_location")
@@ -54,11 +55,13 @@ export default function Wallet() {
           montant_total,
           created_at,
           statut_paiement,
+          livraison_validee,
           vehicules_location!inner(user_id)
         `
         )
         .eq("vehicules_location.user_id", userId)
-        .eq("statut_paiement", "approved");
+        .eq("statut_paiement", "approved")
+        .eq("livraison_validee", true); // ⭐ SEULEMENT les livraisons validées
 
       if (locError) throw locError;
 

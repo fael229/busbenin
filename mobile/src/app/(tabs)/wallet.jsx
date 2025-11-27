@@ -63,6 +63,7 @@ export default function WalletScreen() {
       if (!session?.user?.id) return;
 
       // 1. Récupérer les revenus des locations (Crédits)
+      // IMPORTANT: Ne compter QUE les réservations validées par le client
       // On cherche d'abord les véhicules de l'utilisateur
       const { data: mesVehicules } = await supabase
         .from("vehicules_location")
@@ -75,10 +76,11 @@ export default function WalletScreen() {
         const { data: reservations } = await supabase
           .from("reservations_location")
           .select(
-            "id, created_at, montant_total, statut_paiement, vehicules_location(marque, modele)"
+            "id, created_at, montant_total, statut_paiement, livraison_validee, vehicules_location(marque, modele)"
           )
           .in("vehicule_id", vehiculeIds)
           .eq("statut_paiement", "approved")
+          .eq("livraison_validee", true) // ⭐ SEULEMENT les livraisons validées
           .order("created_at", { ascending: false });
 
         if (reservations) {

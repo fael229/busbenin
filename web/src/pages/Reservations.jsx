@@ -12,6 +12,7 @@ import {
   Users,
   Download,
   Car,
+  Star,
 } from "lucide-react";
 import { supabase } from "../utils/supabase";
 import { useSession } from "../contexts/SessionProvider";
@@ -20,6 +21,7 @@ import {
   generateAdaptiveReceiptPDF,
   generateLocationReceiptPDF,
 } from "../utils/pdfGenerator";
+import ValidationLivraisonModal from "../components/ValidationLivraisonModal";
 
 export default function Reservations() {
   const { session } = useSession();
@@ -28,6 +30,10 @@ export default function Reservations() {
   const [loading, setLoading] = useState(true);
   const [verifying, setVerifying] = useState(null); // ID de la réservation en cours de vérification
   const [filter, setFilter] = useState("all"); // 'all', 'trajets', 'locations'
+  
+  // État pour le modal de validation
+  const [validationModalOpen, setValidationModalOpen] = useState(false);
+  const [selectedReservation, setSelectedReservation] = useState(null);
 
   useEffect(() => {
     loadAllReservations();
@@ -67,7 +73,7 @@ export default function Reservations() {
 
       if (trajetsError) throw trajetsError;
 
-      // Charger les réservations de location
+      // Charger les réservations de location avec livraison_validee
       const { data: locationsData, error: locationsError } = await supabase
         .from("reservations_location")
         .select(
@@ -83,6 +89,10 @@ export default function Reservations() {
           statut_paiement,
           transaction_id,
           created_at,
+          user_id,
+          vehicule_id,
+          livraison_validee,
+          livraison_validee_at,
           vehicules_location (
             id,
             marque,
@@ -485,7 +495,32 @@ export default function Reservations() {
                   </div>
 
                   {/* Boutons d'action */}
-                  <div className="flex gap-2 mt-3">
+                  <div className="flex gap-2 mt-3 flex-wrap">
+                    {/* Bouton de validation de livraison pour les locations non validées */}
+                    {reservation.type === "location" &&
+                      reservation.statut_paiement === "approved" &&
+                      !reservation.livraison_validee && (
+                        <button
+                          onClick={() => {
+                            setSelectedReservation(reservation);
+                            setValidationModalOpen(true);
+                          }}
+                          className="flex items-center space-x-1 px-3 py-2 rounded-lg bg-orange-50 hover:bg-orange-100 dark:bg-orange-900/30 dark:hover:bg-orange-900/50 text-orange-700 dark:text-orange-300 text-xs font-semibold transition-colors border-2 border-orange-500"
+                        >
+                          <Star className="h-3 w-3" />
+                          <span>Valider livraison</span>
+                        </button>
+                      )}
+
+                    {/* Badge de livraison validée */}
+                    {reservation.type === "location" &&
+                      reservation.livraison_validee && (
+                        <div className="flex items-center space-x-1 px-3 py-2 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-xs font-semibold border border-green-500">
+                          <CheckCircle className="h-3 w-3" />
+                          <span>Livraison validée</span>
+                        </div>
+                      )}
+
                     {/* Bouton vérifier si paiement en attente */}
                     {reservation.statut_paiement === "pending" &&
                       (reservation.fedapay_transaction_id ||
@@ -584,6 +619,19 @@ export default function Reservations() {
           ))}
         </div>
       )}
+
+      {/* Modal de validation de livraison */}
+      <ValidationLivraisonModal
+        isOpen={validationModalOpen}
+        onClose={() => {
+          setValidationModalOpen(false);
+          setSelectedReservation(null);
+        }}
+        reservation={selectedReservation}
+        onSuccess={() => {
+          loadAllReservations();
+        }}
+      />
     </div>
   );
 }
