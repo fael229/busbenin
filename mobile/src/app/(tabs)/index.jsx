@@ -23,6 +23,9 @@ import {
   Award,
   Tag,
   Building2,
+  Wallet,
+  Car,
+  DollarSign,
 } from "lucide-react-native";
 import { router } from "expo-router";
 import { supabase } from "../../utils/supabase";
@@ -47,6 +50,10 @@ export default function AccueilScreen() {
   const [compagnies, setCompagnies] = useState([]);
   const [offresSpeciales, setOffresSpeciales] = useState([]);
 
+  // États pour wallet et véhicules
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [vehiculesLocation, setVehiculesLocation] = useState([]);
+
   // Recharge les données à chaque fois que l'onglet reçoit le focus
   useEffect(() => {
     if (isFocused) {
@@ -54,8 +61,10 @@ export default function AccueilScreen() {
       loadDestinations();
       loadCompagnies();
       loadOffresSpeciales();
+      loadVehiculesLocation();
       if (session?.user?.id) {
         loadFavorites();
+        loadWalletBalance();
       }
     }
   }, [isFocused, session?.user?.id]);
@@ -206,6 +215,55 @@ export default function AccueilScreen() {
     }
   };
 
+  const loadWalletBalance = async () => {
+    if (!session?.user?.id) return;
+
+    try {
+      // Récupérer les réservations payées (revenus)
+      const { data: locationReservations } = await supabase
+        .from("reservations_location")
+        .select("montant_total, vehicules_location!inner(user_id)")
+        .eq("vehicules_location.user_id", session.user.id)
+        .eq("statut_paiement", "approved");
+
+      const totalEarnings = (locationReservations || []).reduce(
+        (sum, res) => sum + (res.montant_total || 0),
+        0
+      );
+
+      // Récupérer les retraits
+      const { data: withdrawals } = await supabase
+        .from("demandes_retrait")
+        .select("montant, statut")
+        .eq("user_id", session.user.id);
+
+      const totalWithdrawals = (withdrawals || [])
+        .filter((w) => w.statut !== "refusee")
+        .reduce((sum, w) => sum + (w.montant || 0), 0);
+
+      setWalletBalance(totalEarnings - totalWithdrawals);
+    } catch (error) {
+      console.error("Erreur chargement wallet:", error);
+    }
+  };
+
+  const loadVehiculesLocation = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("vehicules_location")
+        .select("*, profiles:user_id(full_name, phone)")
+        .eq("disponible", true)
+        .order("created_at", { ascending: false })
+        .limit(3);
+
+      if (error) throw error;
+      setVehiculesLocation(data || []);
+    } catch (error) {
+      console.error("Erreur chargement véhicules:", error);
+      setVehiculesLocation([]);
+    }
+  };
+
   const loadFavorites = async () => {
     try {
       if (!session?.user?.id) {
@@ -281,7 +339,9 @@ export default function AccueilScreen() {
         loadDestinations(),
         loadCompagnies(),
         loadOffresSpeciales(),
+        loadVehiculesLocation(),
         session?.user?.id && loadFavorites(),
+        session?.user?.id && loadWalletBalance(),
       ]);
     } catch (error) {
       console.error("Erreur lors du rafraîchissement:", error);
@@ -981,6 +1041,291 @@ export default function AccueilScreen() {
                     >
                       {compagnie.note || "N/A"}
                     </Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          )}
+        </View>
+
+        {/* Section Wallet (uniquement si connecté) */}
+        {session && (
+          <View style={{ paddingHorizontal: 20, marginTop: 32 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: 16,
+              }}
+            >
+              <View
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 8,
+                  backgroundColor: "#d4f4dd",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginRight: 10,
+                }}
+              >
+                <Wallet size={18} color="#16a34a" />
+              </View>
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "700",
+                  color: theme.text,
+                }}
+              >
+                Mon Portefeuille
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => router.push("/(tabs)/wallet")}
+              style={{
+                backgroundColor: theme.surface,
+                borderRadius: 16,
+                padding: 20,
+                shadowColor: theme.shadow,
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.1,
+                shadowRadius: 8,
+                elevation: 4,
+                borderWidth: 2,
+                borderColor: "#16a34a",
+              }}
+              activeOpacity={0.7}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <View>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      color: theme.textSecondary,
+                      marginBottom: 4,
+                    }}
+                  >
+                    Solde disponible
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 28,
+                      fontWeight: "700",
+                      color: "#16a34a",
+                    }}
+                  >
+                    {walletBalance.toLocaleString("fr-FR")} FCFA
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: 24,
+                    backgroundColor: "#d4f4dd",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <DollarSign size={28} color="#16a34a" />
+                </View>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginTop: 12,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: "600",
+                    color: "#16a34a",
+                    marginRight: 4,
+                  }}
+                >
+                  Voir les détails
+                </Text>
+                <ArrowRight size={16} color="#16a34a" />
+              </View>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* Section Véhicules en location */}
+        <View style={{ paddingHorizontal: 20, marginTop: 32 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: 16,
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 8,
+                  backgroundColor: theme.surfaceSecondary,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginRight: 10,
+                }}
+              >
+                <Car size={18} color={theme.primary} />
+              </View>
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "700",
+                  color: theme.text,
+                }}
+              >
+                Véhicules en location
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => router.push("/(tabs)/location")}
+              activeOpacity={0.7}
+            >
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: "600",
+                  color: theme.primary,
+                }}
+              >
+                Voir tout
+              </Text>
+            </TouchableOpacity>
+          </View>
+          {vehiculesLocation.length === 0 ? (
+            <View style={{ alignItems: "center", paddingVertical: 20 }}>
+              <Car size={48} color={theme.textTertiary} />
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: theme.textSecondary,
+                  marginTop: 12,
+                  textAlign: "center",
+                }}
+              >
+                Aucun véhicule disponible
+              </Text>
+            </View>
+          ) : (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingRight: 20, paddingBottom: 20 }}
+            >
+              {vehiculesLocation.map((vehicule) => (
+                <TouchableOpacity
+                  key={vehicule.id}
+                  style={{
+                    backgroundColor: theme.surface,
+                    borderRadius: 16,
+                    padding: 16,
+                    marginRight: 16,
+                    width: 280,
+                    shadowColor: theme.shadow,
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 8,
+                    elevation: 4,
+                    borderWidth: 1,
+                    borderColor: theme.borderLight,
+                  }}
+                  onPress={() =>
+                    router.push(`/(tabs)/location/reserver/${vehicule.id}`)
+                  }
+                  activeOpacity={0.7}
+                >
+                  {vehicule.photo_url && (
+                    <Image
+                      source={{ uri: vehicule.photo_url }}
+                      style={{
+                        width: "100%",
+                        height: 140,
+                        borderRadius: 12,
+                        marginBottom: 12,
+                      }}
+                      resizeMode="cover"
+                    />
+                  )}
+                  <Text
+                    style={{
+                      fontSize: 18,
+                      fontWeight: "700",
+                      color: theme.text,
+                      marginBottom: 4,
+                    }}
+                  >
+                    {vehicule.marque} {vehicule.modele}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      color: theme.textSecondary,
+                      marginBottom: 12,
+                    }}
+                  >
+                    Année: {vehicule.annee}
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <View>
+                      <Text
+                        style={{
+                          fontSize: 22,
+                          fontWeight: "700",
+                          color: theme.primary,
+                        }}
+                      >
+                        {vehicule.prix_par_jour.toLocaleString("fr-FR")}
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          color: theme.textSecondary,
+                        }}
+                      >
+                        FCFA / jour
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        backgroundColor: theme.primary,
+                        paddingHorizontal: 16,
+                        paddingVertical: 8,
+                        borderRadius: 8,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          fontWeight: "700",
+                          color: "#FFFFFF",
+                        }}
+                      >
+                        Réserver
+                      </Text>
+                    </View>
                   </View>
                 </TouchableOpacity>
               ))}

@@ -14,6 +14,9 @@ import {
   Filter,
   X,
   Sliders,
+  Wallet,
+  Car,
+  DollarSign,
 } from "lucide-react";
 import { supabase } from "../utils/supabase";
 import TrajetCard from "../components/TrajetCard";
@@ -32,6 +35,12 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [companiesScrollPosition, setCompaniesScrollPosition] = useState(0);
+
+  // États pour wallet et véhicules
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [vehiculesLocation, setVehiculesLocation] = useState([]);
+  const [loadingWallet, setLoadingWallet] = useState(false);
+  const [loadingVehicules, setLoadingVehicules] = useState(false);
 
   // États des filtres
   const [showFilters, setShowFilters] = useState(false);
@@ -53,9 +62,64 @@ export default function Home() {
         loadCompagnies(),
         loadOffresSpeciales(),
         session && loadFavorites(),
+        session && loadWalletBalance(),
+        loadVehiculesLocation(),
       ]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadWalletBalance = async () => {
+    if (!session?.user?.id) return;
+
+    setLoadingWallet(true);
+    try {
+      // Récupérer les réservations payées (revenus)
+      const { data: locationReservations } = await supabase
+        .from("reservations_location")
+        .select("montant_total, vehicules_location!inner(user_id)")
+        .eq("vehicules_location.user_id", session.user.id)
+        .eq("statut_paiement", "approved");
+
+      const totalEarnings = (locationReservations || []).reduce(
+        (sum, res) => sum + (res.montant_total || 0),
+        0
+      );
+
+      // Récupérer les retraits
+      const { data: withdrawals } = await supabase
+        .from("demandes_retrait")
+        .select("montant, statut")
+        .eq("user_id", session.user.id);
+
+      const totalWithdrawals = (withdrawals || [])
+        .filter((w) => w.statut !== "refusee")
+        .reduce((sum, w) => sum + (w.montant || 0), 0);
+
+      setWalletBalance(totalEarnings - totalWithdrawals);
+    } catch (error) {
+      console.error("Erreur chargement wallet:", error);
+    } finally {
+      setLoadingWallet(false);
+    }
+  };
+
+  const loadVehiculesLocation = async () => {
+    setLoadingVehicules(true);
+    try {
+      const { data } = await supabase
+        .from("vehicules_location")
+        .select("*, profiles:user_id(full_name, phone)")
+        .eq("disponible", true)
+        .order("created_at", { ascending: false })
+        .limit(6);
+
+      setVehiculesLocation(data || []);
+    } catch (error) {
+      console.error("Erreur chargement véhicules:", error);
+    } finally {
+      setLoadingVehicules(false);
     }
   };
 
@@ -620,6 +684,138 @@ export default function Home() {
             <ChevronRight className="h-6 w-6 text-gray-700 dark:text-gray-300" />
           </button>
         </div>
+      </section>
+
+      {/* Section Wallet (uniquement si connecté) */}
+      {session && (
+        <section className="page-container">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+              <Wallet className="h-6 w-6 text-green-600 dark:text-green-400" />
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+              Mon Portefeuille
+            </h2>
+          </div>
+          <div 
+            onClick={() => navigate('/wallet')}
+            className="card bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-2 border-green-200 dark:border-green-700 hover:shadow-xl transition-all cursor-pointer"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                  Solde disponible
+                </p>
+                {loadingWallet ? (
+                  <div className="h-8 w-32 bg-gray-200 dark:bg-gray-700 animate-pulse rounded"></div>
+                ) : (
+                  <p className="text-3xl font-bold text-green-600 dark:text-green-400">
+                    {walletBalance.toLocaleString('fr-FR')} FCFA
+                  </p>
+                )}
+              </div>
+              <div className="p-4 bg-green-100 dark:bg-green-800 rounded-full">
+                <DollarSign className="h-8 w-8 text-green-600 dark:text-green-300" />
+              </div>
+            </div>
+            <div className="mt-4 flex items-center text-sm text-green-700 dark:text-green-400 font-medium">
+              <span>Voir les détails</span>
+              <ArrowRight className="h-4 w-4 ml-1" />
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Section Véhicules en location */}
+      <section className="page-container">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+              <Car className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+              Véhicules en location
+            </h2>
+          </div>
+          <button 
+            onClick={() => navigate('/location')}
+            className="text-primary hover:text-primary/80 font-semibold text-sm flex items-center gap-1"
+          >
+            Voir tout
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        </div>
+        {loadingVehicules ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          </div>
+        ) : vehiculesLocation.length > 0 ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {vehiculesLocation.map((vehicule) => (
+              <div 
+                key={vehicule.id}
+                onClick={() => navigate(`/location/reserver/${vehicule.id}`)}
+                className="card hover:shadow-xl transition-all cursor-pointer"
+              >
+                {vehicule.photo_url && (
+                  <div className="w-full h-48 bg-gray-100 dark:bg-gray-700 rounded-lg mb-4 overflow-hidden">
+                    <img 
+                      src={vehicule.photo_url} 
+                      alt={`${vehicule.marque} ${vehicule.modele}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                <div className="mb-4">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                    {vehicule.marque} {vehicule.modele}
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    Année: {vehicule.annee}
+                  </p>
+                  {vehicule.description && (
+                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                      {vehicule.description}
+                    </p>
+                  )}
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-2xl font-bold text-primary">
+                      {vehicule.prix_par_jour.toLocaleString('fr-FR')}
+                    </span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400 ml-1">
+                      FCFA/jour
+                    </span>
+                  </div>
+                  <button className="btn-primary">
+                    Réserver
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <div className="flex flex-col items-center">
+              <Car className="h-16 w-16 text-gray-300 dark:text-gray-600 mb-4" />
+              <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-400 mb-2">
+                Aucun véhicule disponible
+              </h3>
+              <p className="text-gray-500 dark:text-gray-500 text-center max-w-md mb-4">
+                Aucun véhicule n'est actuellement disponible à la location.
+              </p>
+              {session && (
+                <button 
+                  onClick={() => navigate('/location/ajouter')}
+                  className="btn-primary"
+                >
+                  Proposer un véhicule
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </section>
 
       {/* Offres spéciales */}
