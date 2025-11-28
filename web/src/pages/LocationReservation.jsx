@@ -3,13 +3,29 @@ import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../utils/supabase";
 import { useSession } from "../contexts/SessionProvider";
 import {
-  Car, Calendar, ArrowLeft, Info, User, Phone, Mail,
-  CreditCard, CheckCircle, Shield, Loader, AlertTriangle
+  Car,
+  Calendar,
+  ArrowLeft,
+  Info,
+  User,
+  Phone,
+  Mail,
+  CreditCard,
+  CheckCircle,
+  Shield,
+  Loader,
+  AlertTriangle,
 } from "lucide-react";
 import {
-  createTransaction, openPaymentUrl, formatAmount, checkTransactionStatus
+  createTransaction,
+  openPaymentUrl,
+  formatAmount,
+  checkTransactionStatus,
 } from "../utils/fedapay";
-import { checkVehiculeDisponibilite, getDatesReservees } from "../utils/vehicleAvailability";
+import {
+  checkVehiculeDisponibilite,
+  getDatesReservees,
+} from "../utils/vehicleAvailability";
 
 export default function LocationReservation() {
   const { id } = useParams();
@@ -40,14 +56,18 @@ export default function LocationReservation() {
 
   useEffect(() => {
     if (session?.user) {
-      supabase.from("profiles").select("nom, telephone, email")
-        .eq("id", session.user.id).single()
+      supabase
+        .from("profiles")
+        .select("nom, telephone, email")
+        .eq("id", session.user.id)
+        .single()
         .then(({ data }) => {
-          if (data) setFormData({
-            nom_locataire: data.nom || "",
-           telephone_locataire: data.telephone || "",
-            email_locataire: data.email || session.user.email || "",
-          });
+          if (data)
+            setFormData({
+              nom_locataire: data.nom || "",
+              telephone_locataire: data.telephone || "",
+              email_locataire: data.email || session.user.email || "",
+            });
         });
     }
   }, [session]);
@@ -77,7 +97,10 @@ export default function LocationReservation() {
   const fetchVehicule = async () => {
     try {
       const { data, error } = await supabase
-        .from("vehicules_location").select("*").eq("id", id).single();
+        .from("vehicules_location")
+        .select("*")
+        .eq("id", id)
+        .single();
       if (error) throw error;
       setVehicule(data);
     } catch (error) {
@@ -96,7 +119,11 @@ export default function LocationReservation() {
   const verifierDisponibilite = async () => {
     setCheckingAvailability(true);
     try {
-      const result = await checkVehiculeDisponibilite(id, dates.date_debut, dates.date_fin);
+      const result = await checkVehiculeDisponibilite(
+        id,
+        dates.date_debut,
+        dates.date_fin
+      );
       setAvailabilityResult(result);
     } catch (error) {
       console.error("Erreur vérification:", error);
@@ -107,7 +134,7 @@ export default function LocationReservation() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!session) {
       navigate("/login");
       return;
@@ -131,17 +158,16 @@ export default function LocationReservation() {
 
     // Vérification finale de disponibilité
     setCheckingAvailability(true);
-    const { available, conflictingReservations } = await checkVehiculeDisponibilite(
-      id, dates.date_debut, dates.date_fin
-    );
+    const { available, conflictingReservations } =
+      await checkVehiculeDisponibilite(id, dates.date_debut, dates.date_fin);
     setCheckingAvailability(false);
 
     if (!available) {
       alert(
         `❌ Véhicule indisponible\n\n` +
-        `Ce véhicule est déjà réservé pour ${conflictingReservations.length} période(s) ` +
-        `qui chevauche(nt) vos dates.\n\n` +
-        `Veuillez choisir d'autres dates.`
+          `Ce véhicule est déjà réservé pour ${conflictingReservations.length} période(s) ` +
+          `qui chevauche(nt) vos dates.\n\n` +
+          `Veuillez choisir d'autres dates.`
       );
       return;
     }
@@ -151,19 +177,22 @@ export default function LocationReservation() {
     try {
       const { data: reservation, error } = await supabase
         .from("reservations_location")
-        .insert([{
-          vehicule_id: id,
-          user_id: session.user.id,
-          date_debut: dates.date_debut,
-          date_fin: dates.date_fin,
-          montant_total: totalPrice,
-          statut: "en_attente",
-          statut_paiement: "pending",
-          nom_locataire: formData.nom_locataire,
-          telephone_locataire: formData.telephone_locataire,
-          email_locataire: formData.email_locataire,
-        }])
-        .select().single();
+        .insert([
+          {
+            vehicule_id: id,
+            user_id: session.user.id,
+            date_debut: dates.date_debut,
+            date_fin: dates.date_fin,
+            montant_total: totalPrice,
+            statut: "en_attente",
+            statut_paiement: "pending",
+            nom_locataire: formData.nom_locataire,
+            telephone_locataire: formData.telephone_locataire,
+            email_locataire: formData.email_locataire,
+          },
+        ])
+        .select()
+        .single();
 
       if (error) throw error;
       await handlePayment(reservation, totalPrice);
@@ -190,30 +219,32 @@ export default function LocationReservation() {
       });
 
       if (!result.success) {
-        throw new Error(result.error || "Erreur lors de la création de la transaction");
+        throw new Error(
+          result.error || "Erreur lors de la création de la transaction"
+        );
       }
 
       console.log("✅ Transaction created:", result.transactionId);
 
-      console.log('💾 Sauvegarde du transaction_id...');
+      console.log("💾 Sauvegarde du transaction_id...");
       const { error: updateError } = await supabase
         .from("reservations_location")
         .update({ transaction_id: result.transactionId })
         .eq("id", reservation.id);
 
       if (updateError) {
-        console.error('❌ Erreur update transaction_id:', updateError);
+        console.error("❌ Erreur update transaction_id:", updateError);
       } else {
-        console.log('✅ transaction_id sauvegardé');
+        console.log("✅ transaction_id sauvegardé");
       }
 
       openPaymentUrl(result.paymentUrl, true);
 
       const continueProcess = confirm(
         "💳 Une fenêtre de paiement FedaPay s'est ouverte.\n\n" +
-        "Veuillez compléter votre paiement dans cette fenêtre.\n\n" +
-        '✅ Après avoir payé, cliquez sur "OK" pour vérifier votre paiement.\n' +
-        '❌ Si vous n\'avez pas payé, cliquez sur "Annuler".'
+          "Veuillez compléter votre paiement dans cette fenêtre.\n\n" +
+          '✅ Après avoir payé, cliquez sur "OK" pour vérifier votre paiement.\n' +
+          '❌ Si vous n\'avez pas payé, cliquez sur "Annuler".'
       );
 
       if (continueProcess) {
@@ -224,26 +255,35 @@ export default function LocationReservation() {
 
         if (statusCheck.success) {
           if (statusCheck.status === "approved") {
-            await supabase.from("reservations_location").update({
-              statut_paiement: "approved",
-              statut: "confirmee",
-              transaction_id: result.transactionId,
-            }).eq("id", reservation.id);
+            await supabase
+              .from("reservations_location")
+              .update({
+                statut_paiement: "approved",
+                statut: "confirmee",
+                transaction_id: result.transactionId,
+              })
+              .eq("id", reservation.id);
             alert("✅ Paiement confirmé !\n\nVotre location est validée.");
             navigate("/reservations");
           } else if (statusCheck.status === "pending") {
-            alert("⏳ Paiement en cours de traitement...\n\nVous pouvez vérifier le statut dans \"Mes réservations\".");
+            alert(
+              '⏳ Paiement en cours de traitement...\n\nVous pouvez vérifier le statut dans "Mes réservations".'
+            );
             navigate("/reservations");
           } else {
             alert(`❌ Paiement non confirmé.\n\nStatut: ${statusCheck.status}`);
             navigate("/reservations");
           }
         } else {
-          alert("⚠️ Impossible de vérifier le paiement pour le moment.\n\nVeuillez vérifier dans \"Mes réservations\".");
+          alert(
+            '⚠️ Impossible de vérifier le paiement pour le moment.\n\nVeuillez vérifier dans "Mes réservations".'
+          );
           navigate("/reservations");
         }
       } else {
-        alert("ℹ️ Paiement non effectué.\n\nVotre réservation est sauvegardée.");
+        alert(
+          "ℹ️ Paiement non effectué.\n\nVotre réservation est sauvegardée."
+        );
         navigate("/reservations");
       }
     } catch (error) {
@@ -260,21 +300,34 @@ export default function LocationReservation() {
   if (!vehicule) return null;
 
   const isAvailable = availabilityResult?.available !== false;
-  const canSubmit = !submitting && !processing && totalPrice > 0 && paymentMethod && isAvailable && !checkingAvailability;
+  const canSubmit =
+    !submitting &&
+    !processing &&
+    totalPrice > 0 &&
+    paymentMethod &&
+    isAvailable &&
+    !checkingAvailability;
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <button onClick={() => navigate(-1)} className="flex items-center text-gray-600 hover:text-gray-900 mb-6">
+      <button
+        onClick={() => navigate(-1)}
+        className="flex items-center text-gray-600 hover:text-gray-900 mb-6"
+      >
         <ArrowLeft size={20} className="mr-2" />
         Retour
       </button>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Détails Véhicule */}
-        <div className="md:col-span-1 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden h-fit sticky top-24">
+        <div className="md:col-span-1 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden h-fit md:sticky md:top-24">
           <div className="h-64 bg-gray-200 relative">
             {vehicule.photo_url ? (
-              <img src={vehicule.photo_url} alt={`${vehicule.marque} ${vehicule.modele}`} className="w-full h-full object-cover" />
+              <img
+                src={vehicule.photo_url}
+                alt={`${vehicule.marque} ${vehicule.modele}`}
+                className="w-full h-full object-cover"
+              />
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
                 <Car size={64} />
@@ -300,7 +353,9 @@ export default function LocationReservation() {
             {totalPrice > 0 && (
               <div className="mt-6 bg-primary/5 border border-primary/20 rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-gray-700 font-semibold">Total estimé</span>
+                  <span className="text-gray-700 font-semibold">
+                    Total estimé
+                  </span>
                   <span className="text-2xl font-bold text-primary">
                     {totalPrice.toLocaleString()} FCFA
                   </span>
@@ -315,16 +370,25 @@ export default function LocationReservation() {
             {/* Périodes déjà réservées */}
             {datesReservees.length > 0 && (
               <div className="mt-6">
-                <h3 className="font-semibold mb-2 text-sm">Périodes déjà réservées</h3>
+                <h3 className="font-semibold mb-2 text-sm">
+                  Périodes déjà réservées
+                </h3>
                 <div className="space-y-2">
                   {datesReservees.slice(0, 3).map((periode) => (
-                    <div key={periode.id} className="text-xs p-2 bg-red-50 rounded border border-red-200">
-                      Du {new Date(periode.date_debut).toLocaleDateString('fr-FR')} 
-                      {' '}au {new Date(periode.date_fin).toLocaleDateString('fr-FR')}
+                    <div
+                      key={periode.id}
+                      className="text-xs p-2 bg-red-50 rounded border border-red-200"
+                    >
+                      Du{" "}
+                      {new Date(periode.date_debut).toLocaleDateString("fr-FR")}{" "}
+                      au{" "}
+                      {new Date(periode.date_fin).toLocaleDateString("fr-FR")}
                     </div>
                   ))}
                   {datesReservees.length > 3 && (
-                    <div className="text-xs text-gray-500">+ {datesReservees.length - 3} autre(s)</div>
+                    <div className="text-xs text-gray-500">
+                      + {datesReservees.length - 3} autre(s)
+                    </div>
                   )}
                 </div>
               </div>
@@ -334,26 +398,47 @@ export default function LocationReservation() {
 
         {/* Formulaire Réservation */}
         <div className="md:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Réserver ce véhicule</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-6">
+            Réserver ce véhicule
+          </h2>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  <Calendar size={16} className="inline mr-1" />Date de début
+                  <Calendar size={16} className="inline mr-1" />
+                  Date de début
                 </label>
-                <input type="date" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  value={dates.date_debut} min={new Date().toISOString().split("T")[0]}
-                  onChange={(e) => setDates((prev) => ({ ...prev, date_debut: e.target.value }))}
+                <input
+                  type="date"
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  value={dates.date_debut}
+                  min={new Date().toISOString().split("T")[0]}
+                  onChange={(e) =>
+                    setDates((prev) => ({
+                      ...prev,
+                      date_debut: e.target.value,
+                    }))
+                  }
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  <Calendar size={16} className="inline mr-1" />Date de fin
+                  <Calendar size={16} className="inline mr-1" />
+                  Date de fin
                 </label>
-                <input type="date" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  value={dates.date_fin} min={dates.date_debut || new Date().toISOString().split("T")[0]}
-                  onChange={(e) => setDates((prev) => ({ ...prev, date_fin: e.target.value }))}
+                <input
+                  type="date"
+                  required
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  value={dates.date_fin}
+                  min={
+                    dates.date_debut || new Date().toISOString().split("T")[0]
+                  }
+                  onChange={(e) =>
+                    setDates((prev) => ({ ...prev, date_fin: e.target.value }))
+                  }
                 />
               </div>
             </div>
@@ -362,21 +447,27 @@ export default function LocationReservation() {
             {checkingAvailability && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center gap-2">
                 <Loader className="h-4 w-4 animate-spin text-blue-600" />
-                <span className="text-sm text-blue-800">Vérification de la disponibilité...</span>
+                <span className="text-sm text-blue-800">
+                  Vérification de la disponibilité...
+                </span>
               </div>
             )}
 
             {availabilityResult && !checkingAvailability && (
-              <div className={`border rounded-lg p-3 ${
-                availabilityResult.available 
-                  ? 'bg-green-50 border-green-200' 
-                  : 'bg-red-50 border-red-200'
-              }`}>
+              <div
+                className={`border rounded-lg p-3 ${
+                  availabilityResult.available
+                    ? "bg-green-50 border-green-200"
+                    : "bg-red-50 border-red-200"
+                }`}
+              >
                 <div className="flex items-center gap-2">
                   {availabilityResult.available ? (
                     <>
                       <CheckCircle className="h-5 w-5 text-green-600" />
-                      <span className="text-sm font-semibold text-green-800">Véhicule disponible pour ces dates</span>
+                      <span className="text-sm font-semibold text-green-800">
+                        Véhicule disponible pour ces dates
+                      </span>
                     </>
                   ) : (
                     <>
@@ -386,7 +477,8 @@ export default function LocationReservation() {
                           Véhicule indisponible pour ces dates
                         </span>
                         <span className="text-xs text-red-700">
-                          {availabilityResult.conflictingReservations?.length} réservation(s) existante(s)
+                          {availabilityResult.conflictingReservations?.length}{" "}
+                          réservation(s) existante(s)
                         </span>
                       </div>
                     </>
@@ -397,30 +489,60 @@ export default function LocationReservation() {
 
             {/* Informations du locataire */}
             <div>
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Informations du locataire</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">
+                Informations du locataire
+              </h3>
               <div className="space-y-4">
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                  <input type="text" value={formData.nom_locataire} required placeholder="Nom complet"
+                  <input
+                    type="text"
+                    value={formData.nom_locataire}
+                    required
+                    placeholder="Nom complet"
                     className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
-                    onChange={(e) => setFormData({ ...formData, nom_locataire: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        nom_locataire: e.target.value,
+                      })
+                    }
                   />
                 </div>
                 <div>
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                    <input type="tel" value={formData.telephone_locataire} required placeholder="+22997123456"
+                    <input
+                      type="tel"
+                      value={formData.telephone_locataire}
+                      required
+                      placeholder="+22997123456"
                       className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
-                      onChange={(e) => setFormData({ ...formData, telephone_locataire: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          telephone_locataire: e.target.value,
+                        })
+                      }
                     />
                   </div>
-                  <p className="text-xs text-gray-600 mt-1">Format: +229XXXXXXXX (Mobile Money)</p>
+                  <p className="text-xs text-gray-600 mt-1">
+                    Format: +229XXXXXXXX (Mobile Money)
+                  </p>
                 </div>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                  <input type="email" value={formData.email_locataire} placeholder="email@example.com"
+                  <input
+                    type="email"
+                    value={formData.email_locataire}
+                    placeholder="email@example.com"
                     className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
-                    onChange={(e) => setFormData({ ...formData, email_locataire: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        email_locataire: e.target.value,
+                      })
+                    }
                   />
                 </div>
               </div>
@@ -430,30 +552,67 @@ export default function LocationReservation() {
             <div>
               <div className="flex items-center space-x-2 mb-4">
                 <CreditCard className="h-5 w-5 text-primary" />
-                <h3 className="text-lg font-bold text-gray-900">Opérateur Mobile Money</h3>
+                <h3 className="text-lg font-bold text-gray-900">
+                  Opérateur Mobile Money
+                </h3>
                 <span className="text-red-500">*</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {['mtn', 'moov', 'celtiis'].map((op) => (
-                  <button key={op} type="button" onClick={() => setPaymentMethod(op)}
+                {["mtn", "moov", "celtiis"].map((op) => (
+                  <button
+                    key={op}
+                    type="button"
+                    onClick={() => setPaymentMethod(op)}
                     className={`p-4 rounded-xl border-2 transition-all ${
                       paymentMethod === op
-                        ? op === 'mtn' ? 'border-[#FFCC00] bg-[#FFF9E6]' 
-                          : op === 'moov' ? 'border-[#009CDE] bg-[#E6F7FF]'
-                          : 'border-[#FF6B00] bg-[#FFF3E6]'
-                        : 'border-gray-200'
-                    }`}>
+                        ? op === "mtn"
+                          ? "border-[#FFCC00] bg-[#FFF9E6]"
+                          : op === "moov"
+                          ? "border-[#009CDE] bg-[#E6F7FF]"
+                          : "border-[#FF6B00] bg-[#FFF3E6]"
+                        : "border-gray-200"
+                    }`}
+                  >
                     <div className="flex flex-col items-center">
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 ${
-                        op === 'mtn' ? 'bg-[#FFCC00]' : op === 'moov' ? 'bg-[#009CDE]' : 'bg-[#FF6B00]'
-                      } ${paymentMethod === op ? 'ring-4 ring-opacity-30' : ''}`}
-                        style={{ ringColor: op === 'mtn' ? '#FFCC00' : op === 'moov' ? '#009CDE' : '#FF6B00' }}>
-                        <span className={`font-bold ${op === 'mtn' ? 'text-black text-lg' : 'text-white text-base'}`}>
-                          {op === 'mtn' ? 'MTN' : op === 'moov' ? 'moov' : 'Celtiis'}
+                      <div
+                        className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 ${
+                          op === "mtn"
+                            ? "bg-[#FFCC00]"
+                            : op === "moov"
+                            ? "bg-[#009CDE]"
+                            : "bg-[#FF6B00]"
+                        } ${
+                          paymentMethod === op ? "ring-4 ring-opacity-30" : ""
+                        }`}
+                        style={{
+                          ringColor:
+                            op === "mtn"
+                              ? "#FFCC00"
+                              : op === "moov"
+                              ? "#009CDE"
+                              : "#FF6B00",
+                        }}
+                      >
+                        <span
+                          className={`font-bold ${
+                            op === "mtn"
+                              ? "text-black text-lg"
+                              : "text-white text-base"
+                          }`}
+                        >
+                          {op === "mtn"
+                            ? "MTN"
+                            : op === "moov"
+                            ? "moov"
+                            : "Celtiis"}
                         </span>
                       </div>
                       <p className="text-sm font-semibold text-center">
-                        {op === 'mtn' ? 'MTN Mobile Money' : op === 'moov' ? 'Moov Money' : 'Celtiis Cash'}
+                        {op === "mtn"
+                          ? "MTN Mobile Money"
+                          : op === "moov"
+                          ? "Moov Money"
+                          : "Celtiis Cash"}
                       </p>
                     </div>
                   </button>
@@ -467,17 +626,26 @@ export default function LocationReservation() {
                 <Shield className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
                 <div className="text-sm text-blue-800">
                   <p className="font-semibold mb-1">Paiement 100% sécurisé</p>
-                  <p className="text-xs">Vos données sont cryptées par FedaPay.</p>
+                  <p className="text-xs">
+                    Vos données sont cryptées par FedaPay.
+                  </p>
                 </div>
               </div>
             </div>
 
-            <button type="submit" disabled={!canSubmit}
-              className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2">
+            <button
+              type="submit"
+              disabled={!canSubmit}
+              className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+            >
               {submitting || processing ? (
                 <>
                   <Loader className="h-5 w-5 animate-spin" />
-                  <span>{processing ? "Paiement en cours..." : "Réservation en cours..."}</span>
+                  <span>
+                    {processing
+                      ? "Paiement en cours..."
+                      : "Réservation en cours..."}
+                  </span>
                 </>
               ) : checkingAvailability ? (
                 <>
@@ -491,7 +659,9 @@ export default function LocationReservation() {
                 </>
               )}
             </button>
-            <p className="text-xs text-gray-600 text-center">Paiement sécurisé par FedaPay (Mobile Money)</p>
+            <p className="text-xs text-gray-600 text-center">
+              Paiement sécurisé par FedaPay (Mobile Money)
+            </p>
           </form>
         </div>
       </div>

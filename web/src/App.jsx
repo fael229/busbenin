@@ -34,6 +34,7 @@ import MesVehiculesLocation from "./pages/MesVehiculesLocation";
 import AdminLocation from "./pages/AdminLocation";
 import Wallet from "./pages/Wallet";
 import AdminWallets from "./pages/admin/Wallets";
+import AdminLocations from "./pages/admin/AdminLocations";
 
 function ProtectedRoute({ children }) {
   const { session, loading } = useSession();
@@ -217,6 +218,14 @@ function App() {
           element={
             <AdminRoute>
               <AdminDestinations />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="admin/locations"
+          element={
+            <AdminRoute>
+              <AdminLocations />
             </AdminRoute>
           }
         />

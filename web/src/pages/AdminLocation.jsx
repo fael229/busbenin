@@ -24,6 +24,7 @@ export default function AdminLocation() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview"); // 'overview', 'vehicules', 'reservations', 'proprietaires'
   const [filterStatut, setFilterStatut] = useState("tous");
+  const [filterLivraison, setFilterLivraison] = useState("tous"); // 'tous', 'validee', 'non_validee'
   const [dateDebut, setDateDebut] = useState("");
   const [dateFin, setDateFin] = useState("");
 
@@ -130,6 +131,8 @@ export default function AdminLocation() {
         .select(
           `
           *,
+          livraison_validee,
+          livraison_validee_at,
           vehicules_location (marque, modele, annee, prix_par_jour, user_id)
         `
         )
@@ -138,6 +141,18 @@ export default function AdminLocation() {
       if (filterStatut !== "tous") {
         query = query.eq("statut_paiement", filterStatut);
       }
+      
+      if (filterLivraison !== "tous") {
+        if (filterLivraison === "validee") {
+          query = query.eq("livraison_validee", true);
+        } else {
+          // Pour non validée, on veut soit false soit null, mais supabase gère ça
+          // Pour simplifier, on filtre sur false ou null (mais eq ne gère pas OR null facilement)
+          // On va filtrer côté client pour ce cas spécifique si besoin, ou utiliser .not('livraison_validee', 'eq', true)
+           query = query.not("livraison_validee", "eq", true);
+        }
+      }
+
       if (dateDebut) {
         query = query.gte("date_debut", dateDebut);
       }
@@ -259,6 +274,7 @@ export default function AdminLocation() {
           "Période",
           "Montant",
           "Statut",
+          "Livraison",
         ],
         ...reservations.map((r) => [
           new Date(r.created_at).toLocaleDateString("fr-FR"),
@@ -271,6 +287,7 @@ export default function AdminLocation() {
           ).toLocaleDateString("fr-FR")}`,
           `${r.montant_total} FCFA`,
           r.statut_paiement === "approved" ? "Payé" : "En attente",
+          r.livraison_validee ? "Validée" : "Non validée",
         ]),
       ]
         .map((row) => row.join(","))
@@ -626,6 +643,19 @@ export default function AdminLocation() {
                     <option value="declined">Refusé</option>
                   </select>
 
+                  <select
+                    value={filterLivraison}
+                    onChange={(e) => {
+                      setFilterLivraison(e.target.value);
+                      setTimeout(loadReservations, 100);
+                    }}
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="tous">Toutes les livraisons</option>
+                    <option value="validee">Validées</option>
+                    <option value="non_validee">Non validées</option>
+                  </select>
+
                   <input
                     type="date"
                     value={dateDebut}
@@ -680,6 +710,9 @@ export default function AdminLocation() {
                         <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
                           Statut
                         </th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
+                          Livraison
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
@@ -729,6 +762,23 @@ export default function AdminLocation() {
                                 ? "En attente"
                                 : "Refusé"}
                             </span>
+                          </td>
+                          <td className="px-4 py-3 text-sm">
+                            {reservation.statut_paiement === "approved" ? (
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                                  reservation.livraison_validee
+                                    ? "bg-green-100 text-green-800"
+                                    : "bg-orange-100 text-orange-800"
+                                }`}
+                              >
+                                {reservation.livraison_validee
+                                  ? "Validée"
+                                  : "Non validée"}
+                              </span>
+                            ) : (
+                              <span className="text-gray-400 text-xs">-</span>
+                            )}
                           </td>
                         </tr>
                       ))}

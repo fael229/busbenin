@@ -20,6 +20,7 @@ import {
   Eye,
   Search,
   Filter,
+  CheckCircle,
 } from "lucide-react-native";
 import BackButton from "../../../components/BackButton";
 
@@ -101,6 +102,8 @@ export default function AdminManageLocations() {
         .select(
           `
           *,
+          livraison_validee,
+          livraison_validee_at,
           vehicules_location (marque, modele)
         `
         )
@@ -177,6 +180,42 @@ export default function AdminManageLocations() {
           Gestion Location
         </Text>
         <View style={{ width: 40 }} />
+      </View>
+
+      {/* Statistiques */}
+      <View style={[styles.statsContainer, { backgroundColor: theme.surface }]}>
+        <View style={styles.statCard}>
+          <Text style={[styles.statLabel, { color: theme.textSecondary }]}>
+            Total
+          </Text>
+          <Text style={[styles.statValue, { color: theme.text }]}>
+            {reservations.length}
+          </Text>
+        </View>
+
+        <View style={styles.statCard}>
+          <Text style={[styles.statLabel, { color: theme.textSecondary }]}>
+            Validées
+          </Text>
+          <Text style={[styles.statValue, { color: "#10B981" }]}>
+            {reservations.filter((r) => r.livraison_validee === true).length}
+          </Text>
+        </View>
+
+        <View style={styles.statCard}>
+          <Text style={[styles.statLabel, { color: theme.textSecondary }]}>
+            Non validées
+          </Text>
+          <Text style={[styles.statValue, { color: "#F59E0B" }]}>
+            {
+              reservations.filter(
+                (r) =>
+                  r.statut_paiement === "approved" &&
+                  r.livraison_validee !== true
+              ).length
+            }
+          </Text>
+        </View>
       </View>
 
       <View style={[styles.tabsContainer, { backgroundColor: theme.surface }]}>
@@ -334,37 +373,81 @@ export default function AdminManageLocations() {
                       Client: {reservation.nom_locataire}
                     </Text>
                   </View>
-                  <View
-                    style={[
-                      styles.badge,
-                      {
-                        backgroundColor:
-                          reservation.statut_paiement === "approved"
-                            ? "#D1FAE5"
-                            : reservation.statut_paiement === "pending"
-                              ? "#FEF3C7"
-                              : "#FEE2E2",
-                      },
-                    ]}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 10,
-                        fontWeight: "700",
-                        color:
-                          reservation.statut_paiement === "approved"
-                            ? "#059669"
-                            : reservation.statut_paiement === "pending"
-                              ? "#D97706"
-                              : "#DC2626",
-                      }}
+
+                  <View style={{ alignItems: "flex-end" }}>
+                    {/* Badge de paiement */}
+                    <View
+                      style={[
+                        styles.badge,
+                        {
+                          backgroundColor:
+                            reservation.statut_paiement === "approved"
+                              ? "#D1FAE5"
+                              : reservation.statut_paiement === "pending"
+                                ? "#FEF3C7"
+                                : "#FEE2E2",
+                        },
+                      ]}
                     >
-                      {reservation.statut_paiement === "approved"
-                        ? "PAYÉ"
-                        : reservation.statut_paiement === "pending"
-                          ? "ATTENTE"
-                          : "REFUSÉ"}
-                    </Text>
+                      <Text
+                        style={{
+                          fontSize: 10,
+                          fontWeight: "700",
+                          color:
+                            reservation.statut_paiement === "approved"
+                              ? "#059669"
+                              : reservation.statut_paiement === "pending"
+                                ? "#D97706"
+                                : "#DC2626",
+                        }}
+                      >
+                        {reservation.statut_paiement === "approved"
+                          ? "PAYÉ"
+                          : reservation.statut_paiement === "pending"
+                            ? "ATT."
+                            : "REF."}
+                      </Text>
+                    </View>
+
+                    {/* Badge de livraison (si payé) */}
+                    {reservation.statut_paiement === "approved" && (
+                      <View
+                        style={[
+                          styles.badge,
+                          {
+                            backgroundColor: reservation.livraison_validee
+                              ? "#D1FAE5"
+                              : "#FEF3C7",
+                            marginTop: 4,
+                          },
+                        ]}
+                      >
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 2,
+                          }}
+                        >
+                          {reservation.livraison_validee && (
+                            <CheckCircle size={10} color="#059669" />
+                          )}
+                          <Text
+                            style={{
+                              fontSize: 9,
+                              fontWeight: "700",
+                              color: reservation.livraison_validee
+                                ? "#059669"
+                                : "#D97706",
+                            }}
+                          >
+                            {reservation.livraison_validee
+                              ? "VALIDÉE"
+                              : "NON VALIDÉE"}
+                          </Text>
+                        </View>
+                      </View>
+                    )}
                   </View>
                 </View>
 
@@ -409,6 +492,25 @@ const styles = StyleSheet.create({
   },
   headerTitle: { fontSize: 18, fontWeight: "700" },
   loadingContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
+  statsContainer: {
+    flexDirection: "row",
+    padding: 12,
+    gap: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E5E7EB",
+  },
+  statCard: {
+    flex: 1,
+    alignItems: "center",
+  },
+  statLabel: {
+    fontSize: 11,
+    marginBottom: 4,
+  },
+  statValue: {
+    fontSize: 18,
+    fontWeight: "700",
+  },
   tabsContainer: {
     flexDirection: "row",
     borderBottomWidth: 1,
