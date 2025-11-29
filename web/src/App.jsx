@@ -27,6 +27,7 @@ import CompagnieTrajets from "./pages/compagnie/Trajets";
 import CompagnieReservations from "./pages/compagnie/Reservations";
 import NotFound from "./pages/NotFound";
 import Location from "./pages/Location";
+import LocationDetails from "./pages/LocationDetails";
 import LocationAdd from "./pages/LocationAdd";
 import LocationReservation from "./pages/LocationReservation";
 import LocationPayment from "./pages/LocationPayment";
@@ -73,6 +74,7 @@ function App() {
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route path="location" element={<Location />} />
+        <Route path="location/:id" element={<LocationDetails />} />
 
         {/* Routes protégées */}
         <Route

@@ -56,7 +56,7 @@ export default function LocationScreen() {
         styles.card,
         { backgroundColor: theme.surface, borderColor: theme.border },
       ]}
-      onPress={() => router.push(`/location/reserver/${item.id}`)}
+      onPress={() => router.push(`/location/${item.id}`)}
     >
       <View style={styles.imageContainer}>
         {item.photo_url ? (
