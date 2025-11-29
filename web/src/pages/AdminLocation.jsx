@@ -141,7 +141,7 @@ export default function AdminLocation() {
       if (filterStatut !== "tous") {
         query = query.eq("statut_paiement", filterStatut);
       }
-      
+
       if (filterLivraison !== "tous") {
         if (filterLivraison === "validee") {
           query = query.eq("livraison_validee", true);
@@ -149,7 +149,7 @@ export default function AdminLocation() {
           // Pour non validée, on veut soit false soit null, mais supabase gère ça
           // Pour simplifier, on filtre sur false ou null (mais eq ne gère pas OR null facilement)
           // On va filtrer côté client pour ce cas spécifique si besoin, ou utiliser .not('livraison_validee', 'eq', true)
-           query = query.not("livraison_validee", "eq", true);
+          query = query.not("livraison_validee", "eq", true);
         }
       }
 
