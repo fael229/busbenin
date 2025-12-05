@@ -29,7 +29,12 @@ import {
 } from "lucide-react-native";
 import BackButton from "../../../../components/BackButton";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { createTransaction, getPaymentUrl } from "../../../../utils/fedapay";
+import {
+  createTransaction,
+  getPaymentUrl,
+  processDirectPayment,
+  pollTransactionStatus,
+} from "../../../../utils/fedapay";
 import {
   checkVehiculeDisponibilite,
   getDatesReservees,
@@ -64,6 +69,7 @@ export default function LocationReservationScreen() {
   const [telephoneLocataire, setTelephoneLocataire] = useState("");
   const [emailLocataire, setEmailLocataire] = useState("");
   const [operateurMobile, setOperateurMobile] = useState("");
+  const [paymentProgress, setPaymentProgress] = useState("");
 
   useEffect(() => {
     fetchVehicule();
@@ -217,6 +223,7 @@ export default function LocationReservationScreen() {
 
     try {
       setProcessing(true);
+      setPaymentProgress("Création de la réservation...");
 
       const { data: reservation, error } = await supabase
         .from("reservations_location")
@@ -238,6 +245,8 @@ export default function LocationReservationScreen() {
         .single();
 
       if (error) throw error;
+
+      setPaymentProgress("Création de la transaction...");
 
       const transactionResult = await createTransaction({
         amount: totalPrice,
@@ -265,26 +274,73 @@ export default function LocationReservationScreen() {
         console.log("✅ transaction_id sauvegardé");
       }
 
-      let paymentUrl = transactionResult.paymentUrl;
-      if (!paymentUrl || paymentUrl.includes("/menu")) {
-        paymentUrl = getPaymentUrl(transactionResult.token);
-      }
+      // Initier le paiement direct (sans redirection)
+      setPaymentProgress("Envoi de la demande de paiement...");
 
-      setProcessing(false);
-
-      router.push({
-        pathname: "/paiement/[transactionId]",
-        params: {
-          transactionId: transactionResult.transactionId,
-          reservationId: reservation.id,
-          paymentUrl: paymentUrl,
-          tableName: "reservations_location",
+      const paymentResult = await processDirectPayment({
+        transactionToken: transactionResult.token,
+        phoneNumber: telephoneLocataire,
+        operator: operateurMobile,
+        onProgress: (message) => {
+          setPaymentProgress(message);
         },
       });
+
+      if (!paymentResult.success) {
+        throw new Error(
+          paymentResult.error || "Échec de l'initiation du paiement"
+        );
+      }
+
+      setPaymentProgress("Veuillez valider le paiement sur votre téléphone...");
+
+      // Vérifier le statut du paiement en boucle
+      const finalResult = await pollTransactionStatus(
+        transactionResult.transactionId,
+        (status, transaction) => {
+          console.log("📊 Statut mis à jour :", status);
+          if (status === "approved") {
+            setPaymentProgress("✅ Paiement confirmé !");
+          } else if (status === "pending") {
+            setPaymentProgress("⏳ En attente de votre validation...");
+          }
+        }
+      );
+
+      if (finalResult.success && finalResult.status === "approved") {
+        // Paiement confirmé
+        await supabase
+          .from("reservations_location")
+          .update({
+            statut_paiement: "approved",
+            statut: "confirmee",
+          })
+          .eq("id", reservation.id);
+
+        Alert.alert("✅ Paiement confirmé !", "Votre location est validée.", [
+          { text: "OK", onPress: () => router.push("/mes-reservations") },
+        ]);
+      } else if (finalResult.status === "timeout") {
+        // Timeout
+        Alert.alert(
+          "⏳ Paiement en cours",
+          "Le paiement prend plus de temps que prévu.\n\nNous continuons de vérifier votre paiement.\n\nVérifiez le statut dans 'Mes réservations'.",
+          [{ text: "OK", onPress: () => router.push("/mes-reservations") }]
+        );
+      } else {
+        // Décliné ou annulé
+        Alert.alert(
+          "❌ Paiement non confirmé",
+          finalResult.error || "Paiement refusé",
+          [{ text: "OK", onPress: () => router.push("/mes-reservations") }]
+        );
+      }
     } catch (error) {
       console.error("❌ Erreur:", error);
       Alert.alert("Erreur", error.message);
+    } finally {
       setProcessing(false);
+      setPaymentProgress("");
     }
   };
 
@@ -585,6 +641,28 @@ export default function LocationReservationScreen() {
           </View>
         </View>
 
+        {/* Indicateur de progression du paiement */}
+        {paymentProgress ? (
+          <View
+            style={{
+              margin: 16,
+              padding: 16,
+              backgroundColor: "#FFF9E6",
+              borderRadius: 12,
+              borderWidth: 1,
+              borderColor: "#FCD34D",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 12,
+            }}
+          >
+            <ActivityIndicator color="#D97706" />
+            <Text style={{ flex: 1, color: "#92400E", fontWeight: "600" }}>
+              {paymentProgress}
+            </Text>
+          </View>
+        ) : null}
+
         {/* Bouton payer */}
         <TouchableOpacity
           disabled={!canSubmit}
@@ -600,7 +678,7 @@ export default function LocationReservationScreen() {
             <>
               <CreditCard size={20} color="#FFF" />
               <Text style={styles.submitText}>
-                Payer {totalPrice.toLocaleString()} FCFA
+                {paymentProgress || `Payer ${totalPrice.toLocaleString()} FCFA`}
               </Text>
             </>
           )}

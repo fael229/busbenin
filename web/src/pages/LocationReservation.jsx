@@ -21,6 +21,8 @@ import {
   openPaymentUrl,
   formatAmount,
   checkTransactionStatus,
+  processDirectPayment,
+  pollTransactionStatus,
 } from "../utils/fedapay";
 import {
   checkVehiculeDisponibilite,
@@ -40,6 +42,7 @@ export default function LocationReservation() {
   const [checkingAvailability, setCheckingAvailability] = useState(false);
   const [availabilityResult, setAvailabilityResult] = useState(null);
   const [datesReservees, setDatesReservees] = useState([]);
+  const [paymentProgress, setPaymentProgress] = useState("");
 
   const [dates, setDates] = useState({ date_debut: "", date_fin: "" });
   const [totalPrice, setTotalPrice] = useState(0);
@@ -205,8 +208,10 @@ export default function LocationReservation() {
 
   const handlePayment = async (reservation, amount) => {
     setProcessing(true);
+    setPaymentProgress('Création de la transaction...');
+
     try {
-      console.log("🚀 Starting payment process...");
+      console.log("🚀 Starting direct payment process...");
 
       const result = await createTransaction({
         amount: formatAmount(amount),
@@ -238,61 +243,75 @@ export default function LocationReservation() {
         console.log("✅ transaction_id sauvegardé");
       }
 
-      openPaymentUrl(result.paymentUrl, true);
+      // Initier le paiement direct (sans popup)
+      setPaymentProgress('Envoi de la demande de paiement sur votre téléphone...');
+      
+      const paymentResult = await processDirectPayment({
+        transactionToken: result.token,
+        phoneNumber: formData.telephone_locataire,
+        operator: paymentMethod,
+        onProgress: (message) => {
+          setPaymentProgress(message);
+        },
+      });
 
-      const continueProcess = confirm(
-        "💳 Une fenêtre de paiement FedaPay s'est ouverte.\n\n" +
-          "Veuillez compléter votre paiement dans cette fenêtre.\n\n" +
-          '✅ Après avoir payé, cliquez sur "OK" pour vérifier votre paiement.\n' +
-          '❌ Si vous n\'avez pas payé, cliquez sur "Annuler".'
+      if (!paymentResult.success) {
+        throw new Error(paymentResult.error || 'Échec de l\'initiation du paiement');
+      }
+
+      setPaymentProgress('Paiement en cours... Veuillez valider sur votre téléphone.');
+
+      // Vérifier le statut du paiement en boucle
+      const finalResult = await pollTransactionStatus(
+        result.transactionId,
+        (status, transaction) => {
+          console.log('📊 Statut mis à jour :', status);
+          if (status === 'approved') {
+            setPaymentProgress('✅ Paiement confirmé !');
+          } else if (status === 'pending') {
+            setPaymentProgress('⏳ En attente de votre validation...');
+          }
+        }
       );
 
-      if (continueProcess) {
-        console.log("🔍 Vérification du paiement...");
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        const statusCheck = await checkTransactionStatus(result.transactionId);
-        console.log("📊 Statut reçu:", statusCheck);
-
-        if (statusCheck.success) {
-          if (statusCheck.status === "approved") {
-            await supabase
-              .from("reservations_location")
-              .update({
-                statut_paiement: "approved",
-                statut: "confirmee",
-                transaction_id: result.transactionId,
-              })
-              .eq("id", reservation.id);
-            alert("✅ Paiement confirmé !\n\nVotre location est validée.");
-            navigate("/reservations");
-          } else if (statusCheck.status === "pending") {
-            alert(
-              '⏳ Paiement en cours de traitement...\n\nVous pouvez vérifier le statut dans "Mes réservations".'
-            );
-            navigate("/reservations");
-          } else {
-            alert(`❌ Paiement non confirmé.\n\nStatut: ${statusCheck.status}`);
-            navigate("/reservations");
-          }
-        } else {
-          alert(
-            '⚠️ Impossible de vérifier le paiement pour le moment.\n\nVeuillez vérifier dans "Mes réservations".'
-          );
-          navigate("/reservations");
-        }
-      } else {
+      if (finalResult.success && finalResult.status === 'approved') {
+        // Paiement confirmé
+        await supabase
+          .from("reservations_location")
+          .update({
+            statut_paiement: "approved",
+            statut: "confirmee",
+            transaction_id: result.transactionId,
+          })
+          .eq("id", reservation.id);
+        alert("✅ Paiement confirmé !\n\nVotre location est validée.");
+        navigate("/reservations");
+      } else if (finalResult.status === 'timeout') {
+        // Timeout
         alert(
-          "ℹ️ Paiement non effectué.\n\nVotre réservation est sauvegardée."
+          '⏳ Le paiement prend plus de temps que prévu.\n\n' +
+          'Nous continuons de vérifier votre paiement en arrière-plan.\n\n' +
+          'Vérifiez le statut dans "Mes réservations".'
+        );
+        navigate("/reservations");
+      } else {
+        // Décliné ou annulé
+        alert(
+          `❌ Paiement non confirmé.\n\n${finalResult.error || 'Paiement refusé'}\n\n` +
+          'Vous pouvez réessayer depuis "Mes réservations".'
         );
         navigate("/reservations");
       }
+
     } catch (error) {
       console.error("❌ Payment error:", error);
+      setPaymentProgress('');
       alert(`❌ Erreur : ${error.message}\n\nLa réservation est sauvegardée.`);
       navigate("/reservations");
     } finally {
       setProcessing(false);
       setSubmitting(false);
+      setPaymentProgress('');
     }
   };
 
@@ -633,6 +652,18 @@ export default function LocationReservation() {
               </div>
             </div>
 
+            {/* Indicateur de progression du paiement */}
+            {paymentProgress && (
+              <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+                <div className="flex items-center space-x-3">
+                  <Loader className="h-5 w-5 text-yellow-600 animate-spin flex-shrink-0" />
+                  <div className="text-sm text-yellow-800">
+                    <p className="font-semibold">{paymentProgress}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <button
               type="submit"
               disabled={!canSubmit}
@@ -642,9 +673,9 @@ export default function LocationReservation() {
                 <>
                   <Loader className="h-5 w-5 animate-spin" />
                   <span>
-                    {processing
+                    {paymentProgress || (processing
                       ? "Paiement en cours..."
-                      : "Réservation en cours..."}
+                      : "Réservation en cours...")}
                   </span>
                 </>
               ) : checkingAvailability ? (

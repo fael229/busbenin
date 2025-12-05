@@ -299,14 +299,14 @@ export default function Home() {
     <div className="bg-gray-50 dark:bg-gray-900">
       {/* Hero Section */}
       <div className="text-center mb-12 relative">
-        <div className="absolute inset-0 overflow-hidden rounded-lg">
+        <div className="absolute inset-0 overflow-hidden rounded-lg z-0">
           <img
             src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=2069&auto=format&fit=crop"
             alt="Bus travel background"
             className="w-full h-full object-cover opacity-20"
           />
         </div>
-        <div className="bg-gradient-to-br from-primary to-blue-100 text-white py-20">
+        <div className="bg-gradient-to-br from-primary to-blue-100 text-white py-20 relative z-10">
           {/* Hero Image Background */}
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
