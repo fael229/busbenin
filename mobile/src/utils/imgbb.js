@@ -7,26 +7,24 @@
 const IMGBB_API_KEY = process.env.EXPO_PUBLIC_IMGBB_API_KEY;
 
 /**
- * Upload une image vers ImgBB depuis un URI local (Expo/React Native)
- * @param {Object} imageAsset - Asset image d'Expo ImagePicker
+ * Upload une image vers ImgBB depuis un asset ImagePicker
+ * L'asset doit avoir été récupéré avec l'option base64: true
+ * @param {Object} imageAsset - Asset image d'Expo ImagePicker avec base64
  * @returns {Promise<{success: boolean, url?: string, error?: string}>}
  */
 export const uploadImageToImgBB = async (imageAsset) => {
   try {
     if (!IMGBB_API_KEY) {
-      throw new Error(
-        "Clé API ImgBB non configurée. Ajoutez EXPO_PUBLIC_IMGBB_API_KEY dans votre fichier .env"
-      );
+      throw new Error("Clé API ImgBB non configurée. Ajoutez EXPO_PUBLIC_IMGBB_API_KEY dans votre fichier .env");
     }
 
-    const { uri, mimeType } = imageAsset;
-
-    if (!uri) {
-      throw new Error("URI de l'image manquant");
+    const { base64 } = imageAsset;
+    
+    if (!base64) {
+      throw new Error("Base64 de l'image manquant. Assurez-vous d'utiliser base64: true dans ImagePicker");
     }
 
-    // Convertir l'image en base64
-    const base64 = await uriToBase64(uri);
+    console.log("📤 Upload vers ImgBB...");
 
     // Créer le formulaire pour l'API
     const formData = new FormData();
@@ -43,10 +41,11 @@ export const uploadImageToImgBB = async (imageAsset) => {
     const data = await response.json();
 
     if (!response.ok || !data.success) {
-      throw new Error(
-        data.error?.message || "Erreur lors de l'upload de l'image"
-      );
+      console.error("❌ Réponse ImgBB:", data);
+      throw new Error(data.error?.message || "Erreur lors de l'upload de l'image");
     }
+
+    console.log("✅ Image uploadée:", data.data.url);
 
     return {
       success: true,
@@ -56,40 +55,11 @@ export const uploadImageToImgBB = async (imageAsset) => {
       thumbnail: data.data.thumb?.url,
     };
   } catch (error) {
-    console.error("Erreur upload ImgBB:", error);
+    console.error("❌ Erreur upload ImgBB:", error);
     return {
       success: false,
       error: error.message || "Erreur inconnue lors de l'upload",
     };
-  }
-};
-
-/**
- * Convertit une URI d'image locale en chaîne base64
- * Compatible avec Expo/React Native
- * @param {string} uri - URI locale de l'image
- * @returns {Promise<string>}
- */
-const uriToBase64 = async (uri) => {
-  try {
-    // Utiliser fetch pour lire le fichier en blob
-    const response = await fetch(uri);
-    const blob = await response.blob();
-
-    // Convertir le blob en base64
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        // Retirer le préfixe data:image/...;base64,
-        const base64 = reader.result.split(",")[1];
-        resolve(base64);
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-  } catch (error) {
-    console.error("Erreur conversion base64:", error);
-    throw new Error("Impossible de convertir l'image");
   }
 };
 
@@ -111,3 +81,4 @@ export const isValidImageUrl = (url) => {
     return false;
   }
 };
+

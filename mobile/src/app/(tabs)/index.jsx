@@ -9,6 +9,7 @@ import {
   Image,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useIsFocused } from "@react-navigation/native";
 import {
@@ -373,7 +374,6 @@ export default function AccueilScreen() {
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
-          paddingTop: insets.top + 20,
           paddingBottom: insets.bottom + 80,
         }}
         showsVerticalScrollIndicator={false}
@@ -386,95 +386,22 @@ export default function AccueilScreen() {
           />
         }
       >
-        {/* Header avec gradient visuel */}
-        <View style={{ paddingHorizontal: 20, marginBottom: 32 }}>
-          <View
+        {/* Header Hero Section avec design premium */}
+        <View style={{ marginBottom: 24 }}>
+          {/* Gradient Background */}
+          <LinearGradient
+            colors={["#315370ff", "#1565C0", "#0D47A1"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
             style={{
-              backgroundColor: theme.surface,
-              borderRadius: 20,
-              padding: 24,
-              shadowColor: theme.shadow,
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.1,
-              shadowRadius: 12,
-              elevation: 3,
+              paddingTop: insets.top + 20,
+              paddingBottom: 80,
+              paddingHorizontal: 20,
+              borderBottomLeftRadius: 32,
+              borderBottomRightRadius: 32,
             }}
           >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginBottom: 12,
-              }}
-            >
-              <View
-                style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 12,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginRight: 16,
-                  overflow: "hidden",
-                }}
-              >
-                <Image
-                  source={require("../../../assets/images/icon.png")}
-                  style={{ width: 48, height: 48 }}
-                  resizeMode="contain"
-                />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text
-                  style={{
-                    fontSize: 28,
-                    fontWeight: "700",
-                    color: theme.text,
-                    marginBottom: 4,
-                  }}
-                >
-                  Bus Bénin
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    color: theme.textSecondary,
-                    lineHeight: 20,
-                  }}
-                >
-                  Votre compagnon de voyage
-                </Text>
-              </View>
-            </View>
-            <Text
-              style={{
-                fontSize: 13,
-                color: theme.textSecondary,
-                lineHeight: 22,
-              }}
-            >
-              Trouvez et réservez facilement vos trajets en bus à travers le
-              Bénin
-            </Text>
-          </View>
-        </View>
-
-        {/* Carte de recherche avec design amélioré */}
-        <View style={{ paddingHorizontal: 20, marginBottom: 32 }}>
-          <View
-            style={{
-              backgroundColor: theme.surface,
-              borderRadius: 16,
-              padding: 24,
-              shadowColor: theme.shadow,
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.12,
-              shadowRadius: 12,
-              elevation: 5,
-              borderWidth: 1,
-              borderColor: theme.borderLight,
-            }}
-          >
+            {/* Logo et Titre */}
             <View
               style={{
                 flexDirection: "row",
@@ -484,57 +411,209 @@ export default function AccueilScreen() {
             >
               <View
                 style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 8,
-                  backgroundColor: theme.primaryLight || theme.surfaceSecondary,
+                  width: 56,
+                  height: 56,
+                  borderRadius: 16,
+                  backgroundColor: "rgba(255, 255, 255, 0)",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginRight: 16,
+                }}
+              >
+                <Image
+                  source={require("../../../assets/images/icon.png")}
+                  style={{ width: 40, height: 40 }}
+                  resizeMode="contain"
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{
+                    fontSize: 32,
+                    fontWeight: "800",
+                    color: "#FFFFFF",
+                    letterSpacing: -0.5,
+                  }}
+                >
+                  Bus Bénin
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    color: "rgba(255,255,255,0.85)",
+                    marginTop: 2,
+                  }}
+                >
+                  Votre compagnon de voyage
+                </Text>
+              </View>
+            </View>
+
+            {/* Statistiques rapides */}
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-around",
+                backgroundColor: "rgba(255,255,255,0.15)",
+                borderRadius: 16,
+                paddingVertical: 16,
+                paddingHorizontal: 8,
+              }}
+            >
+              <View style={{ alignItems: "center" }}>
+                <Text
+                  style={{
+                    fontSize: 24,
+                    fontWeight: "800",
+                    color: "#FFFFFF",
+                  }}
+                >
+                  50+
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 12,
+                    color: "rgba(255,255,255,0.8)",
+                    marginTop: 2,
+                  }}
+                >
+                  Destinations
+                </Text>
+              </View>
+              <View
+                style={{
+                  width: 1,
+                  backgroundColor: "rgba(255,255,255,0.3)",
+                }}
+              />
+              <View style={{ alignItems: "center" }}>
+                <Text
+                  style={{
+                    fontSize: 24,
+                    fontWeight: "800",
+                    color: "#FFFFFF",
+                  }}
+                >
+                  10+
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 12,
+                    color: "rgba(255,255,255,0.8)",
+                    marginTop: 2,
+                  }}
+                >
+                  Compagnies
+                </Text>
+              </View>
+              <View
+                style={{
+                  width: 1,
+                  backgroundColor: "rgba(255,255,255,0.3)",
+                }}
+              />
+              <View style={{ alignItems: "center" }}>
+                <Text
+                  style={{
+                    fontSize: 24,
+                    fontWeight: "800",
+                    color: "#FFFFFF",
+                  }}
+                >
+                  24/7
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 12,
+                    color: "rgba(255,255,255,0.8)",
+                    marginTop: 2,
+                  }}
+                >
+                  Disponible
+                </Text>
+              </View>
+            </View>
+          </LinearGradient>
+
+          {/* Carte de recherche flottante */}
+          <View
+            style={{
+              marginHorizontal: 20,
+              marginTop: -50,
+              backgroundColor: theme.surface,
+              borderRadius: 20,
+              padding: 20,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 8 },
+              shadowOpacity: 0.15,
+              shadowRadius: 24,
+              elevation: 12,
+            }}
+          >
+            {/* Titre de la carte */}
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: 20,
+              }}
+            >
+              <View
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 12,
+                  backgroundColor: theme.primary,
                   alignItems: "center",
                   justifyContent: "center",
                   marginRight: 12,
                 }}
               >
-                <Search size={20} color={theme.commun} />
+                <Search size={20} color="#FFFFFF" />
               </View>
               <Text
                 style={{
-                  fontSize: 20,
+                  fontSize: 18,
                   fontWeight: "700",
-                  color: theme.text,
+                  color: theme.textTertiary,
                 }}
               >
-                Rechercher un trajet
+                Où voulez-vous aller ?
               </Text>
             </View>
 
-            {/* Input pour la ville de départ avec style amélioré */}
-            <View style={{ marginBottom: 16 }}>
-              <Text
-                style={{
-                  fontSize: 14,
-                  fontWeight: "600",
-                  color: theme.text,
-                  marginBottom: 10,
-                }}
-              >
-                Départ
-              </Text>
+            {/* Input Départ */}
+            <View style={{ marginBottom: 12 }}>
               <View
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  borderWidth: 2,
-                  borderColor: depart ? theme.primary : theme.borderLight,
-                  borderRadius: 12,
+                  backgroundColor: theme.backgroundSecondary,
+                  borderRadius: 14,
                   paddingHorizontal: 16,
                   paddingVertical: 14,
-                  backgroundColor: theme.background,
+                  borderWidth: 2,
+                  borderColor: depart ? theme.primary : "transparent",
                 }}
               >
-                <MapPin
-                  size={20}
-                  color={depart ? theme.primary : theme.textSecondary}
-                  style={{ marginRight: 12 }}
-                />
+                <View
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 8,
+                    backgroundColor: depart
+                      ? theme.primary + "20"
+                      : theme.surfaceSecondary,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginRight: 12,
+                  }}
+                >
+                  <MapPin
+                    size={18}
+                    color={depart ? theme.primary : theme.textSecondary}
+                  />
+                </View>
                 <TextInput
                   style={{
                     flex: 1,
@@ -550,35 +629,57 @@ export default function AccueilScreen() {
               </View>
             </View>
 
-            {/* Input pour la ville d'arrivée avec style amélioré */}
-            <View style={{ marginBottom: 20 }}>
-              <Text
+            {/* Séparateur avec ligne pointillée */}
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginVertical: 4,
+                paddingLeft: 24,
+              }}
+            >
+              <View
                 style={{
-                  fontSize: 14,
-                  fontWeight: "600",
-                  color: theme.text,
-                  marginBottom: 10,
+                  width: 2,
+                  height: 20,
+                  backgroundColor: theme.primary + "40",
+                  borderRadius: 1,
                 }}
-              >
-                Arrivée
-              </Text>
+              />
+            </View>
+
+            {/* Input Arrivée */}
+            <View style={{ marginBottom: 16 }}>
               <View
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  borderWidth: 2,
-                  borderColor: arrivee ? theme.primary : theme.borderLight,
-                  borderRadius: 12,
+                  backgroundColor: theme.backgroundSecondary,
+                  borderRadius: 14,
                   paddingHorizontal: 16,
                   paddingVertical: 14,
-                  backgroundColor: theme.background,
+                  borderWidth: 2,
+                  borderColor: arrivee ? theme.primary : "transparent",
                 }}
               >
-                <MapPin
-                  size={20}
-                  color={arrivee ? theme.primary : theme.textSecondary}
-                  style={{ marginRight: 12 }}
-                />
+                <View
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 8,
+                    backgroundColor: arrivee
+                      ? theme.primary + "20"
+                      : theme.surfaceSecondary,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginRight: 12,
+                  }}
+                >
+                  <MapPin
+                    size={18}
+                    color={arrivee ? theme.primary : theme.textSecondary}
+                  />
+                </View>
                 <TextInput
                   style={{
                     flex: 1,
@@ -594,36 +695,36 @@ export default function AccueilScreen() {
               </View>
             </View>
 
-            {/* Bouton de recherche amélioré */}
+            {/* Bouton de recherche */}
             <TouchableOpacity
               style={{
                 backgroundColor: theme.primary,
-                borderRadius: 12,
+                borderRadius: 14,
                 paddingVertical: 16,
                 alignItems: "center",
                 flexDirection: "row",
                 justifyContent: "center",
                 shadowColor: theme.primary,
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 8,
-                elevation: 6,
+                shadowOffset: { width: 0, height: 6 },
+                shadowOpacity: 0.35,
+                shadowRadius: 12,
+                elevation: 8,
               }}
               onPress={handleSearch}
-              activeOpacity={0.85}
+              activeOpacity={0.9}
             >
-              <Search size={22} color="#FFFFFF" style={{ marginRight: 10 }} />
+              <Search size={20} color="#FFFFFF" style={{ marginRight: 10 }} />
               <Text
                 style={{
-                  fontSize: 17,
+                  fontSize: 16,
                   fontWeight: "700",
                   color: "#FFFFFF",
-                  letterSpacing: 0.5,
+                  letterSpacing: 0.3,
                 }}
               >
-                Rechercher des trajets
+                Rechercher
               </Text>
-              <ArrowRight size={20} color="#FFFFFF" style={{ marginLeft: 8 }} />
+              <ArrowRight size={18} color="#FFFFFF" style={{ marginLeft: 8 }} />
             </TouchableOpacity>
           </View>
         </View>
@@ -654,7 +755,7 @@ export default function AccueilScreen() {
               style={{
                 fontSize: 20,
                 fontWeight: "700",
-                color: theme.text,
+                color: theme.textTertiary,
               }}
             >
               Destinations populaires
@@ -741,7 +842,7 @@ export default function AccueilScreen() {
                 style={{
                   fontSize: 20,
                   fontWeight: "700",
-                  color: theme.text,
+                  color: theme.textTertiary,
                 }}
               >
                 Trajets populaires
@@ -759,7 +860,7 @@ export default function AccueilScreen() {
                 style={{
                   fontSize: 12,
                   fontWeight: "600",
-                  color: theme.primary,
+                  color: theme.commun,
                 }}
               >
                 Top {trajetsPopulaires.length}
@@ -952,7 +1053,7 @@ export default function AccueilScreen() {
               style={{
                 fontSize: 20,
                 fontWeight: "700",
-                color: theme.text,
+                color: theme.textTertiary,
               }}
             >
               Compagnies recommandées
@@ -1076,7 +1177,7 @@ export default function AccueilScreen() {
                 style={{
                   fontSize: 20,
                   fontWeight: "700",
-                  color: theme.text,
+                  color: theme.textTertiary,
                 }}
               >
                 Mon Portefeuille
@@ -1189,7 +1290,7 @@ export default function AccueilScreen() {
                 style={{
                   fontSize: 20,
                   fontWeight: "700",
-                  color: theme.text,
+                  color: theme.textTertiary,
                 }}
               >
                 Véhicules en location
@@ -1362,7 +1463,7 @@ export default function AccueilScreen() {
                 style={{
                   fontSize: 20,
                   fontWeight: "700",
-                  color: theme.text,
+                  color: theme.textTertiary,
                 }}
               >
                 Offres spéciales

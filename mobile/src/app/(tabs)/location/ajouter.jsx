@@ -99,10 +99,11 @@ export default function LocationAddScreen() {
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ["images"],
         allowsEditing: true,
         aspect: [4, 3],
-        quality: 0.8,
+        quality: 0.7,
+        base64: true, // Retourne directement le base64
       });
 
       if (!result.canceled && result.assets[0]) {
@@ -118,11 +119,11 @@ export default function LocationAddScreen() {
   const uploadImage = async (image) => {
     setUploadingImage(true);
     setUploadSuccess(false);
-    
+
     try {
       // Upload vers ImgBB (service gratuit)
       const result = await uploadImageToImgBB(image);
-      
+
       if (result.success) {
         setFormData((prev) => ({ ...prev, photo_url: result.url }));
         setUploadSuccess(true);
@@ -393,7 +394,9 @@ export default function LocationAddScreen() {
                 {uploadingImage && (
                   <View style={styles.uploadOverlay}>
                     <ActivityIndicator size="large" color="#FFF" />
-                    <Text style={styles.uploadOverlayText}>Upload en cours...</Text>
+                    <Text style={styles.uploadOverlayText}>
+                      Upload en cours...
+                    </Text>
                   </View>
                 )}
                 {/* Bouton supprimer */}
@@ -422,7 +425,12 @@ export default function LocationAddScreen() {
                 {uploadingImage ? (
                   <View style={styles.uploadingContainer}>
                     <ActivityIndicator size="large" color={theme.primary} />
-                    <Text style={[styles.uploadingText, { color: theme.textSecondary }]}>
+                    <Text
+                      style={[
+                        styles.uploadingText,
+                        { color: theme.textSecondary },
+                      ]}
+                    >
                       Upload en cours...
                     </Text>
                   </View>
