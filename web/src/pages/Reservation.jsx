@@ -35,60 +35,68 @@ export default function Reservation() {
   const [submitting, setSubmitting] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState(""); // '', 'mtn', 'moov', 'celtiis'
-  const [reservationCreated, setReservationCreated] = useState(null)
-  const [paymentProgress, setPaymentProgress] = useState('')
+  const [reservationCreated, setReservationCreated] = useState(null);
+  const [paymentProgress, setPaymentProgress] = useState("");
   const [formData, setFormData] = useState({
     nb_places: 1,
-    horaire: '',
-    date_voyage: '',
-    nom_passager: '',
-    telephone_passager: '',
-    email_passager: session?.user?.email || '',
-  })
+    horaire: "",
+    date_voyage: "",
+    nom_passager: "",
+    telephone_passager: "",
+    email_passager: session?.user?.email || "",
+  });
 
   useEffect(() => {
-    loadTrajet()
-  }, [id])
+    loadTrajet();
+  }, [id]);
 
   const loadTrajet = async () => {
     try {
       const { data, error } = await supabase
-        .from('trajets')
-        .select('*, compagnies:compagnie_id(nom)')
-        .eq('id', id)
-        .single()
+        .from("trajets")
+        .select("*, compagnies:compagnie_id(nom)")
+        .eq("id", id)
+        .single();
 
-      if (error) throw error
-      setTrajet(data)
+      if (error) throw error;
+      setTrajet(data);
     } catch (error) {
-      console.error('Error loading trajet:', error)
-      navigate('/trajets')
+      console.error("Error loading trajet:", error);
+      navigate("/trajets");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     // Validation
     if (!paymentMethod) {
-      alert('⚠️ Veuillez sélectionner votre opérateur Mobile Money')
-      return
+      alert("⚠️ Veuillez sélectionner votre opérateur Mobile Money");
+      return;
     }
 
-    if (!formData.telephone_passager.match(/^\+229\d{8,10}$/)) {
-      alert('⚠️ Le numéro de téléphone doit être au format +229XXXXXXXX')
-      return
+    // Formater le numéro avec +229 si nécessaire
+    let telephone = formData.telephone_passager.trim();
+    if (!telephone.startsWith("+229")) {
+      telephone = "+229" + telephone;
     }
 
-    setSubmitting(true)
+    if (!telephone.match(/^\+229\d{8,10}$/)) {
+      alert(
+        "⚠️ Le numéro de téléphone doit contenir 8 à 10 chiffres après +229"
+      );
+      return;
+    }
+
+    setSubmitting(true);
 
     try {
-      const montantTotal = trajet.prix * formData.nb_places
+      const montantTotal = trajet.prix * formData.nb_places;
 
       const { data: reservation, error } = await supabase
-        .from('reservations')
+        .from("reservations")
         .insert({
           user_id: session.user.id,
           trajet_id: trajet.id,
@@ -96,33 +104,33 @@ export default function Reservation() {
           horaire: formData.horaire,
           date_voyage: formData.date_voyage,
           nom_passager: formData.nom_passager,
-          telephone_passager: formData.telephone_passager,
+          telephone_passager: telephone,
           email_passager: formData.email_passager,
           montant_total: montantTotal,
-          statut: 'en_attente',
-          statut_paiement: 'pending',
+          statut: "en_attente",
+          statut_paiement: "pending",
         })
         .select()
-        .single()
+        .single();
 
-      if (error) throw error
+      if (error) throw error;
 
       // Stocker la réservation et lancer le paiement
-      setReservationCreated(reservation)
-      await handlePayment(reservation, montantTotal)
+      setReservationCreated(reservation);
+      await handlePayment(reservation, montantTotal, telephone);
     } catch (error) {
-      console.error('Error creating reservation:', error)
-      alert('Une erreur est survenue lors de la réservation')
-      setSubmitting(false)
+      console.error("Error creating reservation:", error);
+      alert("Une erreur est survenue lors de la réservation");
+      setSubmitting(false);
     }
-  }
+  };
 
-  const handlePayment = async (reservation, amount) => {
-    setProcessing(true)
-    setPaymentProgress('Création de la transaction...')
+  const handlePayment = async (reservation, amount, telephone) => {
+    setProcessing(true);
+    setPaymentProgress("Création de la transaction...");
 
     try {
-      console.log('🚀 Starting direct payment process...')
+      console.log("🚀 Starting direct payment process...");
 
       // Créer la transaction FedaPay
       const result = await createTransaction({
@@ -131,87 +139,100 @@ export default function Reservation() {
         customerId: session.user.id,
         customerEmail: formData.email_passager || session.user.email,
         customerName: formData.nom_passager,
-        customerPhone: formData.telephone_passager,
+        customerPhone: telephone,
         mobileMoneyOperator: paymentMethod, // 'mtn', 'moov', ou 'celtiis'
-      })
+      });
 
       if (!result.success) {
-        throw new Error(result.error || 'Erreur lors de la création de la transaction')
+        throw new Error(
+          result.error || "Erreur lors de la création de la transaction"
+        );
       }
 
-      console.log('✅ Transaction created:', result.transactionId)
+      console.log("✅ Transaction created:", result.transactionId);
 
       // Sauvegarder l'ID de transaction dans la réservation
       await supabase
-        .from('reservations')
+        .from("reservations")
         .update({
           fedapay_transaction_id: result.transactionId,
         })
-        .eq('id', reservation.id)
+        .eq("id", reservation.id);
 
       // Initier le paiement direct (sans popup)
-      setPaymentProgress('Envoi de la demande de paiement sur votre téléphone...')
-      
+      setPaymentProgress(
+        "Envoi de la demande de paiement sur votre téléphone..."
+      );
+
       const paymentResult = await processDirectPayment({
         transactionToken: result.token,
-        phoneNumber: formData.telephone_passager,
+        phoneNumber: telephone,
         operator: paymentMethod,
         onProgress: (message) => {
-          setPaymentProgress(message)
+          setPaymentProgress(message);
         },
-      })
+      });
 
       if (!paymentResult.success) {
-        throw new Error(paymentResult.error || 'Échec de l\'initiation du paiement')
+        throw new Error(
+          paymentResult.error || "Échec de l'initiation du paiement"
+        );
       }
 
-      setPaymentProgress('Paiement en cours... Veuillez valider sur votre téléphone.')
+      setPaymentProgress(
+        "Paiement en cours... Veuillez valider sur votre téléphone."
+      );
 
       // Vérifier le statut du paiement en boucle
       const finalResult = await pollTransactionStatus(
         result.transactionId,
         (status, transaction) => {
-          console.log('📊 Statut mis à jour :', status)
-          if (status === 'approved') {
-            setPaymentProgress('✅ Paiement confirmé !')
-          } else if (status === 'pending') {
-            setPaymentProgress('⏳ En attente de votre validation...')
+          console.log("📊 Statut mis à jour :", status);
+          if (status === "approved") {
+            setPaymentProgress("✅ Paiement confirmé !");
+          } else if (status === "pending") {
+            setPaymentProgress("⏳ En attente de votre validation...");
           }
         }
-      )
+      );
 
-      if (finalResult.success && finalResult.status === 'approved') {
+      if (finalResult.success && finalResult.status === "approved") {
         // Paiement confirmé
-        await updateReservationStatus(reservation.id, 'approved', result.transactionId)
-        alert('✅ Paiement confirmé !\\n\\nVotre réservation est validée.')
-        navigate('/reservations')
-      } else if (finalResult.status === 'timeout') {
+        await updateReservationStatus(
+          reservation.id,
+          "approved",
+          result.transactionId
+        );
+        alert("✅ Paiement confirmé !\\n\\nVotre réservation est validée.");
+        navigate("/reservations");
+      } else if (finalResult.status === "timeout") {
         // Timeout
         alert(
-          '⏳ Le paiement prend plus de temps que prévu.\\n\\n' +
-          'Nous continuons de vérifier votre paiement en arrière-plan.\\n\\n' +
-          'Vous pouvez vérifier le statut dans \"Mes réservations\".'
-        )
-        navigate('/reservations')
+          "⏳ Le paiement prend plus de temps que prévu.\\n\\n" +
+            "Nous continuons de vérifier votre paiement en arrière-plan.\\n\\n" +
+            'Vous pouvez vérifier le statut dans "Mes réservations".'
+        );
+        navigate("/reservations");
       } else {
         // Décliné ou annulé
         alert(
-          '❌ Paiement non confirmé.\\n\\n' +
-          `${finalResult.error || 'Paiement refusé'}\\n\\n` +
-          'Vous pouvez réessayer depuis \"Mes réservations\".'
-        )
-        navigate('/reservations')
+          "❌ Paiement non confirmé.\\n\\n" +
+            `${finalResult.error || "Paiement refusé"}\\n\\n` +
+            'Vous pouvez réessayer depuis "Mes réservations".'
+        );
+        navigate("/reservations");
       }
-
     } catch (error) {
-      console.error('❌ Payment error:', error)
-      setPaymentProgress('')
-      alert(`❌ Erreur : ${error.message}\\n\\nLa réservation est sauvegardée, vous pouvez payer plus tard depuis \"Mes réservations\".`)
-      navigate('/reservations')
+      console.error("❌ Payment error:", error);
+      setPaymentProgress("");
+      alert(
+        `❌ Erreur : ${error.message}\\n\\nLa réservation est sauvegardée, vous pouvez payer plus tard depuis \"Mes réservations\".`
+      );
+      navigate("/reservations");
     } finally {
-      setProcessing(false)
-      setSubmitting(false)
-      setPaymentProgress('')
+      setProcessing(false);
+      setSubmitting(false);
+      setPaymentProgress("");
     }
   };
 
@@ -389,14 +410,13 @@ export default function Reservation() {
                             telephone_passager: e.target.value,
                           })
                         }
-                        placeholder="+22997123456"
+                        placeholder="01xxxxxxxx"
                         required
                         className="input-field pl-10 dark:bg-gray-700 dark:text-white dark:border-gray-600"
                       />
                     </div>
                     <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                      Format: +229XXXXXXXX (ce numéro sera utilisé pour le
-                      paiement Mobile Money)
+                      Entrez votre numéro à partir de 01 (ex: 0197123456)
                     </p>
                   </div>
 
@@ -588,9 +608,10 @@ export default function Reservation() {
                   <>
                     <Loader className="h-5 w-5 animate-spin" />
                     <span>
-                      {paymentProgress || (processing
-                        ? "Paiement en cours..."
-                        : "Réservation en cours...")}
+                      {paymentProgress ||
+                        (processing
+                          ? "Paiement en cours..."
+                          : "Réservation en cours...")}
                     </span>
                   </>
                 ) : (
@@ -673,7 +694,8 @@ export default function Reservation() {
               <div className="space-y-3">
                 <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
                   <p className="text-xs text-blue-800 dark:text-blue-300">
-                    <strong>� Note:</strong> Vous recevrez une demande de paiement directement sur votre téléphone Mobile Money.
+                    <strong>� Note:</strong> Vous recevrez une demande de
+                    paiement directement sur votre téléphone Mobile Money.
                   </p>
                 </div>
                 <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3 border border-green-200 dark:border-green-800">

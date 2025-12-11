@@ -171,13 +171,24 @@ export default function LocationReservationScreen() {
     setShowPicker({ show: true, mode: "date", type });
   };
 
+  // Fonction pour formater le téléphone avec +229
+  const getFormattedPhone = () => {
+    let telephone = telephoneLocataire.trim();
+    if (!telephone.startsWith('+229')) {
+      telephone = '+229' + telephone;
+    }
+    return telephone;
+  };
+
   const validerFormulaire = () => {
     if (!nomLocataire.trim()) {
       Alert.alert("Erreur", "Veuillez entrer votre nom");
       return false;
     }
-    if (!telephoneLocataire.match(/^\+229\d{8,10}$/)) {
-      Alert.alert("Erreur", "Le numéro doit être au format +229XXXXXXXX");
+    
+    const telephone = getFormattedPhone();
+    if (!telephone.match(/^\+229\d{8,10}$/)) {
+      Alert.alert("Erreur", "Le numéro doit contenir 8 à 10 chiffres (ex: 01xxxxxxxx)");
       return false;
     }
     if (!operateurMobile) {
@@ -204,6 +215,9 @@ export default function LocationReservationScreen() {
     }
 
     if (!validerFormulaire()) return;
+
+    // Formater le numéro avec +229
+    const telephone = getFormattedPhone();
 
     // Vérification finale de disponibilité
     setCheckingAvailability(true);
@@ -236,7 +250,7 @@ export default function LocationReservationScreen() {
             montant_total: totalPrice,
             statut: "en_attente",
             nom_locataire: nomLocataire,
-            telephone_locataire: telephoneLocataire,
+            telephone_locataire: telephone,
             email_locataire: emailLocataire,
             statut_paiement: "pending",
           },
@@ -253,7 +267,7 @@ export default function LocationReservationScreen() {
         description: `Location ${vehicule.marque} ${vehicule.modele}`,
         customerEmail: emailLocataire || session.user.email,
         customerName: nomLocataire,
-        customerPhone: telephoneLocataire,
+        customerPhone: telephone,
         mobileMoneyOperator: operateurMobile,
         reservationId: reservation.id,
       });
@@ -279,7 +293,7 @@ export default function LocationReservationScreen() {
 
       const paymentResult = await processDirectPayment({
         transactionToken: transactionResult.token,
-        phoneNumber: telephoneLocataire,
+        phoneNumber: telephone,
         operator: operateurMobile,
         onProgress: (message) => {
           setPaymentProgress(message);
@@ -560,7 +574,7 @@ export default function LocationReservationScreen() {
             <Phone size={20} color={theme.textSecondary} />
             <TextInput
               style={[styles.input, { color: theme.text }]}
-              placeholder="+22901xxxxxxxx"
+              placeholder="01xxxxxxxx"
               placeholderTextColor={theme.textTertiary}
               value={telephoneLocataire}
               onChangeText={setTelephoneLocataire}

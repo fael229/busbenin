@@ -149,8 +149,14 @@ export default function LocationReservation() {
       return;
     }
 
-    if (!formData.telephone_locataire.match(/^\+229\d{8,10}$/)) {
-      alert("⚠️ Le numéro de téléphone doit être au format +229XXXXXXXX");
+    // Formater le numéro avec +229 si nécessaire
+    let telephone = formData.telephone_locataire.trim();
+    if (!telephone.startsWith("+229")) {
+      telephone = "+229" + telephone;
+    }
+
+    if (!telephone.match(/^\+229\d{8,10}$/)) {
+      alert("⚠️ Le numéro de téléphone doit contenir 8 à 10 chiffres");
       return;
     }
 
@@ -190,7 +196,7 @@ export default function LocationReservation() {
             statut: "en_attente",
             statut_paiement: "pending",
             nom_locataire: formData.nom_locataire,
-            telephone_locataire: formData.telephone_locataire,
+            telephone_locataire: telephone,
             email_locataire: formData.email_locataire,
           },
         ])
@@ -198,7 +204,7 @@ export default function LocationReservation() {
         .single();
 
       if (error) throw error;
-      await handlePayment(reservation, totalPrice);
+      await handlePayment(reservation, totalPrice, telephone);
     } catch (error) {
       console.error("Erreur réservation:", error);
       alert("Une erreur est survenue lors de la création de la réservation");
@@ -206,9 +212,9 @@ export default function LocationReservation() {
     }
   };
 
-  const handlePayment = async (reservation, amount) => {
+  const handlePayment = async (reservation, amount, telephone) => {
     setProcessing(true);
-    setPaymentProgress('Création de la transaction...');
+    setPaymentProgress("Création de la transaction...");
 
     try {
       console.log("🚀 Starting direct payment process...");
@@ -219,7 +225,7 @@ export default function LocationReservation() {
         customerId: session.user.id,
         customerEmail: formData.email_locataire || session.user.email,
         customerName: formData.nom_locataire,
-        customerPhone: formData.telephone_locataire,
+        customerPhone: telephone,
         mobileMoneyOperator: paymentMethod,
       });
 
@@ -244,11 +250,13 @@ export default function LocationReservation() {
       }
 
       // Initier le paiement direct (sans popup)
-      setPaymentProgress('Envoi de la demande de paiement sur votre téléphone...');
-      
+      setPaymentProgress(
+        "Envoi de la demande de paiement sur votre téléphone..."
+      );
+
       const paymentResult = await processDirectPayment({
         transactionToken: result.token,
-        phoneNumber: formData.telephone_locataire,
+        phoneNumber: telephone,
         operator: paymentMethod,
         onProgress: (message) => {
           setPaymentProgress(message);
@@ -256,25 +264,29 @@ export default function LocationReservation() {
       });
 
       if (!paymentResult.success) {
-        throw new Error(paymentResult.error || 'Échec de l\'initiation du paiement');
+        throw new Error(
+          paymentResult.error || "Échec de l'initiation du paiement"
+        );
       }
 
-      setPaymentProgress('Paiement en cours... Veuillez valider sur votre téléphone.');
+      setPaymentProgress(
+        "Paiement en cours... Veuillez valider sur votre téléphone."
+      );
 
       // Vérifier le statut du paiement en boucle
       const finalResult = await pollTransactionStatus(
         result.transactionId,
         (status, transaction) => {
-          console.log('📊 Statut mis à jour :', status);
-          if (status === 'approved') {
-            setPaymentProgress('✅ Paiement confirmé !');
-          } else if (status === 'pending') {
-            setPaymentProgress('⏳ En attente de votre validation...');
+          console.log("📊 Statut mis à jour :", status);
+          if (status === "approved") {
+            setPaymentProgress("✅ Paiement confirmé !");
+          } else if (status === "pending") {
+            setPaymentProgress("⏳ En attente de votre validation...");
           }
         }
       );
 
-      if (finalResult.success && finalResult.status === 'approved') {
+      if (finalResult.success && finalResult.status === "approved") {
         // Paiement confirmé
         await supabase
           .from("reservations_location")
@@ -286,32 +298,32 @@ export default function LocationReservation() {
           .eq("id", reservation.id);
         alert("✅ Paiement confirmé !\n\nVotre location est validée.");
         navigate("/reservations");
-      } else if (finalResult.status === 'timeout') {
+      } else if (finalResult.status === "timeout") {
         // Timeout
         alert(
-          '⏳ Le paiement prend plus de temps que prévu.\n\n' +
-          'Nous continuons de vérifier votre paiement en arrière-plan.\n\n' +
-          'Vérifiez le statut dans "Mes réservations".'
+          "⏳ Le paiement prend plus de temps que prévu.\n\n" +
+            "Nous continuons de vérifier votre paiement en arrière-plan.\n\n" +
+            'Vérifiez le statut dans "Mes réservations".'
         );
         navigate("/reservations");
       } else {
         // Décliné ou annulé
         alert(
-          `❌ Paiement non confirmé.\n\n${finalResult.error || 'Paiement refusé'}\n\n` +
-          'Vous pouvez réessayer depuis "Mes réservations".'
+          `❌ Paiement non confirmé.\n\n${
+            finalResult.error || "Paiement refusé"
+          }\n\n` + 'Vous pouvez réessayer depuis "Mes réservations".'
         );
         navigate("/reservations");
       }
-
     } catch (error) {
       console.error("❌ Payment error:", error);
-      setPaymentProgress('');
+      setPaymentProgress("");
       alert(`❌ Erreur : ${error.message}\n\nLa réservation est sauvegardée.`);
       navigate("/reservations");
     } finally {
       setProcessing(false);
       setSubmitting(false);
-      setPaymentProgress('');
+      setPaymentProgress("");
     }
   };
 
@@ -535,7 +547,7 @@ export default function LocationReservation() {
                       type="tel"
                       value={formData.telephone_locataire}
                       required
-                      placeholder="+22997123456"
+                      placeholder="01xxxxxxxx"
                       className="w-full pl-10 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
                       onChange={(e) =>
                         setFormData({
@@ -546,7 +558,7 @@ export default function LocationReservation() {
                     />
                   </div>
                   <p className="text-xs text-gray-600 mt-1">
-                    Format: +229XXXXXXXX (Mobile Money)
+                    Entrez votre numéro à partir de 01 (ex: 0197123456)
                   </p>
                 </div>
                 <div className="relative">
@@ -673,9 +685,10 @@ export default function LocationReservation() {
                 <>
                   <Loader className="h-5 w-5 animate-spin" />
                   <span>
-                    {paymentProgress || (processing
-                      ? "Paiement en cours..."
-                      : "Réservation en cours...")}
+                    {paymentProgress ||
+                      (processing
+                        ? "Paiement en cours..."
+                        : "Réservation en cours...")}
                   </span>
                 </>
               ) : checkingAvailability ? (

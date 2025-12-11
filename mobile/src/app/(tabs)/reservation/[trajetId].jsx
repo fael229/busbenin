@@ -203,12 +203,13 @@ export default function ReservationScreen() {
       return false;
     }
 
-    // Valider le format du téléphone (+22901XXXXXXXX)
-    const phoneRegex = /^\+229\d{10}$/;
-    if (!phoneRegex.test(telephonePassager)) {
+    // Valider le format du téléphone
+    const telephone = getFormattedPhone();
+    const phoneRegex = /^\+229\d{8,10}$/;
+    if (!phoneRegex.test(telephone)) {
       Alert.alert(
         "Erreur",
-        "Le numéro doit être au format +22901XXXXXXXX (exemple: +22997123456)"
+        "Le numéro doit contenir 8 à 10 chiffres (exemple: 01xxxxxxxx)"
       );
       return false;
     }
@@ -224,6 +225,15 @@ export default function ReservationScreen() {
     return true;
   };
 
+  // Fonction pour formater le téléphone avec +229
+  const getFormattedPhone = () => {
+    let telephone = telephonePassager.trim();
+    if (!telephone.startsWith("+229")) {
+      telephone = "+229" + telephone;
+    }
+    return telephone;
+  };
+
   const procederAuPaiement = async () => {
     if (!session?.user?.id) {
       Alert.alert(
@@ -234,6 +244,9 @@ export default function ReservationScreen() {
     }
 
     if (!validerFormulaire()) return;
+
+    // Formater le numéro avec +229
+    const telephone = getFormattedPhone();
 
     try {
       setProcessing(true);
@@ -249,7 +262,7 @@ export default function ReservationScreen() {
           p_horaire: horaireSelectionne,
           p_date_voyage: dateVoyage,
           p_nom_passager: nomPassager.trim(),
-          p_telephone_passager: telephonePassager.trim(),
+          p_telephone_passager: telephone,
           p_email_passager: emailPassager.trim() || null,
         });
 
@@ -263,7 +276,7 @@ export default function ReservationScreen() {
         description: `Réservation ${trajet.depart} → ${trajet.arrivee} - ${nbPlaces} place(s)`,
         customerEmail: emailPassager || session.user.email,
         customerName: nomPassager,
-        customerPhone: telephonePassager,
+        customerPhone: telephone,
         mobileMoneyOperator: operateurMobile,
       });
 
@@ -289,7 +302,7 @@ export default function ReservationScreen() {
 
       const paymentResult = await processDirectPayment({
         transactionToken: transactionResult.token,
-        phoneNumber: telephonePassager,
+        phoneNumber: telephone,
         operator: operateurMobile,
         onProgress: (message) => {
           setPaymentProgress(message);
@@ -893,15 +906,14 @@ export default function ReservationScreen() {
                 fontSize: 16,
                 color: "#1F2937",
               }}
-              placeholder="+22901xxxxxxxx"
+              placeholder="01xxxxxxxx"
               placeholderTextColor="#808080"
               keyboardType="phone-pad"
               value={telephonePassager}
               onChangeText={setTelephonePassager}
             />
             <Text style={{ fontSize: 12, color: "#6B7280", marginTop: 4 }}>
-              Format: +22901XXXXXXXX (ce numéro sera utilisé pour le paiement
-              Mobile Money)
+              Entrez votre numéro à partir de 01 (ex: 0197123456)
             </Text>
           </View>
 

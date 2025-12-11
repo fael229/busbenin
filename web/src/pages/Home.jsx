@@ -297,32 +297,67 @@ export default function Home() {
 
   return (
     <div className="bg-gray-50 dark:bg-gray-900">
-      {/* Hero Section */}
-      <div className="text-center mb-12 relative">
-        <div className="absolute inset-0 overflow-hidden rounded-lg z-0">
+      {/* Hero Section avec image de couverture */}
+      <div className="relative mb-12 overflow-hidden">
+        {/* Image de fond */}
+        <div className="absolute inset-0 z-0">
           <img
-            src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=2069&auto=format&fit=crop"
+            src="/images/hero-bg.png"
             alt="Bus travel background"
-            className="w-full h-full object-cover opacity-20"
+            className="w-full h-full object-cover"
           />
+          {/* Overlay gradient pour améliorer la lisibilité */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/85 via-blue-600/30 to-blue-800/30"></div>
+          {/* Motif décoratif subtil */}
+          <div
+            className="absolute inset-0 opacity-10"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            }}
+          ></div>
         </div>
-        <div className="bg-gradient-to-br from-primary to-blue-100 text-white py-20 relative z-10">
-          {/* Hero Image Background */}
 
+        {/* Contenu Hero */}
+        <div className="relative z-10 py-20 lg:py-28">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 relative z-10">
+              {/* Badge animé */}
+              <div className="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium mb-6 animate-pulse">
+                <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                Réservation en ligne disponible 24h/24
+              </div>
+
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg">
                 Bus Bénin
               </h1>
-              <p className="text-base sm:text-lg md:text-xl text-blue-100 relative z-10">
+              <p className="text-lg sm:text-xl md:text-2xl text-blue-100 max-w-2xl mx-auto mb-8 drop-shadow">
                 Trouvez et réservez facilement vos trajets en bus à travers le
                 Bénin
               </p>
+
+              {/* Stats rapides */}
+              <div className="flex flex-wrap justify-center gap-6 mb-10">
+                <div className="flex items-center space-x-2 text-white/90">
+                  <span className="text-2xl font-bold">50+</span>
+                  <span className="text-sm">Destinations</span>
+                </div>
+                <div className="w-px h-8 bg-white/30 hidden sm:block"></div>
+                <div className="flex items-center space-x-2 text-white/90">
+                  <span className="text-2xl font-bold">10+</span>
+                  <span className="text-sm">Compagnies</span>
+                </div>
+                <div className="w-px h-8 bg-white/30 hidden sm:block"></div>
+                <div className="flex items-center space-x-2 text-white/90">
+                  <span className="text-2xl font-bold">1000+</span>
+                  <span className="text-sm">Voyageurs</span>
+                </div>
+              </div>
+
               {/* Search Card */}
-              <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8">
+              <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 sm:p-8 transform hover:scale-[1.01] transition-transform duration-300">
                 <div className="flex items-center space-x-3 mb-6">
-                  <div className="p-2 bg-primary-light rounded-lg">
-                    <Search className="h-6 w-6 text-primary" />
+                  <div className="p-3 bg-gradient-to-br from-primary to-blue-600 rounded-xl shadow-lg">
+                    <Search className="h-6 w-6 text-white" />
                   </div>
                   <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                     Rechercher un trajet
@@ -335,13 +370,13 @@ export default function Home() {
                       Départ
                     </label>
                     <div className="relative">
-                      <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-primary" />
                       <input
                         type="text"
                         value={depart}
                         onChange={(e) => setDepart(e.target.value)}
                         placeholder="Ville de départ"
-                        className="text-gray-400 input-field pl-10 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                        className="text-gray-700 input-field pl-10 dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:ring-2 focus:ring-primary/50"
                       />
                     </div>
                   </div>
@@ -351,14 +386,14 @@ export default function Home() {
                       Arrivée
                     </label>
                     <div className="relative">
-                      <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-primary" />
                       <input
                         id="arrivee"
                         type="text"
                         value={arrivee}
                         onChange={(e) => setArrivee(e.target.value)}
                         placeholder="Ville d'arrivée"
-                        className="text-gray-400 input-field pl-10 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                        className="text-gray-700 input-field pl-10 dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:ring-2 focus:ring-primary/50"
                       />
                     </div>
                   </div>
@@ -366,7 +401,7 @@ export default function Home() {
 
                 <button
                   onClick={handleSearch}
-                  className="w-full btn-primary flex items-center justify-center space-x-2"
+                  className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700 text-white py-4 px-6 rounded-xl font-semibold flex items-center justify-center space-x-2 transform hover:scale-[1.02] transition-all duration-200 shadow-lg hover:shadow-xl"
                 >
                   <Search className="h-5 w-5" />
                   <span>Rechercher des trajets</span>
@@ -375,6 +410,21 @@ export default function Home() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Vague décorative en bas */}
+        <div className="absolute bottom-0 left-0 right-0 z-10">
+          <svg
+            viewBox="0 0 1440 120"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-full h-auto"
+          >
+            <path
+              d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z"
+              className="fill-gray-50 dark:fill-gray-900"
+            />
+          </svg>
         </div>
       </div>
 
