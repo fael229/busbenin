@@ -307,7 +307,7 @@ export default function Home() {
             className="w-full h-full object-cover"
           />
           {/* Overlay gradient pour améliorer la lisibilité */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/85 via-blue-600/30 to-blue-800/30"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/85 via-yellow-600/30 to-blue-800/50"></div>
           {/* Motif décoratif subtil */}
           <div
             className="absolute inset-0 opacity-10"

@@ -12,12 +12,18 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from "expo-file-system/legacy";
 import { supabase } from "../../../utils/supabase";
+import { uploadImageToImgBB } from "../../../utils/imgbb";
 import { useSession } from "../../../contexts/SessionProvider";
 import { useTheme } from "../../../contexts/ThemeProvider";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Car, Upload, Image as ImageIcon, X } from "lucide-react-native";
+import {
+  Car,
+  Upload,
+  Image as ImageIcon,
+  X,
+  CheckCircle,
+} from "lucide-react-native";
 import BackButton from "../../../components/BackButton";
 import PhoneNumberModal from "../../../components/PhoneNumberModal";
 
@@ -32,6 +38,7 @@ export default function LocationAddScreen() {
   const [showPhoneModal, setShowPhoneModal] = useState(false);
   const [hasPhone, setHasPhone] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
   const [formData, setFormData] = useState({
     marque: "",
     modele: "",
@@ -109,42 +116,24 @@ export default function LocationAddScreen() {
   };
 
   const uploadImage = async (image) => {
-    if (!session?.user?.id) return;
-
     setUploadingImage(true);
+    setUploadSuccess(false);
+    
     try {
-      const fileExt = image.uri.split('.').pop();
-      const fileName = `${session.user.id}-${Date.now()}.${fileExt}`;
-      const filePath = `vehicules/${fileName}`;
+      // Upload vers ImgBB (service gratuit)
+      const result = await uploadImageToImgBB(image);
       
-      // URL de l'API Storage de Supabase
-      const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || "https://aztjjcxaoqtchvvzgbpd.supabase.co";
-      const uploadUrl = `${supabaseUrl}/storage/v1/object/images/${filePath}`;
-
-      // Upload natif via FileSystem (plus robuste que fetch/blob en RN)
-      const response = await FileSystem.uploadAsync(uploadUrl, image.uri, {
-        httpMethod: 'POST',
-        uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-          'Content-Type': image.mimeType || 'image/jpeg',
-        },
-      });
-
-      if (response.status !== 200) {
-        throw new Error(`Upload failed: ${response.body}`);
+      if (result.success) {
+        setFormData((prev) => ({ ...prev, photo_url: result.url }));
+        setUploadSuccess(true);
+        console.log("✅ Image uploadée vers ImgBB:", result.url);
+      } else {
+        throw new Error(result.error || "Erreur lors de l'upload");
       }
-
-      // Obtenir l'URL publique
-      const { data: { publicUrl } } = supabase.storage
-        .from('images')
-        .getPublicUrl(filePath);
-
-      setFormData(prev => ({ ...prev, photo_url: publicUrl }));
-      Alert.alert('Succès', 'Image uploadée avec succès !');
     } catch (error) {
-      console.error('Erreur upload image:', error);
-      Alert.alert('Erreur', 'Impossible d\'uploader l\'image. ' + error.message);
+      console.error("Erreur upload image:", error);
+      Alert.alert("Erreur", "Impossible d'uploader l'image. " + error.message);
+      setSelectedImage(null);
     } finally {
       setUploadingImage(false);
     }
@@ -153,6 +142,7 @@ export default function LocationAddScreen() {
   const removeImage = () => {
     setSelectedImage(null);
     setFormData((prev) => ({ ...prev, photo_url: "" }));
+    setUploadSuccess(false);
   };
 
   const handleSubmit = async () => {
@@ -392,6 +382,21 @@ export default function LocationAddScreen() {
                   source={{ uri: selectedImage?.uri || formData.photo_url }}
                   style={styles.imagePreview}
                 />
+                {/* Badge de succès */}
+                {uploadSuccess && (
+                  <View style={styles.successBadge}>
+                    <CheckCircle size={14} color="#FFF" />
+                    <Text style={styles.successBadgeText}>Uploadée</Text>
+                  </View>
+                )}
+                {/* Overlay de chargement */}
+                {uploadingImage && (
+                  <View style={styles.uploadOverlay}>
+                    <ActivityIndicator size="large" color="#FFF" />
+                    <Text style={styles.uploadOverlayText}>Upload en cours...</Text>
+                  </View>
+                )}
+                {/* Bouton supprimer */}
                 <TouchableOpacity
                   style={[
                     styles.removeImageButton,
@@ -415,7 +420,12 @@ export default function LocationAddScreen() {
                 disabled={uploadingImage}
               >
                 {uploadingImage ? (
-                  <ActivityIndicator color={theme.primary} />
+                  <View style={styles.uploadingContainer}>
+                    <ActivityIndicator size="large" color={theme.primary} />
+                    <Text style={[styles.uploadingText, { color: theme.textSecondary }]}>
+                      Upload en cours...
+                    </Text>
+                  </View>
                 ) : (
                   <>
                     <Upload size={32} color={theme.textSecondary} />
@@ -430,12 +440,16 @@ export default function LocationAddScreen() {
                         { color: theme.textSecondary },
                       ]}
                     >
-                      Format: JPG, PNG (max 5MB)
+                      JPG, PNG, GIF ou WebP • Max 32MB
                     </Text>
                   </>
                 )}
               </TouchableOpacity>
             )}
+            {/* Info stockage gratuit */}
+            <Text style={[styles.storageInfo, { color: theme.textSecondary }]}>
+              📸 Images stockées gratuitement sur ImgBB
+            </Text>
           </View>
 
           <TouchableOpacity
@@ -586,5 +600,51 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
+  },
+  successBadge: {
+    position: "absolute",
+    top: 8,
+    left: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#10B981",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 20,
+    gap: 4,
+  },
+  successBadgeText: {
+    color: "#FFF",
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  uploadOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 12,
+  },
+  uploadOverlayText: {
+    color: "#FFF",
+    marginTop: 8,
+    fontSize: 14,
+  },
+  uploadingContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  uploadingText: {
+    marginTop: 12,
+    fontSize: 14,
+  },
+  storageInfo: {
+    fontSize: 12,
+    marginTop: 8,
+    textAlign: "center",
   },
 });
