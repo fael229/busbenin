@@ -8,7 +8,6 @@ import {
   RefreshControl,
   Image,
 } from "react-native";
-import { StatusBar } from "expo-status-bar";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useIsFocused } from "@react-navigation/native";
@@ -367,9 +366,6 @@ export default function AccueilScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.background }}>
-      {/* Barre de statut */}
-      <StatusBar style={isDark ? "light" : "dark"} />
-
       {/* Contenu principal scrollable */}
       <ScrollView
         style={{ flex: 1 }}

@@ -10,6 +10,7 @@ import {
   Platform,
   ActivityIndicator,
   TouchableOpacity,
+  Image,  
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -218,16 +219,16 @@ export default function Register() {
         <View style={{ alignItems: "center", marginBottom: 32, marginTop: 20 }}>
           <View
             style={{
-              width: 80,
-              height: 80,
+              // width: 80,
+              // height: 80,
               borderRadius: 40,
-              backgroundColor: theme.primary,
+              // backgroundColor: theme.primary,
               alignItems: "center",
               justifyContent: "center",
               marginBottom: 20,
             }}
           >
-            <Bus size={40} color={theme.textInverse} />
+            <Image source={require('../../../assets/images/icon.png')} style={{ width: 70, height: 70 }} />
           </View>
           <Text
             style={{

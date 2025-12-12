@@ -21,6 +21,7 @@ export const lightTheme = {
   text: "#1F2937",
   commun: "#FFFFFF",
   textSecondary: "#6B7280",
+  textIcon: "#505050ff",
   textTertiary: "#9CA3AF",
   textInverse: "#FFFFFF",
 

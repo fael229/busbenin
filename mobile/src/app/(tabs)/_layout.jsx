@@ -68,7 +68,7 @@ export default function TabLayout() {
         // Couleur du texte et de l'icône de l'onglet actif
         tabBarActiveTintColor: theme.primary,
         // Couleur du texte et de l'icône des onglets inactifs
-        tabBarInactiveTintColor: theme.textSecondary,
+        tabBarInactiveTintColor: theme.textIcon,
         // Style du texte des labels des onglets
         tabBarLabelStyle: {
           // Taille de la police du texte des labels
@@ -84,8 +84,9 @@ export default function TabLayout() {
         options={{
           // Titre de l'onglet
           title: "Accueil",
+          tabBarLabel: "",
           // Icône de l'onglet
-          tabBarIcon: ({ color, size }) => <Home color={color} size={24} />,
+          tabBarIcon: ({ color, size }) => <Home color={color} size={28} />,
         }}
       />
       {/* Onglet "Trajets" */}
@@ -94,9 +95,10 @@ export default function TabLayout() {
         options={{
           // Titre de l'onglet
           title: "Trajets",
+          tabBarLabel: "",
           // Icône de l'onglet
           tabBarIcon: ({ color, size }) => (
-            <Navigation color={color} size={24} />
+            <Navigation color={color} size={28} />
           ),
         }}
       />
@@ -106,9 +108,10 @@ export default function TabLayout() {
         options={{
           // Titre de l'onglet
           title: "Compagnies",
+          tabBarLabel: "",
           // Icône de l'onglet
           tabBarIcon: ({ color, size }) => (
-            <Building2 color={color} size={24} />
+            <Building2 color={color} size={28} />
           ),
         }}
       />
@@ -118,8 +121,9 @@ export default function TabLayout() {
         options={{
           // Titre de l'onglet
           title: "Location",
+          tabBarLabel: "",
           // Icône de l'onglet
-          tabBarIcon: ({ color, size }) => <Car color={color} size={24} />,
+          tabBarIcon: ({ color, size }) => <Car color={color} size={28} />,
         }}
       />
       {/* Onglet "Favoris" */}
@@ -128,8 +132,9 @@ export default function TabLayout() {
         options={{
           // Titre de l'onglet
           title: "Favoris",
+          tabBarLabel: "",
           // Icône de l'onglet
-          tabBarIcon: ({ color, size }) => <Heart color={color} size={24} />,
+          tabBarIcon: ({ color, size }) => <Heart color={color} size={28} />,
         }}
       />
       {/* Onglet "Paramètres" */}
@@ -138,8 +143,9 @@ export default function TabLayout() {
         options={{
           // Titre de l'onglet
           title: "Paramètres",
+          tabBarLabel: "",
           // Icône de l'onglet
-          tabBarIcon: ({ color, size }) => <Settings color={color} size={24} />,
+          tabBarIcon: ({ color, size }) => <Settings color={color} size={28} />,
         }}
       />
       {/* Masquer les routes de navigation interne de la TabBar */}
@@ -157,11 +163,12 @@ export default function TabLayout() {
         options={{
           href: isAdmin || isCompagnie ? undefined : null,
           title: isCompagnie ? "Gestion" : "Admin",
+          tabBarLabel: "",
           tabBarIcon: ({ color, size }) =>
             isCompagnie ? (
-              <Building2 color={color} size={24} />
+              <Building2 color={color} size={28} />
             ) : (
-              <Shield color={color} size={24} />
+              <Shield color={color} size={28} />
             ),
         }}
       />
