@@ -1,157 +1,166 @@
-import { useState, useEffect } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
-import { Clock, Star, MapPin, ArrowRight, Heart, Building2, MessageSquare, User } from 'lucide-react'
-import { supabase } from '../utils/supabase'
-import { useSession } from '../contexts/SessionProvider'
+import { useState, useEffect } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import {
+  Clock,
+  Star,
+  MapPin,
+  ArrowRight,
+  Heart,
+  Building2,
+  MessageSquare,
+  User,
+  Map,
+} from "lucide-react";
+import { supabase } from "../utils/supabase";
+import { useSession } from "../contexts/SessionProvider";
+import RouteMap from "../components/RouteMap";
 
 export default function TrajetDetails() {
-  const { id } = useParams()
-  const navigate = useNavigate()
-  const { session } = useSession()
-  
-  const [trajet, setTrajet] = useState(null)
-  const [avis, setAvis] = useState([])
-  const [isFavorite, setIsFavorite] = useState(false)
-  const [loading, setLoading] = useState(true)
-  const [showReviewForm, setShowReviewForm] = useState(false)
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { session } = useSession();
+
+  const [trajet, setTrajet] = useState(null);
+  const [avis, setAvis] = useState([]);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [showReviewForm, setShowReviewForm] = useState(false);
   const [reviewData, setReviewData] = useState({
     note: 5,
-    commentaire: '',
-  })
-  const [submittingReview, setSubmittingReview] = useState(false)
+    commentaire: "",
+  });
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   useEffect(() => {
-    loadTrajet()
-    loadAvis()
-    if (session) checkFavorite()
-  }, [id, session])
+    loadTrajet();
+    loadAvis();
+    if (session) checkFavorite();
+  }, [id, session]);
 
   const loadTrajet = async () => {
     try {
       const { data, error } = await supabase
-        .from('trajets')
-        .select('*, compagnies:compagnie_id(id, nom, telephone, logo_url)')
-        .eq('id', id)
-        .single()
+        .from("trajets")
+        .select("*, compagnies:compagnie_id(id, nom, telephone, logo_url)")
+        .eq("id", id)
+        .single();
 
-      if (error) throw error
-      console.log('✅ Trajet loaded:', data)
-      console.log('📊 Compagnie data:', data?.compagnies)
-      setTrajet(data)
+      if (error) throw error;
+      console.log("✅ Trajet loaded:", data);
+      console.log("📊 Compagnie data:", data?.compagnies);
+      setTrajet(data);
     } catch (error) {
-      console.error('Error loading trajet:', error)
+      console.error("Error loading trajet:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const loadAvis = async () => {
     try {
-      console.log('🔍 Loading avis for trajet:', id)
-      
+      console.log("🔍 Loading avis for trajet:", id);
+
       const { data, error } = await supabase
-        .from('avis')
-        .select('*')
-        .eq('trajet_id', id)
-        .order('created_at', { ascending: false })
+        .from("avis")
+        .select("*")
+        .eq("trajet_id", id)
+        .order("created_at", { ascending: false });
 
       if (error) {
-        console.error('❌ Error loading avis:', error)
-        console.error('❌ Error details:', {
+        console.error("❌ Error loading avis:", error);
+        console.error("❌ Error details:", {
           message: error.message,
           details: error.details,
           hint: error.hint,
-          code: error.code
-        })
-        throw error
+          code: error.code,
+        });
+        throw error;
       }
 
-      console.log('✅ Avis loaded:', data?.length || 0)
-      console.log('📊 Sample avis:', data?.[0])
-      
-      setAvis(data || [])
+      console.log("✅ Avis loaded:", data?.length || 0);
+      console.log("📊 Sample avis:", data?.[0]);
+
+      setAvis(data || []);
     } catch (error) {
-      console.error('❌ Exception loading avis:', error)
-      setAvis([])
+      console.error("❌ Exception loading avis:", error);
+      setAvis([]);
     }
-  }
+  };
 
   const checkFavorite = async () => {
-    if (!session?.user?.id) return
+    if (!session?.user?.id) return;
     const { data } = await supabase
-      .from('favoris')
-      .select('id')
-      .eq('user_id', session.user.id)
-      .eq('trajet_id', id)
-      .single()
-    setIsFavorite(!!data)
-  }
+      .from("favoris")
+      .select("id")
+      .eq("user_id", session.user.id)
+      .eq("trajet_id", id)
+      .single();
+    setIsFavorite(!!data);
+  };
 
   const toggleFavorite = async () => {
     if (!session) {
-      navigate('/login')
-      return
+      navigate("/login");
+      return;
     }
 
     try {
       if (isFavorite) {
         await supabase
-          .from('favoris')
+          .from("favoris")
           .delete()
-          .eq('user_id', session.user.id)
-          .eq('trajet_id', id)
+          .eq("user_id", session.user.id)
+          .eq("trajet_id", id);
       } else {
         await supabase
-          .from('favoris')
-          .insert({ user_id: session.user.id, trajet_id: id })
+          .from("favoris")
+          .insert({ user_id: session.user.id, trajet_id: id });
       }
-      setIsFavorite(!isFavorite)
+      setIsFavorite(!isFavorite);
     } catch (error) {
-      console.error('Error toggling favorite:', error)
+      console.error("Error toggling favorite:", error);
     }
-  }
+  };
 
   const handleSubmitReview = async (e) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     if (!session) {
-      navigate('/login')
-      return
+      navigate("/login");
+      return;
     }
 
-    setSubmittingReview(true)
+    setSubmittingReview(true);
 
     try {
-      const { error } = await supabase
-        .from('avis')
-        .insert({
-          user_id: session.user.id,
-          trajet_id: id,
-          note: reviewData.note,
-          commentaire: reviewData.commentaire,
-        })
+      const { error } = await supabase.from("avis").insert({
+        user_id: session.user.id,
+        trajet_id: id,
+        note: reviewData.note,
+        commentaire: reviewData.commentaire,
+      });
 
-      if (error) throw error
+      if (error) throw error;
 
-      alert('✅ Avis ajouté avec succès !')
-      setReviewData({ note: 5, commentaire: '' })
-      setShowReviewForm(false)
-      await loadAvis()
-      await loadTrajet() // Recharger pour mettre à jour le nombre d'avis
+      alert("✅ Avis ajouté avec succès !");
+      setReviewData({ note: 5, commentaire: "" });
+      setShowReviewForm(false);
+      await loadAvis();
+      await loadTrajet(); // Recharger pour mettre à jour le nombre d'avis
     } catch (error) {
-      console.error('Error submitting review:', error)
-      alert('❌ Erreur lors de l\'ajout de l\'avis')
+      console.error("Error submitting review:", error);
+      alert("❌ Erreur lors de l'ajout de l'avis");
     } finally {
-      setSubmittingReview(false)
+      setSubmittingReview(false);
     }
-  }
+  };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
-    )
+    );
   }
 
   if (!trajet) {
@@ -164,7 +173,7 @@ export default function TrajetDetails() {
           Retour aux trajets
         </Link>
       </div>
-    )
+    );
   }
 
   return (
@@ -178,8 +187,8 @@ export default function TrajetDetails() {
                 {trajet.depart} → {trajet.arrivee}
               </h1>
               <div className="flex items-center space-x-2">
-                <Link 
-                  to={`/compagnies/${trajet.compagnies?.id}`} 
+                <Link
+                  to={`/compagnies/${trajet.compagnies?.id}`}
                   className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors"
                 >
                   <Building2 className="h-5 w-5" />
@@ -193,7 +202,7 @@ export default function TrajetDetails() {
             >
               <Heart
                 className={`h-6 w-6 ${
-                  isFavorite ? 'text-red-500 fill-red-500' : 'text-gray-400'
+                  isFavorite ? "text-red-500 fill-red-500" : "text-gray-400"
                 }`}
               />
             </button>
@@ -207,7 +216,7 @@ export default function TrajetDetails() {
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Note</p>
                 <p className="text-xl font-bold text-gray-900 dark:text-white">
-                  {trajet.note || 'N/A'}
+                  {trajet.note || "N/A"}
                 </p>
               </div>
             </div>
@@ -231,7 +240,7 @@ export default function TrajetDetails() {
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400">Gare</p>
                 <p className="text-xl font-bold text-gray-900 dark:text-white">
-                  {trajet.gare || 'N/A'}
+                  {trajet.gare || "N/A"}
                 </p>
               </div>
             </div>
@@ -284,6 +293,17 @@ export default function TrajetDetails() {
           </div>
         </div>
 
+        {/* Map section */}
+        <div className="mb-6">
+          <div className="flex items-center space-x-2 mb-4">
+            <Map className="h-5 w-5 text-primary" />
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+              Itinéraire du trajet
+            </h2>
+          </div>
+          <RouteMap depart={trajet.depart} arrivee={trajet.arrivee} />
+        </div>
+
         {/* Avis section */}
         <div className="card">
           <div className="flex items-center justify-between mb-6">
@@ -295,18 +315,21 @@ export default function TrajetDetails() {
                 onClick={() => setShowReviewForm(!showReviewForm)}
                 className="btn-primary text-sm"
               >
-                {showReviewForm ? 'Annuler' : 'Laisser un avis'}
+                {showReviewForm ? "Annuler" : "Laisser un avis"}
               </button>
             )}
           </div>
 
           {/* Formulaire d'avis */}
           {showReviewForm && (
-            <form onSubmit={handleSubmitReview} className="mb-8 p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <form
+              onSubmit={handleSubmitReview}
+              className="mb-8 p-6 bg-gray-50 dark:bg-gray-700 rounded-lg"
+            >
               <h3 className="font-semibold text-gray-900 dark:text-white mb-4">
                 Partagez votre expérience
               </h3>
-              
+
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Note *
@@ -316,14 +339,16 @@ export default function TrajetDetails() {
                     <button
                       key={star}
                       type="button"
-                      onClick={() => setReviewData({ ...reviewData, note: star })}
+                      onClick={() =>
+                        setReviewData({ ...reviewData, note: star })
+                      }
                       className="focus:outline-none"
                     >
                       <Star
                         className={`h-8 w-8 ${
                           star <= reviewData.note
-                            ? 'text-warning fill-warning'
-                            : 'text-gray-300 dark:text-gray-600'
+                            ? "text-warning fill-warning"
+                            : "text-gray-300 dark:text-gray-600"
                         }`}
                       />
                     </button>
@@ -340,7 +365,12 @@ export default function TrajetDetails() {
                 </label>
                 <textarea
                   value={reviewData.commentaire}
-                  onChange={(e) => setReviewData({ ...reviewData, commentaire: e.target.value })}
+                  onChange={(e) =>
+                    setReviewData({
+                      ...reviewData,
+                      commentaire: e.target.value,
+                    })
+                  }
                   placeholder="Partagez votre expérience avec ce trajet..."
                   rows="4"
                   required
@@ -361,7 +391,7 @@ export default function TrajetDetails() {
                   disabled={submittingReview || !reviewData.commentaire.trim()}
                   className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {submittingReview ? 'Publication...' : 'Publier l\'avis'}
+                  {submittingReview ? "Publication..." : "Publier l'avis"}
                 </button>
               </div>
             </form>
@@ -401,11 +431,14 @@ export default function TrajetDetails() {
                         {review.commentaire}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {new Date(review.created_at).toLocaleDateString('fr-FR', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        })}
+                        {new Date(review.created_at).toLocaleDateString(
+                          "fr-FR",
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          }
+                        )}
                       </p>
                     </div>
                   </div>
@@ -416,5 +449,5 @@ export default function TrajetDetails() {
         </div>
       </div>
     </div>
-  )
+  );
 }

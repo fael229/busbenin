@@ -26,7 +26,7 @@ html {
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -35,39 +35,156 @@ body {
   .btn-primary {
     @apply bg-primary hover:bg-primary-dark text-white font-semibold py-2 sm:py-2.5 px-4 sm:px-6 text-sm sm:text-base rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg;
   }
-  
+
   .btn-secondary {
     @apply bg-secondary hover:bg-secondary-dark text-white font-semibold py-2 sm:py-2.5 px-4 sm:px-6 text-sm sm:text-base rounded-lg transition-colors duration-200;
   }
-  
+
   .btn-outline {
     @apply border-2 border-primary text-primary hover:bg-primary hover:text-white font-semibold py-2 sm:py-2.5 px-4 sm:px-6 text-sm sm:text-base rounded-lg transition-all duration-200;
   }
-  
+
   .input-field {
     @apply w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-primary transition-colors duration-200;
   }
-  
+
   .card {
     @apply bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 border border-gray-100 dark:border-gray-700;
   }
-  
+
   .page-container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8;
   }
-  
+
   /* Masquer la scrollbar tout en permettant le scroll */
   .scrollbar-hide {
-    -ms-overflow-style: none;  /* IE et Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none; /* IE et Edge */
+    scrollbar-width: none; /* Firefox */
   }
-  
+
   .scrollbar-hide::-webkit-scrollbar {
-    display: none;  /* Chrome, Safari et Opera */
+    display: none; /* Chrome, Safari et Opera */
   }
-  
+
   /* Améliorer le scroll tactile sur mobile */
   .touch-pan-x {
     touch-action: pan-x;
   }
+}
+
+/* ========================================
+   RouteMap Component Styles
+   ======================================== */
+
+.route-map-wrapper {
+  @apply bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700;
+}
+
+.route-map-container {
+  height: 350px;
+  width: 100%;
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .route-map-container {
+    height: 400px;
+  }
+}
+
+.route-map {
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+}
+
+/* Loading state */
+.route-map-loading {
+  @apply flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900;
+}
+
+.route-map-loading-content {
+  @apply text-center text-gray-600 dark:text-gray-400;
+}
+
+.route-map-spinner {
+  @apply h-10 w-10 mx-auto mb-3 text-primary animate-spin;
+}
+
+.route-map-loading-hint {
+  @apply text-sm text-gray-500 dark:text-gray-500 mt-1;
+}
+
+/* Error state */
+.route-map-error {
+  @apply flex items-center justify-center bg-red-50 dark:bg-red-900/20;
+}
+
+.route-map-error-content {
+  @apply text-center text-red-600 dark:text-red-400;
+}
+
+.route-map-error-icon {
+  @apply h-10 w-10 mx-auto mb-3;
+}
+
+/* Info bar */
+.route-map-info {
+  @apply flex items-center justify-center gap-3 py-3 px-4 bg-gradient-to-r from-primary/10 to-indigo-500/10 dark:from-primary/20 dark:to-indigo-500/20 border-b border-gray-100 dark:border-gray-700;
+}
+
+.route-map-info-item {
+  @apply flex items-center gap-2 text-gray-700 dark:text-gray-300 font-medium;
+}
+
+.route-map-info-icon {
+  @apply h-4 w-4 text-primary;
+}
+
+.route-map-info-divider {
+  @apply text-gray-400 dark:text-gray-600;
+}
+
+/* Popup */
+.route-map-popup {
+  @apply text-center;
+}
+
+.route-map-popup strong {
+  @apply block text-sm mb-1;
+}
+
+.route-map-popup p {
+  @apply text-gray-600 dark:text-gray-400 text-sm m-0;
+}
+
+/* Legend */
+.route-map-legend {
+  @apply flex items-center justify-center gap-3 py-3 px-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-100 dark:border-gray-700;
+}
+
+.route-map-legend-item {
+  @apply flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300;
+}
+
+.route-map-legend-dot {
+  @apply w-3 h-3 rounded-full;
+}
+
+.route-map-legend-dot-depart {
+  @apply bg-green-500;
+}
+
+.route-map-legend-dot-arrivee {
+  @apply bg-red-500;
+}
+
+.route-map-legend-arrow {
+  @apply text-gray-400 dark:text-gray-600 font-bold;
+}
+
+/* Custom marker fix */
+.custom-marker {
+  background: transparent !important;
+  border: none !important;
 }

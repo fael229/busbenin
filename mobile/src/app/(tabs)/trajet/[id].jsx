@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,10 +7,10 @@ import {
   Alert,
   Linking,
   RefreshControl,
-} from 'react-native';
-import { StatusBar } from 'expo-status-bar';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useIsFocused } from '@react-navigation/native';
+} from "react-native";
+import { StatusBar } from "expo-status-bar";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useIsFocused } from "@react-navigation/native";
 import {
   MapPin,
   Clock,
@@ -22,12 +22,14 @@ import {
   Navigation,
   MessageCircle,
   Edit3,
-} from 'lucide-react-native';
-import { router, useLocalSearchParams } from 'expo-router';
-import { supabase } from '../../../utils/supabase';
-import { useSession } from '../../../contexts/SessionProvider';
-import { useTheme } from '../../../contexts/ThemeProvider';
-import BackButton from '../../../components/BackButton';
+  Map,
+} from "lucide-react-native";
+import { router, useLocalSearchParams } from "expo-router";
+import { supabase } from "../../../utils/supabase";
+import { useSession } from "../../../contexts/SessionProvider";
+import { useTheme } from "../../../contexts/ThemeProvider";
+import BackButton from "../../../components/BackButton";
+import RouteMap from "../../../components/RouteMap";
 
 export default function TrajetDetailScreen() {
   const insets = useSafeAreaInsets();
@@ -59,8 +61,9 @@ export default function TrajetDetailScreen() {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('trajets')
-        .select(`
+        .from("trajets")
+        .select(
+          `
           id,
           depart,
           arrivee,
@@ -75,15 +78,16 @@ export default function TrajetDetailScreen() {
             logo_url,
             telephone
           )
-        `)
-        .eq('id', trajetId)
+        `
+        )
+        .eq("id", trajetId)
         .single();
 
       if (error) throw error;
       setTrajet(data);
     } catch (error) {
-      console.error('Erreur lors du chargement du trajet:', error);
-      Alert.alert('Erreur', 'Impossible de charger les détails du trajet');
+      console.error("Erreur lors du chargement du trajet:", error);
+      Alert.alert("Erreur", "Impossible de charger les détails du trajet");
       router.back();
     } finally {
       setLoading(false);
@@ -94,10 +98,10 @@ export default function TrajetDetailScreen() {
     if (!session?.user?.id) return;
     try {
       const { data, error } = await supabase
-        .from('favoris')
-        .select('trajet_id')
-        .eq('user_id', session.user.id)
-        .eq('trajet_id', trajetId)
+        .from("favoris")
+        .select("trajet_id")
+        .eq("user_id", session.user.id)
+        .eq("trajet_id", trajetId)
         .single();
 
       setIsFavorite(!!data);
@@ -117,7 +121,10 @@ export default function TrajetDetailScreen() {
 
   const toggleFavorite = async () => {
     if (!session?.user?.id) {
-      Alert.alert('Connexion requise', 'Vous devez être connecté pour ajouter des favoris');
+      Alert.alert(
+        "Connexion requise",
+        "Vous devez être connecté pour ajouter des favoris"
+      );
       return;
     }
 
@@ -125,25 +132,25 @@ export default function TrajetDetailScreen() {
       if (isFavorite) {
         // Retirer des favoris
         const { error } = await supabase
-          .from('favoris')
+          .from("favoris")
           .delete()
-          .eq('user_id', session.user.id)
-          .eq('trajet_id', trajetId);
+          .eq("user_id", session.user.id)
+          .eq("trajet_id", trajetId);
 
         if (error) throw error;
         setIsFavorite(false);
       } else {
         // Ajouter aux favoris
         const { error } = await supabase
-          .from('favoris')
+          .from("favoris")
           .insert({ user_id: session.user.id, trajet_id: trajetId });
 
-        if (error && error.code !== '23505') throw error;
+        if (error && error.code !== "23505") throw error;
         setIsFavorite(true);
       }
     } catch (error) {
-      console.error('Erreur favoris:', error);
-      Alert.alert('Erreur', 'Impossible de modifier les favoris');
+      console.error("Erreur favoris:", error);
+      Alert.alert("Erreur", "Impossible de modifier les favoris");
     }
   };
 
@@ -154,23 +161,41 @@ export default function TrajetDetailScreen() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.backgroundSecondary }}>
-        <Text style={{ fontSize: 16, color: theme.textSecondary }}>Chargement...</Text>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: theme.backgroundSecondary,
+        }}
+      >
+        <Text style={{ fontSize: 16, color: theme.textSecondary }}>
+          Chargement...
+        </Text>
       </View>
     );
   }
 
   if (!trajet) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.backgroundSecondary }}>
-        <Text style={{ fontSize: 16, color: theme.textSecondary }}>Trajet introuvable</Text>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: theme.backgroundSecondary,
+        }}
+      >
+        <Text style={{ fontSize: 16, color: theme.textSecondary }}>
+          Trajet introuvable
+        </Text>
       </View>
     );
   }
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.backgroundSecondary }}>
-      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <StatusBar style={isDark ? "light" : "dark"} />
 
       {/* Header */}
       <View
@@ -183,18 +208,35 @@ export default function TrajetDetailScreen() {
           borderBottomColor: theme.border,
         }}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <BackButton 
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <BackButton
             fallback={
-              fromCompagnie ? `/compagnie/${fromCompagnie}` :
-              fromTrajets ? '/(tabs)/trajets' :
-              fromFavoris ? '/(tabs)/favoris' :
-              '/(tabs)/'
+              fromCompagnie
+                ? `/compagnie/${fromCompagnie}`
+                : fromTrajets
+                  ? "/(tabs)/trajets"
+                  : fromFavoris
+                    ? "/(tabs)/favoris"
+                    : "/(tabs)/"
             }
-            buttonStyle={{ marginLeft: -8 }} 
+            buttonStyle={{ marginLeft: -8 }}
           />
 
-          <Text style={{ fontSize: 18, fontWeight: '600', color: theme.text, flex: 1, textAlign: 'center' }}>
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: "600",
+              color: theme.text,
+              flex: 1,
+              textAlign: "center",
+            }}
+          >
             Détails du trajet
           </Text>
 
@@ -205,7 +247,11 @@ export default function TrajetDetailScreen() {
               marginRight: -8,
             }}
           >
-            <Heart size={24} color={isFavorite ? theme.error : theme.textTertiary} fill={isFavorite ? theme.error : 'none'} />
+            <Heart
+              size={24}
+              color={isFavorite ? theme.error : theme.textTertiary}
+              fill={isFavorite ? theme.error : "none"}
+            />
           </TouchableOpacity>
         </View>
       </View>
@@ -215,17 +261,49 @@ export default function TrajetDetailScreen() {
         contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[theme.primary]} tintColor={theme.primary} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[theme.primary]}
+            tintColor={theme.primary}
+          />
         }
       >
         {/* Route principale */}
-        <View style={{ backgroundColor: theme.surface, padding: 20, marginBottom: 12 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+        <View
+          style={{
+            backgroundColor: theme.surface,
+            padding: 20,
+            marginBottom: 12,
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginBottom: 16,
+            }}
+          >
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 12, color: theme.textSecondary, marginBottom: 4 }}>Départ</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: theme.textSecondary,
+                  marginBottom: 4,
+                }}
+              >
+                Départ
+              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <MapPin size={20} color={theme.primary} />
-                <Text style={{ fontSize: 20, fontWeight: '700', color: theme.text, marginLeft: 8 }}>
+                <Text
+                  style={{
+                    fontSize: 20,
+                    fontWeight: "700",
+                    color: theme.text,
+                    marginLeft: 8,
+                  }}
+                >
                   {trajet.depart}
                 </Text>
               </View>
@@ -235,10 +313,25 @@ export default function TrajetDetailScreen() {
               <Navigation size={24} color={theme.textTertiary} />
             </View>
 
-            <View style={{ flex: 1, alignItems: 'flex-end' }}>
-              <Text style={{ fontSize: 12, color: theme.textSecondary, marginBottom: 4 }}>Arrivée</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={{ fontSize: 20, fontWeight: '700', color: theme.text, marginRight: 8 }}>
+            <View style={{ flex: 1, alignItems: "flex-end" }}>
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: theme.textSecondary,
+                  marginBottom: 4,
+                }}
+              >
+                Arrivée
+              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text
+                  style={{
+                    fontSize: 20,
+                    fontWeight: "700",
+                    color: theme.text,
+                    marginRight: 8,
+                  }}
+                >
                   {trajet.arrivee}
                 </Text>
                 <MapPin size={20} color={theme.success} />
@@ -249,16 +342,23 @@ export default function TrajetDetailScreen() {
           {/* Prix */}
           <View
             style={{
-              flexDirection: 'row',
-              alignItems: 'center',
+              flexDirection: "row",
+              alignItems: "center",
               paddingTop: 16,
               borderTopWidth: 1,
               borderTopColor: theme.border,
             }}
           >
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
               <DollarSign size={20} color={theme.success} />
-              <Text style={{ fontSize: 24, fontWeight: '700', color: theme.success, marginLeft: 4 }}>
+              <Text
+                style={{
+                  fontSize: 24,
+                  fontWeight: "700",
+                  color: theme.success,
+                  marginLeft: 4,
+                }}
+              >
                 {trajet.prix} FCFA
               </Text>
             </View>
@@ -267,16 +367,37 @@ export default function TrajetDetailScreen() {
           {/* Note et avis - Cliquable */}
           <TouchableOpacity
             onPress={() => router.push(`/avis/liste/${trajetId}`)}
-            style={{ flexDirection: 'row', alignItems: 'center', marginTop: 12 }}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginTop: 12,
+            }}
           >
             <Star size={18} color={theme.warning} fill={theme.warning} />
-            <Text style={{ fontSize: 14, fontWeight: '600', color: theme.text, marginLeft: 4 }}>
-              {trajet.note > 0 ? trajet.note.toFixed(1) : '0.0'}
+            <Text
+              style={{
+                fontSize: 14,
+                fontWeight: "600",
+                color: theme.text,
+                marginLeft: 4,
+              }}
+            >
+              {trajet.note > 0 ? trajet.note.toFixed(1) : "0.0"}
             </Text>
-            <Text style={{ fontSize: 12, color: theme.textSecondary, marginLeft: 4 }}>
+            <Text
+              style={{
+                fontSize: 12,
+                color: theme.textSecondary,
+                marginLeft: 4,
+              }}
+            >
               ({trajet.nb_avis || 0} avis)
             </Text>
-            <MessageCircle size={14} color={theme.primary} style={{ marginLeft: 8 }} />
+            <MessageCircle
+              size={14}
+              color={theme.primary}
+              style={{ marginLeft: 8 }}
+            />
           </TouchableOpacity>
 
           {/* Bouton laisser un avis */}
@@ -288,42 +409,113 @@ export default function TrajetDetailScreen() {
               borderRadius: 8,
               paddingVertical: 8,
               paddingHorizontal: 12,
-              flexDirection: 'row',
-              alignItems: 'center',
-              alignSelf: 'flex-start',
+              flexDirection: "row",
+              alignItems: "center",
+              alignSelf: "flex-start",
             }}
           >
             <Edit3 size={14} color={theme.commun} />
-            <Text style={{ fontSize: 12, fontWeight: '600', color: theme.commun, marginLeft: 6 }}>
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: "600",
+                color: theme.commun,
+                marginLeft: 6,
+              }}
+            >
               Laisser un avis
             </Text>
           </TouchableOpacity>
         </View>
 
+        {/* Map Section */}
+        <View
+          style={{
+            backgroundColor: theme.surface,
+            padding: 20,
+            marginBottom: 12,
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginBottom: 16,
+            }}
+          >
+            <Map size={20} color={theme.primary} />
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: "600",
+                color: theme.text,
+                marginLeft: 8,
+              }}
+            >
+              Itinéraire du trajet
+            </Text>
+          </View>
+          <RouteMap depart={trajet.depart} arrivee={trajet.arrivee} />
+        </View>
+
         {/* Gare de départ */}
         {trajet.gare && (
-          <View style={{ backgroundColor: theme.surface, padding: 20, marginBottom: 12 }}>
-            <Text style={{ fontSize: 16, fontWeight: '600', color: theme.text, marginBottom: 12 }}>
+          <View
+            style={{
+              backgroundColor: theme.surface,
+              padding: 20,
+              marginBottom: 12,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: "600",
+                color: theme.text,
+                marginBottom: 12,
+              }}
+            >
               Gare de départ
             </Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
               <MapPin size={18} color={theme.textSecondary} />
-              <Text style={{ fontSize: 14, color: theme.text, marginLeft: 8 }}>{trajet.gare}</Text>
+              <Text style={{ fontSize: 14, color: theme.text, marginLeft: 8 }}>
+                {trajet.gare}
+              </Text>
             </View>
           </View>
         )}
 
         {/* Horaires */}
         {trajet.horaires && trajet.horaires.length > 0 && (
-          <View style={{ backgroundColor: theme.surface, padding: 20, marginBottom: 12 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+          <View
+            style={{
+              backgroundColor: theme.surface,
+              padding: 20,
+              marginBottom: 12,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: 12,
+              }}
+            >
               <Clock size={20} color={theme.primary} />
-              <Text style={{ fontSize: 16, fontWeight: '600', color: theme.text, marginLeft: 8 }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "600",
+                  color: theme.text,
+                  marginLeft: 8,
+                }}
+              >
                 Horaires disponibles
               </Text>
             </View>
 
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
               {trajet.horaires.map((horaire, index) => (
                 <View
                   key={index}
@@ -336,7 +528,13 @@ export default function TrajetDetailScreen() {
                     borderColor: theme.primary,
                   }}
                 >
-                  <Text style={{ fontSize: 14, fontWeight: '600', color: theme.commun }}>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      fontWeight: "600",
+                      color: theme.commun,
+                    }}
+                  >
                     {horaire}
                   </Text>
                 </View>
@@ -347,15 +545,41 @@ export default function TrajetDetailScreen() {
 
         {/* Informations compagnie */}
         {trajet.compagnies && (
-          <View style={{ backgroundColor: theme.surface, padding: 20, marginBottom: 12 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+          <View
+            style={{
+              backgroundColor: theme.surface,
+              padding: 20,
+              marginBottom: 12,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: 16,
+              }}
+            >
               <Building2 size={20} color={theme.primary} />
-              <Text style={{ fontSize: 16, fontWeight: '600', color: theme.text, marginLeft: 8 }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "600",
+                  color: theme.text,
+                  marginLeft: 8,
+                }}
+              >
                 Compagnie
               </Text>
             </View>
 
-            <Text style={{ fontSize: 18, fontWeight: '700', color: theme.text, marginBottom: 12 }}>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: "700",
+                color: theme.text,
+                marginBottom: 12,
+              }}
+            >
               {trajet.compagnies.nom}
             </Text>
 
@@ -363,8 +587,8 @@ export default function TrajetDetailScreen() {
               <TouchableOpacity
                 onPress={() => handleCall(trajet.compagnies.telephone)}
                 style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
+                  flexDirection: "row",
+                  alignItems: "center",
                   backgroundColor: theme.primaryLight,
                   padding: 12,
                   borderRadius: 8,
@@ -372,7 +596,14 @@ export default function TrajetDetailScreen() {
                 }}
               >
                 <Phone size={18} color={theme.commun} />
-                <Text style={{ fontSize: 14, fontWeight: '600', color: theme.commun, marginLeft: 8 }}>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: "600",
+                    color: theme.commun,
+                    marginLeft: 8,
+                  }}
+                >
                   {trajet.compagnies.telephone}
                 </Text>
               </TouchableOpacity>
@@ -384,7 +615,7 @@ export default function TrajetDetailScreen() {
       {/* Bouton de réservation fixe en bas */}
       <View
         style={{
-          position: 'absolute',
+          position: "absolute",
           bottom: 0,
           left: 0,
           right: 0,
@@ -401,12 +632,18 @@ export default function TrajetDetailScreen() {
             backgroundColor: theme.primary,
             padding: 16,
             borderRadius: 12,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          <Text style={{ fontSize: 16, fontWeight: '600', color: theme.textInverse }}>
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: "600",
+              color: theme.textInverse,
+            }}
+          >
             Réserver ce trajet
           </Text>
         </TouchableOpacity>
