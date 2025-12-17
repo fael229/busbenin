@@ -431,9 +431,9 @@ export default function Home() {
       {/* Destinations populaires */}
       <section className="page-container">
         <div className="flex items-center space-x-3 mb-6">
-          <div className="p-2 bg-secondary-light rounded-lg">
+          {/* <div className="p-2 bg-secondary-light rounded-lg">
             <TrendingUp className="h-6 w-6 text-primary" />
-          </div>
+          </div> */}
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
             Destinations populaires
           </h2>
@@ -621,9 +621,9 @@ export default function Home() {
       <section className="page-container">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-warning-light rounded-lg">
+            {/* <div className="p-2 bg-warning-light rounded-lg">
               <Star className="h-6 w-6 text-warning fill-warning" />
-            </div>
+            </div> */}
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
               Trajets populaires
             </h2>
@@ -667,9 +667,9 @@ export default function Home() {
       {/* Compagnies recommandées */}
       <section className="page-container">
         <div className="flex items-center space-x-3 mb-6">
-          <div className="p-2 bg-secondary-light rounded-lg">
+          {/* <div className="p-2 bg-secondary-light rounded-lg">
             <Award className="h-6 w-6 text-primary" />
-          </div>
+          </div> */}
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
             Compagnies recommandées
           </h2>
@@ -741,9 +741,9 @@ export default function Home() {
       {session && (
         <section className="page-container">
           <div className="flex items-center space-x-3 mb-6">
-            <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+            {/* <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
               <Wallet className="h-6 w-6 text-green-600 dark:text-green-400" />
-            </div>
+            </div> */}
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
               Mon Portefeuille
             </h2>
@@ -781,9 +781,9 @@ export default function Home() {
       <section className="page-container">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+            {/* <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
               <Car className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-            </div>
+            </div> */}
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
               Véhicules en location
             </h2>
@@ -871,9 +871,9 @@ export default function Home() {
       <section className="page-container pb-16">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-success-light rounded-lg">
+            {/* <div className="p-2 bg-success-light rounded-lg">
               <Tag className="h-6 w-6 text-success" />
-            </div>
+            </div> */}
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
               Offres spéciales
             </h2>
