@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Architecture Technique - Bus Bénin Pro</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="nav">
+      <div class="nav-content">
+        <a href="index.html" class="nav-logo">
+          <div class="nav-logo-icon">B</div>
+          <div class="nav-logo-text">Bus<span>Bénin</span> Pro</div>
+        </a>
+        <div class="nav-links">
+          <a href="index.html" class="nav-link">Accueil</a>
+          <a href="presentation.html" class="nav-link">Présentation</a>
+          <a href="fonctionnalites.html" class="nav-link">Fonctionnalités</a>
+          <a href="architecture.html" class="nav-link active">Architecture</a>
+          <a href="business.html" class="nav-link">Business Model</a>
+          <a href="roadmap.html" class="nav-link">Roadmap</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+      <div class="page-header-content">
+        <div class="breadcrumb">
+          <a href="index.html">Accueil</a>
+          <span>/</span>
+          <span>Architecture</span>
+        </div>
+        <h1>Architecture Technique</h1>
+        <p>Stack technologique et structure du projet</p>
+      </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container">
+      <!-- Architecture Overview -->
+      <section class="content-section">
+        <h2>🏗️ Vue d'ensemble de l'Architecture</h2>
+
+        <div class="architecture-diagram">
+          <div class="diagram-title">Architecture en Couches</div>
+          <div class="diagram-layers">
+            <div class="diagram-layer">
+              <div class="layer-label">Clients</div>
+              <div class="layer-content">
+                <div class="layer-box blue">
+                  🌐 Application Web<br />
+                  <small>React + Vite</small>
+                </div>
+                <div class="layer-box green">
+                  📱 Application Mobile<br />
+                  <small>React Native + Expo</small>
+                </div>
+              </div>
+            </div>
+            <div class="diagram-layer">
+              <div class="layer-label">API</div>
+              <div class="layer-content">
+                <div class="layer-box purple">
+                  ⚡ Supabase API<br />
+                  <small>REST + Realtime</small>
+                </div>
+                <div class="layer-box orange">
+                  💳 FedaPay API<br />
+                  <small>Paiements</small>
+                </div>
+              </div>
+            </div>
+            <div class="diagram-layer">
+              <div class="layer-label">Backend</div>
+              <div class="layer-content">
+                <div class="layer-box dark">
+                  🗄️ Supabase (PostgreSQL + Auth + Storage + Edge Functions)
+                </div>
+              </div>
+            </div>
+            <div class="diagram-layer">
+              <div class="layer-label">Services Tiers</div>
+              <div class="layer-content">
+                <div class="layer-box blue">
+                  🗺️ OpenStreetMap<br />
+                  <small>Cartographie</small>
+                </div>
+                <div class="layer-box green">
+                  📍 Nominatim<br />
+                  <small>Géocodage</small>
+                </div>
+                <div class="layer-box purple">
+                  🛤️ OSRM<br />
+                  <small>Routage</small>
+                </div>
+                <div class="layer-box orange">
+                  🖼️ ImgBB<br />
+                  <small>Images</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tech Stack -->
+      <section class="content-section">
+        <h2>🛠️ Stack Technologique</h2>
+
+        <div class="tech-grid">
+          <div class="tech-card">
+            <div class="tech-card-icon">⚛️</div>
+            <h4>React 18</h4>
+            <p>
+              Framework frontend pour l'application web, avec hooks et Context
+              API
+            </p>
+          </div>
+          <div class="tech-card">
+            <div class="tech-card-icon">📱</div>
+            <h4>React Native</h4>
+            <p>
+              Framework cross-platform pour l'application mobile iOS et Android
+            </p>
+          </div>
+          <div class="tech-card">
+            <div class="tech-card-icon">🚀</div>
+            <h4>Expo SDK 54</h4>
+            <p>
+              Plateforme de développement pour React Native avec outils intégrés
+            </p>
+          </div>
+          <div class="tech-card">
+            <div class="tech-card-icon">⚡</div>
+            <h4>Vite 7</h4>
+            <p>
+              Bundler ultra-rapide pour le développement et la production web
+            </p>
+          </div>
+          <div class="tech-card">
+            <div class="tech-card-icon">🎨</div>
+            <h4>TailwindCSS 3</h4>
+            <p>Framework CSS utilitaire pour un styling rapide et cohérent</p>
+          </div>
+          <div class="tech-card">
+            <div class="tech-card-icon">🗄️</div>
+            <h4>Supabase</h4>
+            <p>
+              Backend-as-a-Service avec PostgreSQL, Auth, Storage et Realtime
+            </p>
+          </div>
+          <div class="tech-card">
+            <div class="tech-card-icon">💳</div>
+            <h4>FedaPay</h4>
+            <p>
+              Gateway de paiement africain supportant Mobile Money et cartes
+            </p>
+          </div>
+          <div class="tech-card">
+            <div class="tech-card-icon">🗺️</div>
+            <h4>Leaflet</h4>
+            <p>Bibliothèque JavaScript open-source pour cartes interactives</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Database Schema -->
+      <section class="content-section">
+        <h2>🗃️ Schéma de Base de Données</h2>
+
+        <div class="highlight-box blue">
+          <p class="highlight-text">
+            La base de données PostgreSQL (via Supabase) est structurée autour
+            de <strong>10 tables principales</strong>
+            avec des relations clés et des politiques RLS (Row Level Security)
+            pour la sécurité.
+          </p>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-header">
+              <span class="feature-icon">👤</span>
+              <h3>Utilisateurs & Auth</h3>
+            </div>
+            <div class="feature-body">
+              <ul class="feature-list">
+                <li><strong>auth.users</strong> - Authentification Supabase</li>
+                <li>
+                  <strong>profiles</strong> - Données utilisateur étendues
+                </li>
+                <li>Champs: username, email, avatar, role, phone</li>
+                <li>Rôles: user, admin, compagnie</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header green">
+              <span class="feature-icon">🚌</span>
+              <h3>Transport</h3>
+            </div>
+            <div class="feature-body">
+              <ul class="feature-list">
+                <li><strong>compagnies</strong> - Compagnies de transport</li>
+                <li><strong>trajets</strong> - Lignes et itinéraires</li>
+                <li><strong>destinations</strong> - Villes disponibles</li>
+                <li>Relations: trajets → compagnies</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header orange">
+              <span class="feature-icon">🎫</span>
+              <h3>Réservations Bus</h3>
+            </div>
+            <div class="feature-body">
+              <ul class="feature-list">
+                <li><strong>reservations</strong> - Réservations de billets</li>
+                <li>Statuts: en_attente, confirmee, annulee, expiree</li>
+                <li>Paiement: pending, approved, declined, canceled</li>
+                <li>Lien FedaPay: transaction_id, token</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header purple">
+              <span class="feature-icon">🚗</span>
+              <h3>Location Véhicules</h3>
+            </div>
+            <div class="feature-body">
+              <ul class="feature-list">
+                <li><strong>vehicules_location</strong> - Véhicules à louer</li>
+                <li><strong>reservations_location</strong> - Locations</li>
+                <li>Système de disponibilité intelligent</li>
+                <li>Validation livraison sécurisée</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header pink">
+              <span class="feature-icon">💰</span>
+              <h3>Finance</h3>
+            </div>
+            <div class="feature-body">
+              <ul class="feature-list">
+                <li><strong>wallets</strong> - Portefeuilles utilisateurs</li>
+                <li><strong>demandes_retrait</strong> - Demandes de retrait</li>
+                <li>Solde disponible et en attente</li>
+                <li>Historique des transactions</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header cyan">
+              <span class="feature-icon">⭐</span>
+              <h3>Interactions</h3>
+            </div>
+            <div class="feature-body">
+              <ul class="feature-list">
+                <li><strong>avis</strong> - Avis sur les trajets</li>
+                <li><strong>avis_location</strong> - Avis sur les véhicules</li>
+                <li><strong>favoris</strong> - Trajets favoris</li>
+                <li>Notes de 1 à 5 avec commentaires</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Project Structure -->
+      <section class="content-section">
+        <h2>📁 Structure du Projet</h2>
+
+        <div class="two-columns">
+          <div class="column-card">
+            <div class="column-header">
+              <span class="column-icon">🌐</span>
+              <h3>Application Web</h3>
+            </div>
+            <pre
+              style="
+                background: var(--gray-100);
+                padding: 20px;
+                border-radius: 8px;
+                font-size: 13px;
+                overflow-x: auto;
+              "
+            >
+web/
+├── src/
+│   ├── components/     # Composants réutilisables
+│   │   ├── Layout.jsx
+│   │   ├── AdminRoute.jsx
+│   │   ├── CompagnieRoute.jsx
+│   │   └── RouteMap.jsx
+│   ├── contexts/       # Context API
+│   │   ├── SessionProvider.jsx
+│   │   └── ThemeProvider.jsx
+│   ├── pages/          # Pages de l'application
+│   │   ├── Home.jsx
+│   │   ├── Trajets.jsx
+│   │   ├── Location.jsx
+│   │   ├── Wallet.jsx
+│   │   ├── admin/      # Pages admin
+│   │   └── compagnie/  # Pages compagnie
+│   ├── utils/          # Utilitaires
+│   │   ├── supabase.js
+│   │   ├── fedapay.js
+│   │   └── vehicleAvailability.js
+│   ├── App.jsx         # Router principal
+│   └── main.jsx        # Point d'entrée
+├── sql/                # Scripts SQL
+├── index.html
+└── package.json
+                    </pre
+            >
+          </div>
+
+          <div class="column-card">
+            <div class="column-header">
+              <span class="column-icon">📱</span>
+              <h3>Application Mobile</h3>
+            </div>
+            <pre
+              style="
+                background: var(--gray-100);
+                padding: 20px;
+                border-radius: 8px;
+                font-size: 13px;
+                overflow-x: auto;
+              "
+            >
+mobile/
+├── src/
+│   ├── app/            # Expo Router pages
+│   │   ├── (auth)/     # Authentification
+│   │   ├── (tabs)/     # Navigation tabs
+│   │   │   ├── index.jsx      # Accueil
+│   │   │   ├── trajets.jsx    # Liste trajets
+│   │   │   ├── location/      # Module location
+│   │   │   ├── mes-vehicules.jsx
+│   │   │   └── wallet.jsx
+│   │   └── trajet/     # Détails trajet
+│   ├── components/     # Composants
+│   │   ├── BackButton.jsx
+│   │   ├── RouteMap.jsx
+│   │   └── ThemeToggle.jsx
+│   ├── contexts/       # Context API
+│   │   ├── SessionProvider.jsx
+│   │   └── ThemeProvider.jsx
+│   └── utils/          # Utilitaires
+│       ├── supabase.js
+│       ├── fedapay.js
+│       └── pdfGenerator.js
+├── app.json            # Config Expo
+└── package.json
+                    </pre
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- Security -->
+      <section class="content-section">
+        <h2>🔒 Sécurité</h2>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-header pink">
+              <span class="feature-icon">🛡️</span>
+              <h3>Row Level Security (RLS)</h3>
+            </div>
+            <div class="feature-body">
+              <p>Politiques de sécurité au niveau des lignes PostgreSQL</p>
+              <ul class="feature-list">
+                <li>Utilisateurs ne voient que leurs propres données</li>
+                <li>Admins ont accès à toutes les données</li>
+                <li>Compagnies accèdent uniquement à leurs trajets</li>
+                <li>Protection contre les injections SQL</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header pink">
+              <span class="feature-icon">🔐</span>
+              <h3>Authentification</h3>
+            </div>
+            <div class="feature-body">
+              <p>Système d'authentification Supabase Auth</p>
+              <ul class="feature-list">
+                <li>Inscription email/mot de passe</li>
+                <li>Tokens JWT sécurisés</li>
+                <li>Sessions persistantes</li>
+                <li>Refresh tokens automatiques</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header pink">
+              <span class="feature-icon">🚧</span>
+              <h3>Routes Protégées</h3>
+            </div>
+            <div class="feature-body">
+              <p>Protection côté client et serveur</p>
+              <ul class="feature-list">
+                <li>ProtectedRoute pour utilisateurs connectés</li>
+                <li>AdminRoute pour administrateurs</li>
+                <li>CompagnieRoute pour gestionnaires</li>
+                <li>Redirection automatique si non autorisé</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header pink">
+              <span class="feature-icon">💳</span>
+              <h3>Paiements Sécurisés</h3>
+            </div>
+            <div class="feature-body">
+              <p>Transactions via FedaPay certifié PCI-DSS</p>
+              <ul class="feature-list">
+                <li>Aucune donnée carte stockée localement</li>
+                <li>Webhooks de confirmation</li>
+                <li>Polling sécurisé du statut</li>
+                <li>Tokens de transaction uniques</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- APIs and Integrations -->
+      <section class="content-section">
+        <h2>🔌 APIs & Intégrations</h2>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-header">
+              <span class="feature-icon">🗄️</span>
+              <h3>Supabase</h3>
+            </div>
+            <div class="feature-body">
+              <p>Backend-as-a-Service complet</p>
+              <ul class="feature-list">
+                <li><strong>Database</strong> - PostgreSQL managé</li>
+                <li><strong>Auth</strong> - Authentification complète</li>
+                <li><strong>Storage</strong> - Stockage fichiers</li>
+                <li><strong>Realtime</strong> - Websockets</li>
+                <li><strong>Edge Functions</strong> - Serverless</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header green">
+              <span class="feature-icon">💳</span>
+              <h3>FedaPay</h3>
+            </div>
+            <div class="feature-body">
+              <p>Gateway de paiement africain</p>
+              <ul class="feature-list">
+                <li><strong>MTN Mobile Money</strong></li>
+                <li><strong>Moov Money</strong></li>
+                <li><strong>Cartes Visa/Mastercard</strong></li>
+                <li>API REST sécurisée</li>
+                <li>Mode sandbox pour tests</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header orange">
+              <span class="feature-icon">🗺️</span>
+              <h3>OpenStreetMap Stack</h3>
+            </div>
+            <div class="feature-body">
+              <p>Services cartographiques gratuits</p>
+              <ul class="feature-list">
+                <li><strong>Leaflet</strong> - Affichage carte</li>
+                <li><strong>OSM Tiles</strong> - Fond de carte</li>
+                <li><strong>Nominatim</strong> - Géocodage villes</li>
+                <li><strong>OSRM</strong> - Calcul itinéraires</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header purple">
+              <span class="feature-icon">🖼️</span>
+              <h3>ImgBB</h3>
+            </div>
+            <div class="feature-body">
+              <p>Hébergement d'images gratuit</p>
+              <ul class="feature-list">
+                <li>Upload via API REST</li>
+                <li>CDN global rapide</li>
+                <li>URLs permanentes</li>
+                <li>Compression automatique</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Navigation -->
+      <div class="page-navigation">
+        <a href="fonctionnalites.html" class="nav-btn prev">
+          <span class="nav-btn-icon">←</span>
+          <span class="nav-btn-text">Fonctionnalités</span>
+        </a>
+        <a href="business.html" class="nav-btn next">
+          <span class="nav-btn-text">Business Model</span>
+          <span class="nav-btn-icon">→</span>
+        </a>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-logo">Bus Bénin Pro</div>
+      <p class="footer-text">
+        Documentation Officielle • Version 2.0 • Décembre 2025
+      </p>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fonctionnalités - Bus Bénin Pro</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="nav">
+      <div class="nav-content">
+        <a href="index.html" class="nav-logo">
+          <div class="nav-logo-icon">B</div>
+          <div class="nav-logo-text">Bus<span>Bénin</span> Pro</div>
+        </a>
+        <div class="nav-links">
+          <a href="index.html" class="nav-link">Accueil</a>
+          <a href="presentation.html" class="nav-link">Présentation</a>
+          <a href="fonctionnalites.html" class="nav-link active"
+            >Fonctionnalités</a
+          >
+          <a href="architecture.html" class="nav-link">Architecture</a>
+          <a href="business.html" class="nav-link">Business Model</a>
+          <a href="roadmap.html" class="nav-link">Roadmap</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+      <div class="page-header-content">
+        <div class="breadcrumb">
+          <a href="index.html">Accueil</a>
+          <span>/</span>
+          <span>Fonctionnalités</span>
+        </div>
+        <h1>Fonctionnalités Détaillées</h1>
+        <p>
+          Découvrez l'ensemble des modules et fonctionnalités de la plateforme
+        </p>
+      </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container">
+      <!-- Module 1: Réservation de Trajets -->
+      <section class="content-section">
+        <h2>🚌 Module Réservation de Trajets</h2>
+        <p style="color: var(--gray-500); margin-bottom: 32px">
+          Le cœur de la plateforme permettant aux voyageurs de rechercher,
+          comparer et réserver leurs billets de bus.
+        </p>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-header">
+              <span class="feature-icon">🔍</span>
+              <h3>Recherche de Trajets</h3>
+            </div>
+            <div class="feature-body">
+              <p>Interface intuitive pour trouver rapidement le trajet idéal</p>
+              <ul class="feature-list">
+                <li>Sélection ville de départ et d'arrivée</li>
+                <li>Filtrage par prix, horaire, compagnie</li>
+                <li>Affichage des notes et avis utilisateurs</li>
+                <li>Carte interactive du trajet</li>
+                <li>Calcul automatique distance et durée</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header">
+              <span class="feature-icon">📝</span>
+              <h3>Processus de Réservation</h3>
+            </div>
+            <div class="feature-body">
+              <p>Parcours client optimisé en 3 étapes simples</p>
+              <ul class="feature-list">
+                <li>Sélection du nombre de places</li>
+                <li>Choix de l'horaire de départ</li>
+                <li>Renseignement des informations passager</li>
+                <li>Choix de la date de voyage</li>
+                <li>Récapitulatif avant paiement</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header green">
+              <span class="feature-icon">💳</span>
+              <h3>Paiement Sécurisé</h3>
+            </div>
+            <div class="feature-body">
+              <p>Intégration FedaPay pour un paiement 100% local</p>
+              <ul class="feature-list">
+                <li>Mobile Money (MTN, Moov)</li>
+                <li>Cartes bancaires (Visa, Mastercard)</li>
+                <li>Polling automatique du statut</li>
+                <li>Confirmation instantanée</li>
+                <li>Génération de reçu PDF</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header purple">
+              <span class="feature-icon">📋</span>
+              <h3>Gestion des Réservations</h3>
+            </div>
+            <div class="feature-body">
+              <p>Suivi complet de toutes les réservations</p>
+              <ul class="feature-list">
+                <li>Historique des réservations</li>
+                <li>Statuts en temps réel</li>
+                <li>Téléchargement des billets</li>
+                <li>Annulation possible</li>
+                <li>Système d'expiration automatique</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Module 2: Location de Véhicules -->
+      <section class="content-section">
+        <h2>🚗 Module Location de Véhicules</h2>
+        <p style="color: var(--gray-500); margin-bottom: 32px">
+          Marketplace P2P permettant la mise en location et la réservation de
+          véhicules entre particuliers.
+        </p>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-header green">
+              <span class="feature-icon">📷</span>
+              <h3>Publication de Véhicules</h3>
+            </div>
+            <div class="feature-body">
+              <p>Interface propriétaire pour publier ses véhicules</p>
+              <ul class="feature-list">
+                <li>Upload de photos (hébergement ImgBB)</li>
+                <li>Informations détaillées (marque, modèle, année)</li>
+                <li>Description personnalisée</li>
+                <li>Prix par jour configurable</li>
+                <li>Gestion de la disponibilité</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header green">
+              <span class="feature-icon">📅</span>
+              <h3>Système de Disponibilité</h3>
+            </div>
+            <div class="feature-body">
+              <p>Gestion intelligente des réservations avec timeout</p>
+              <ul class="feature-list">
+                <li>Blocage automatique des dates réservées</li>
+                <li>Timeout 10 min pour réservations pending</li>
+                <li>Vérification temps réel</li>
+                <li>Calendrier des périodes occupées</li>
+                <li>Indicateurs visuels (vert/rouge)</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header orange">
+              <span class="feature-icon">🔐</span>
+              <h3>Validation Livraison</h3>
+            </div>
+            <div class="feature-body">
+              <p>Système sécurisé de remise du véhicule</p>
+              <ul class="feature-list">
+                <li>Code de validation unique</li>
+                <li>Confirmation par le locataire</li>
+                <li>Transfert des fonds au propriétaire</li>
+                <li>Historique des validations</li>
+                <li>Protection contre les fraudes</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header purple">
+              <span class="feature-icon">📊</span>
+              <h3>Dashboard Propriétaire</h3>
+            </div>
+            <div class="feature-body">
+              <p>Interface de gestion complète pour les propriétaires</p>
+              <ul class="feature-list">
+                <li>Statistiques de revenus</li>
+                <li>Liste des véhicules</li>
+                <li>Suivi des réservations</li>
+                <li>Export CSV des données</li>
+                <li>Notifications de nouvelles réservations</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Module 3: Wallet -->
+      <section class="content-section">
+        <h2>💰 Module Portefeuille (Wallet)</h2>
+        <p style="color: var(--gray-500); margin-bottom: 32px">
+          Système de portefeuille numérique pour la gestion des revenus et des
+          transactions.
+        </p>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-header orange">
+              <span class="feature-icon">💵</span>
+              <h3>Gestion du Solde</h3>
+            </div>
+            <div class="feature-body">
+              <p>Vue d'ensemble des finances utilisateur</p>
+              <ul class="feature-list">
+                <li>Solde disponible en temps réel</li>
+                <li>Solde en attente (réservations actives)</li>
+                <li>Historique des transactions</li>
+                <li>Filtrage par période et type</li>
+                <li>Graphiques d'évolution</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header orange">
+              <span class="feature-icon">🏧</span>
+              <h3>Demandes de Retrait</h3>
+            </div>
+            <div class="feature-body">
+              <p>Système de retrait vers Mobile Money</p>
+              <ul class="feature-list">
+                <li>Demande de retrait en quelques clics</li>
+                <li>Montant minimum configurable</li>
+                <li>Suivi du statut de la demande</li>
+                <li>Historique des retraits</li>
+                <li>Validation admin avant transfert</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Module 4: Compagnies -->
+      <section class="content-section">
+        <h2>🏢 Module Compagnies de Transport</h2>
+        <p style="color: var(--gray-500); margin-bottom: 32px">
+          Interface dédiée aux compagnies de transport pour gérer leurs
+          opérations.
+        </p>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-header cyan">
+              <span class="feature-icon">📈</span>
+              <h3>Dashboard Compagnie</h3>
+            </div>
+            <div class="feature-body">
+              <p>Tableau de bord personnalisé par compagnie</p>
+              <ul class="feature-list">
+                <li>Statistiques de réservations</li>
+                <li>Revenus générés</li>
+                <li>Taux d'occupation</li>
+                <li>Performance par trajet</li>
+                <li>Comparaison périodique</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header cyan">
+              <span class="feature-icon">🛤️</span>
+              <h3>Gestion des Trajets</h3>
+            </div>
+            <div class="feature-body">
+              <p>Administration complète des lignes de transport</p>
+              <ul class="feature-list">
+                <li>Création et modification de trajets</li>
+                <li>Définition des horaires</li>
+                <li>Configuration des prix</li>
+                <li>Localisation des gares</li>
+                <li>Activation/désactivation de lignes</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Module 5: Administration -->
+      <section class="content-section">
+        <h2>👑 Module Administration</h2>
+        <p style="color: var(--gray-500); margin-bottom: 32px">
+          Panneau d'administration complet pour la gestion globale de la
+          plateforme.
+        </p>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-header pink">
+              <span class="feature-icon">📊</span>
+              <h3>Dashboard Global</h3>
+            </div>
+            <div class="feature-body">
+              <p>Vue d'ensemble de toute la plateforme</p>
+              <ul class="feature-list">
+                <li>Statistiques globales (utilisateurs, réservations)</li>
+                <li>Revenus totaux de la plateforme</li>
+                <li>Graphiques et tendances</li>
+                <li>Alertes et notifications</li>
+                <li>Indicateurs de performance clés (KPIs)</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header pink">
+              <span class="feature-icon">👥</span>
+              <h3>Gestion Utilisateurs</h3>
+            </div>
+            <div class="feature-body">
+              <p>Administration des comptes utilisateurs</p>
+              <ul class="feature-list">
+                <li>Liste de tous les utilisateurs</li>
+                <li>Attribution des rôles (admin, compagnie, user)</li>
+                <li>Visualisation des profils</li>
+                <li>Désactivation de comptes</li>
+                <li>Recherche et filtrage</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header pink">
+              <span class="feature-icon">🏢</span>
+              <h3>Gestion Compagnies</h3>
+            </div>
+            <div class="feature-body">
+              <p>Administration des compagnies partenaires</p>
+              <ul class="feature-list">
+                <li>Création de compagnies</li>
+                <li>Association utilisateurs/compagnies</li>
+                <li>Modification des informations</li>
+                <li>Upload de logos</li>
+                <li>Statistiques par compagnie</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header pink">
+              <span class="feature-icon">💳</span>
+              <h3>Gestion Wallets</h3>
+            </div>
+            <div class="feature-body">
+              <p>Supervision des portefeuilles et retraits</p>
+              <ul class="feature-list">
+                <li>Vue sur tous les wallets</li>
+                <li>Demandes de retrait en attente</li>
+                <li>Validation/refus des retraits</li>
+                <li>Historique des opérations</li>
+                <li>Détection d'anomalies</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Module 6: Autres fonctionnalités -->
+      <section class="content-section">
+        <h2>✨ Fonctionnalités Transversales</h2>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-header">
+              <span class="feature-icon">⭐</span>
+              <h3>Système d'Avis</h3>
+            </div>
+            <div class="feature-body">
+              <p>Évaluations et retours d'expérience</p>
+              <ul class="feature-list">
+                <li>Notes de 1 à 5 étoiles</li>
+                <li>Commentaires textuels</li>
+                <li>Avis sur trajets et véhicules</li>
+                <li>Système de satisfaction post-trajet</li>
+                <li>Calcul automatique des moyennes</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header">
+              <span class="feature-icon">❤️</span>
+              <h3>Favoris</h3>
+            </div>
+            <div class="feature-body">
+              <p>Sauvegarde des trajets préférés</p>
+              <ul class="feature-list">
+                <li>Ajout/retrait en un clic</li>
+                <li>Liste des favoris dédiée</li>
+                <li>Accès rapide aux trajets fréquents</li>
+                <li>Synchronisation multi-appareils</li>
+                <li>Notifications de changements</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header green">
+              <span class="feature-icon">🗺️</span>
+              <h3>Cartographie</h3>
+            </div>
+            <div class="feature-body">
+              <p>Visualisation géographique des trajets</p>
+              <ul class="feature-list">
+                <li>Carte interactive Leaflet</li>
+                <li>Affichage du tracé routier (OSRM)</li>
+                <li>Marqueurs départ/arrivée</li>
+                <li>Calcul distance et durée</li>
+                <li>Géocodage automatique (Nominatim)</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header orange">
+              <span class="feature-icon">📄</span>
+              <h3>Génération PDF</h3>
+            </div>
+            <div class="feature-body">
+              <p>Export et impression des documents</p>
+              <ul class="feature-list">
+                <li>Billets de bus imprimables</li>
+                <li>Reçus de paiement</li>
+                <li>Contrats de location</li>
+                <li>Rapports d'activité</li>
+                <li>Export des données admin</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Navigation -->
+      <div class="page-navigation">
+        <a href="presentation.html" class="nav-btn prev">
+          <span class="nav-btn-icon">←</span>
+          <span class="nav-btn-text">Présentation</span>
+        </a>
+        <a href="architecture.html" class="nav-btn next">
+          <span class="nav-btn-text">Architecture</span>
+          <span class="nav-btn-icon">→</span>
+        </a>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-logo">Bus Bénin Pro</div>
+      <p class="footer-text">
+        Documentation Officielle • Version 2.0 • Décembre 2025
+      </p>
+    </footer>
+  </body>
+</html>

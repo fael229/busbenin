@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Équipe & Contacts - Bus Bénin Pro</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      /* Additional styles for team page */
+      .team-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 32px;
+      }
+
+      .team-card {
+        background: white;
+        border-radius: 16px;
+        padding: 32px;
+        text-align: center;
+        box-shadow: var(--shadow-md);
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+
+      .team-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-xl);
+      }
+
+      .team-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 48px;
+      }
+
+      .team-name {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 4px;
+      }
+
+      .team-role {
+        font-size: 14px;
+        color: var(--primary);
+        font-weight: 600;
+        margin-bottom: 16px;
+      }
+
+      .team-bio {
+        font-size: 14px;
+        color: var(--gray-500);
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
+
+      .team-skills {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .skill-tag {
+        background: var(--gray-100);
+        color: var(--gray-600);
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 500;
+      }
+
+      .contact-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 32px;
+      }
+
+      .contact-card {
+        background: white;
+        border-radius: 16px;
+        padding: 32px;
+        box-shadow: var(--shadow-md);
+      }
+
+      .contact-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 20px;
+      }
+
+      .contact-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+      }
+
+      .contact-icon.email {
+        background: #dbeafe;
+      }
+      .contact-icon.phone {
+        background: #d1fae5;
+      }
+      .contact-icon.whatsapp {
+        background: #d1fae5;
+      }
+      .contact-icon.location {
+        background: #fef3c7;
+      }
+      .contact-icon.linkedin {
+        background: #dbeafe;
+      }
+      .contact-icon.website {
+        background: #ede9fe;
+      }
+
+      .contact-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--dark);
+      }
+
+      .contact-subtitle {
+        font-size: 13px;
+        color: var(--gray-500);
+      }
+
+      .contact-value {
+        font-size: 16px;
+        color: var(--gray-700);
+        font-weight: 500;
+      }
+
+      .contact-value a {
+        color: var(--primary);
+        text-decoration: none;
+      }
+
+      .contact-value a:hover {
+        text-decoration: underline;
+      }
+
+      .legal-section {
+        background: white;
+        border-radius: 16px;
+        padding: 40px;
+        box-shadow: var(--shadow-md);
+      }
+
+      .legal-section h3 {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 20px;
+      }
+
+      .legal-section p {
+        font-size: 14px;
+        color: var(--gray-600);
+        line-height: 1.8;
+        margin-bottom: 16px;
+      }
+
+      .investors-section {
+        background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
+        border-radius: 16px;
+        padding: 48px;
+        text-align: center;
+        color: white;
+      }
+
+      .investors-section h3 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 16px;
+      }
+
+      .investors-section p {
+        font-size: 16px;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto 32px;
+      }
+
+      .cta-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        background: white;
+        color: var(--primary);
+        padding: 16px 32px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 16px;
+        text-decoration: none;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .cta-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      @media (max-width: 1024px) {
+        .team-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .team-grid,
+        .contact-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="nav">
+      <div class="nav-content">
+        <a href="index.html" class="nav-logo">
+          <div class="nav-logo-icon">B</div>
+          <div class="nav-logo-text">Bus<span>Bénin</span> Pro</div>
+        </a>
+        <div class="nav-links">
+          <a href="index.html" class="nav-link">Accueil</a>
+          <a href="presentation.html" class="nav-link">Présentation</a>
+          <a href="fonctionnalites.html" class="nav-link">Fonctionnalités</a>
+          <a href="architecture.html" class="nav-link">Architecture</a>
+          <a href="business.html" class="nav-link">Business Model</a>
+          <a href="roadmap.html" class="nav-link">Roadmap</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section
+      class="page-header"
+      style="
+        background: linear-gradient(
+          135deg,
+          #ec4899 0%,
+          #db2777 50%,
+          #be185d 100%
+        );
+      "
+    >
+      <div class="page-header-content">
+        <div class="breadcrumb">
+          <a href="index.html">Accueil</a>
+          <span>/</span>
+          <span>Équipe</span>
+        </div>
+        <h1>Équipe & Contacts</h1>
+        <p>Les personnes derrière Bus Bénin Pro et comment nous contacter</p>
+      </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container">
+      <!-- Core Team -->
+      <section class="content-section">
+        <h2>👥 Équipe Fondatrice</h2>
+        <p style="color: var(--gray-500); margin-bottom: 32px">
+          Une équipe passionnée par la technologie et le développement de
+          solutions locales pour l'Afrique.
+        </p>
+
+        <div class="team-grid">
+          <div class="team-card">
+            <div class="team-avatar">👨‍💻</div>
+            <div class="team-name">FAEL</div>
+            <div class="team-role">Fondateur & CTO</div>
+            <p class="team-bio">
+              Développeur full-stack passionné par la création de solutions
+              technologiques innovantes pour le marché africain.
+            </p>
+            <div class="team-skills">
+              <span class="skill-tag">React</span>
+              <span class="skill-tag">React Native</span>
+              <span class="skill-tag">Node.js</span>
+              <span class="skill-tag">Supabase</span>
+            </div>
+          </div>
+
+          <div class="team-card">
+            <div
+              class="team-avatar"
+              style="
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+              "
+            >
+              🎨
+            </div>
+            <div class="team-name">[À définir]</div>
+            <div class="team-role">UI/UX Designer</div>
+            <p class="team-bio">
+              Responsable de l'expérience utilisateur et du design visuel de la
+              plateforme.
+            </p>
+            <div class="team-skills">
+              <span class="skill-tag">Figma</span>
+              <span class="skill-tag">UI Design</span>
+              <span class="skill-tag">Prototyping</span>
+            </div>
+          </div>
+
+          <div class="team-card">
+            <div
+              class="team-avatar"
+              style="
+                background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+              "
+            >
+              📊
+            </div>
+            <div class="team-name">[À définir]</div>
+            <div class="team-role">Business Developer</div>
+            <p class="team-bio">
+              En charge des partenariats avec les compagnies de transport et du
+              développement commercial.
+            </p>
+            <div class="team-skills">
+              <span class="skill-tag">Négociation</span>
+              <span class="skill-tag">Partenariats</span>
+              <span class="skill-tag">Marketing</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Advisory Board -->
+      <section class="content-section">
+        <h2>🎓 Conseillers & Mentors</h2>
+
+        <div class="highlight-box blue">
+          <p class="highlight-text">
+            Nous sommes ouverts à accueillir des
+            <strong>conseillers expérimentés</strong> dans les domaines du
+            transport, de la technologie et de la finance en Afrique de l'Ouest
+            pour nous accompagner dans notre croissance.
+          </p>
+        </div>
+      </section>
+
+      <!-- Contact Information -->
+      <section class="content-section">
+        <h2>📞 Nous Contacter</h2>
+
+        <div class="contact-grid">
+          <div class="contact-card">
+            <div class="contact-header">
+              <div class="contact-icon email">📧</div>
+              <div>
+                <div class="contact-title">Email</div>
+                <div class="contact-subtitle">
+                  Pour toute question ou partenariat
+                </div>
+              </div>
+            </div>
+            <div class="contact-value">
+              <a href="mailto:contact@busbenin.pro">contact@busbenin.pro</a>
+            </div>
+          </div>
+
+          <div class="contact-card">
+            <div class="contact-header">
+              <div class="contact-icon whatsapp">💬</div>
+              <div>
+                <div class="contact-title">WhatsApp</div>
+                <div class="contact-subtitle">
+                  Support rapide et discussions
+                </div>
+              </div>
+            </div>
+            <div class="contact-value">
+              <a href="https://wa.me/22900000000">+229 00 00 00 00</a>
+            </div>
+          </div>
+
+          <div class="contact-card">
+            <div class="contact-header">
+              <div class="contact-icon phone">📱</div>
+              <div>
+                <div class="contact-title">Téléphone</div>
+                <div class="contact-subtitle">Appels directs</div>
+              </div>
+            </div>
+            <div class="contact-value">+229 00 00 00 00</div>
+          </div>
+
+          <div class="contact-card">
+            <div class="contact-header">
+              <div class="contact-icon location">📍</div>
+              <div>
+                <div class="contact-title">Localisation</div>
+                <div class="contact-subtitle">Siège de l'entreprise</div>
+              </div>
+            </div>
+            <div class="contact-value">Cotonou, Bénin</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- For Investors -->
+      <section class="content-section">
+        <div class="investors-section">
+          <h3>🚀 Investisseurs & Partenaires</h3>
+          <p>
+            Vous êtes investisseur, fonds de capital-risque ou partenaire
+            stratégique intéressé par Bus Bénin Pro ? Nous serions ravis
+            d'échanger sur les opportunités de collaboration.
+          </p>
+          <a href="mailto:invest@busbenin.pro" class="cta-button">
+            <span>📩</span>
+            <span>Contactez-nous</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Legal Information -->
+      <section class="content-section">
+        <h2>⚖️ Informations Légales</h2>
+
+        <div class="legal-section">
+          <h3>Mention Légales</h3>
+          <p>
+            <strong>Bus Bénin Pro</strong> est une plateforme technologique de
+            mise en relation entre voyageurs, compagnies de transport et
+            propriétaires de véhicules.
+          </p>
+          <p>
+            La plateforme agit en qualité d'intermédiaire technique et ne se
+            substitue pas aux obligations des transporteurs ou des propriétaires
+            de véhicules.
+          </p>
+          <p>
+            Les transactions financières sont sécurisées par
+            <strong>FedaPay</strong>, opérateur de paiement agréé et conforme
+            aux réglementations en vigueur.
+          </p>
+
+          <h3 style="margin-top: 32px">Protection des Données</h3>
+          <p>
+            Conformément aux lois sur la protection des données personnelles,
+            Bus Bénin Pro s'engage à :
+          </p>
+          <ul
+            style="margin-left: 24px; color: var(--gray-600); font-size: 14px"
+          >
+            <li style="margin-bottom: 8px">
+              Collecter uniquement les données nécessaires au fonctionnement du
+              service
+            </li>
+            <li style="margin-bottom: 8px">
+              Ne jamais vendre les données personnelles à des tiers
+            </li>
+            <li style="margin-bottom: 8px">
+              Sécuriser les données via chiffrement et bonnes pratiques
+            </li>
+            <li style="margin-bottom: 8px">
+              Permettre aux utilisateurs de supprimer leur compte et données
+            </li>
+          </ul>
+
+          <h3 style="margin-top: 32px">Propriété Intellectuelle</h3>
+          <p>
+            L'ensemble du code source, du design et du contenu de Bus Bénin Pro
+            est protégé par le droit d'auteur. Toute reproduction non autorisée
+            est interdite.
+          </p>
+          <p>© 2025 Bus Bénin Pro. Tous droits réservés.</p>
+        </div>
+      </section>
+
+      <!-- Version Info -->
+      <section class="content-section">
+        <h2>📦 Informations de Version</h2>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-header">
+              <span class="feature-icon">📱</span>
+              <h3>Application Mobile</h3>
+            </div>
+            <div class="feature-body">
+              <ul class="feature-list">
+                <li><strong>Version:</strong> 1.0.0</li>
+                <li><strong>SDK Expo:</strong> 54</li>
+                <li><strong>React Native:</strong> 0.81.5</li>
+                <li><strong>Plateformes:</strong> iOS, Android</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-header green">
+              <span class="feature-icon">🌐</span>
+              <h3>Application Web</h3>
+            </div>
+            <div class="feature-body">
+              <ul class="feature-list">
+                <li><strong>Version:</strong> 1.0.0</li>
+                <li><strong>React:</strong> 18.2</li>
+                <li><strong>Vite:</strong> 7.2</li>
+                <li><strong>TailwindCSS:</strong> 3.4</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Navigation -->
+      <div class="page-navigation">
+        <a href="roadmap.html" class="nav-btn prev">
+          <span class="nav-btn-icon">←</span>
+          <span class="nav-btn-text">Roadmap</span>
+        </a>
+        <a href="index.html" class="nav-btn next">
+          <span class="nav-btn-text">Retour à l'accueil</span>
+          <span class="nav-btn-icon">→</span>
+        </a>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-logo">Bus Bénin Pro</div>
+      <p class="footer-text">
+        Documentation Officielle • Version 2.0 • Décembre 2025
+      </p>
+      <p class="footer-text" style="margin-top: 8px">
+        © 2025 Bus Bénin Pro. Tous droits réservés.
+      </p>
+    </footer>
+  </body>
+</html>

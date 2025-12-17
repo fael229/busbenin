@@ -1,1323 +1,660 @@
 <!DOCTYPE html>
-<html lang="fr" class="scroll-smooth">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BusPro – Documentation Complète & Plan Stratégique</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Bus Bénin Pro - Documentation Projet</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap"
       rel="stylesheet"
     />
     <style>
-      body {
-        font-family: "Inter", sans-serif;
+      :root {
+        --primary: #1e88e5;
+        --primary-dark: #1565c0;
+        --primary-light: #bbdefb;
+        --secondary: #10b981;
+        --secondary-dark: #059669;
+        --accent: #f59e0b;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+        --dark: #1f2937;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --gray-900: #111827;
+        --gradient-primary: linear-gradient(
+          135deg,
+          #1e88e5 0%,
+          #1565c0 50%,
+          #0d47a1 100%
+        );
+        --gradient-secondary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        --gradient-hero: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
       }
-      .gradient-text {
-        background: linear-gradient(to right, #0284c7, #2563eb);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: var(--gray-100);
+        color: var(--gray-800);
+        line-height: 1.6;
+      }
+
+      /* Navigation */
+      .nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        z-index: 1000;
+        border-bottom: 1px solid var(--gray-200);
+      }
+
+      .nav-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 70px;
+      }
+
+      .nav-logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+      }
+
+      .nav-logo-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--gradient-primary);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 800;
+        font-size: 18px;
+      }
+
+      .nav-logo-text {
+        font-family: "Poppins", sans-serif;
+        font-weight: 700;
+        font-size: 20px;
+        color: var(--dark);
+      }
+
+      .nav-logo-text span {
+        color: var(--primary);
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 8px;
+      }
+
+      .nav-link {
+        padding: 10px 18px;
+        text-decoration: none;
+        color: var(--gray-600);
+        font-weight: 500;
+        font-size: 14px;
+        border-radius: 8px;
+        transition: all 0.2s;
+      }
+
+      .nav-link:hover {
+        background: var(--gray-100);
+        color: var(--primary);
+      }
+
+      .nav-link.active {
+        background: var(--primary-light);
+        color: var(--primary);
+      }
+
+      /* Hero Section */
+      .hero {
+        padding: 140px 24px 80px;
+        background: var(--gradient-primary);
+        color: white;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.5;
+      }
+
+      .hero-content {
+        position: relative;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 16px;
+        border-radius: 50px;
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 24px;
+      }
+
+      .hero h1 {
+        font-family: "Poppins", sans-serif;
+        font-size: 56px;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 20px;
+      }
+
+      .hero p {
+        font-size: 20px;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto 32px;
+      }
+
+      .hero-version {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.15);
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-size: 14px;
+      }
+
+      /* Content Container */
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 60px 24px;
+      }
+
+      /* Section Headers */
+      .section-header {
+        text-align: center;
+        margin-bottom: 48px;
+      }
+
+      .section-tag {
+        display: inline-block;
+        background: var(--primary-light);
+        color: var(--primary);
+        padding: 6px 16px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 16px;
+      }
+
+      .section-title {
+        font-family: "Poppins", sans-serif;
+        font-size: 36px;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 16px;
+      }
+
+      .section-subtitle {
+        font-size: 18px;
+        color: var(--gray-500);
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      /* Stats Grid */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        margin-bottom: 60px;
+      }
+
+      .stat-card {
+        background: white;
+        border-radius: 16px;
+        padding: 28px;
+        text-align: center;
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--gray-200);
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-xl);
+      }
+
+      .stat-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        font-size: 24px;
+      }
+
+      .stat-icon.blue {
+        background: var(--primary-light);
+        color: var(--primary);
+      }
+      .stat-icon.green {
+        background: #d1fae5;
+        color: var(--secondary);
+      }
+      .stat-icon.orange {
+        background: #fef3c7;
+        color: var(--accent);
+      }
+      .stat-icon.purple {
+        background: #ede9fe;
+        color: #7c3aed;
+      }
+
+      .stat-value {
+        font-family: "Poppins", sans-serif;
+        font-size: 36px;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 4px;
+      }
+
+      .stat-label {
+        font-size: 14px;
+        color: var(--gray-500);
+        font-weight: 500;
+      }
+
+      /* Cards Grid */
+      .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+      }
+
+      .card {
+        background: white;
+        border-radius: 16px;
+        padding: 32px;
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--gray-200);
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+
+      .card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-xl);
+      }
+
+      .card-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        font-size: 24px;
+      }
+
+      .card h3 {
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 12px;
+      }
+
+      .card p {
+        font-size: 14px;
+        color: var(--gray-500);
+        line-height: 1.6;
+      }
+
+      /* Table of Contents */
+      .toc {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+
+      .toc-item {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px 24px;
+        background: white;
+        border-radius: 12px;
+        text-decoration: none;
+        color: var(--gray-700);
+        font-weight: 500;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--gray-200);
+        transition: all 0.2s;
+      }
+
+      .toc-item:hover {
+        background: var(--primary);
+        color: white;
+        transform: translateX(8px);
+      }
+
+      .toc-number {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: var(--primary-light);
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+        flex-shrink: 0;
+      }
+
+      .toc-item:hover .toc-number {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+
+      /* Footer */
+      .footer {
+        background: var(--gray-900);
+        color: white;
+        padding: 48px 24px;
+        text-align: center;
+      }
+
+      .footer-logo {
+        font-family: "Poppins", sans-serif;
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 16px;
+      }
+
+      .footer-text {
+        color: var(--gray-400);
+        font-size: 14px;
+      }
+
+      /* Responsive */
+      @media (max-width: 1024px) {
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .cards-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .nav-links {
+          display: none;
+        }
+        .hero h1 {
+          font-size: 36px;
+        }
+        .hero p {
+          font-size: 16px;
+        }
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+        .cards-grid {
+          grid-template-columns: 1fr;
+        }
+        .toc {
+          grid-template-columns: 1fr;
+        }
+        .section-title {
+          font-size: 28px;
+        }
       }
     </style>
   </head>
-  <body class="bg-slate-50 text-slate-900 antialiased">
-    <!-- Navigation Flottante -->
-    <nav
-      class="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-md border-b border-slate-200 z-50"
-    >
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16 items-center">
-          <div class="flex items-center gap-2">
-            <div
-              class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold"
-            >
-              B
-            </div>
-            <span class="font-bold text-xl tracking-tight">BusPro</span>
-          </div>
-          <div
-            class="hidden md:flex space-x-6 text-sm font-medium text-slate-600"
-          >
-            <a href="#marche" class="hover:text-blue-600 transition-colors"
-              >Marché</a
-            >
-            <a href="#ecosysteme" class="hover:text-blue-600 transition-colors"
-              >Écosystème</a
-            >
-            <a href="#financier" class="hover:text-blue-600 transition-colors"
-              >Financier</a
-            >
-            <a href="#kpis" class="hover:text-blue-600 transition-colors"
-              >KPIs</a
-            >
-            <a href="#operations" class="hover:text-blue-600 transition-colors"
-              >Opérations</a
-            >
-            <a href="#roadmap" class="hover:text-blue-600 transition-colors"
-              >Roadmap</a
-            >
-          </div>
-          <a
-            href="#"
-            class="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-700 transition-colors"
-            >Espace Investisseur</a
-          >
+  <body>
+    <!-- Navigation -->
+    <nav class="nav">
+      <div class="nav-content">
+        <a href="index.html" class="nav-logo">
+          <div class="nav-logo-icon">B</div>
+          <div class="nav-logo-text">Bus<span>Bénin</span> Pro</div>
+        </a>
+        <div class="nav-links">
+          <a href="index.html" class="nav-link active">Accueil</a>
+          <a href="presentation.html" class="nav-link">Présentation</a>
+          <a href="fonctionnalites.html" class="nav-link">Fonctionnalités</a>
+          <a href="architecture.html" class="nav-link">Architecture</a>
+          <a href="business.html" class="nav-link">Business Model</a>
+          <a href="roadmap.html" class="nav-link">Roadmap</a>
         </div>
       </div>
     </nav>
 
     <!-- Hero Section -->
-    <header class="pt-32 pb-20 bg-white">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h1
-          class="text-4xl md:text-6xl font-extrabold text-slate-900 mb-6 tracking-tight"
-        >
-          Révolutionner le Transport <br class="hidden md:block" />
-          <span class="gradient-text">Interurbain au Bénin</span>
-        </h1>
-        <p
-          class="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto mb-10 leading-relaxed"
-        >
-          BusPro est la plateforme tout-en-un qui digitalise l'expérience de
-          voyage et la location de véhicules. Nous connectons voyageurs,
-          compagnies de transport et loueurs de véhicules dans un écosystème
-          sécurisé et performant.
+    <section class="hero">
+      <div class="hero-content">
+        <div class="hero-badge">📄 Documentation Officielle du Projet</div>
+        <h1>Bus Bénin Pro</h1>
+        <p>
+          Plateforme digitale de réservation de billets de bus et de location de
+          véhicules au Bénin
         </p>
-        <div class="flex flex-wrap justify-center gap-4">
-          <a
-            href="#ecosysteme"
-            class="px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30"
-            >Découvrir la solution</a
-          >
-          <a
-            href="#financier"
-            class="px-8 py-3 bg-white text-slate-700 border border-slate-200 rounded-xl font-semibold hover:bg-slate-50 transition-all"
-            >Modèle Économique</a
-          >
+        <div class="hero-version">
+          <span>📦 Version 2.0</span>
+          <span>•</span>
+          <span>🗓️ Décembre 2025</span>
+          <span>•</span>
+          <span>✅ Production Ready</span>
         </div>
       </div>
-    </header>
+    </section>
 
-    <!-- Section Analyse de Marché -->
-    <section id="marche" class="py-20 bg-gradient-to-b from-white to-slate-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl font-bold text-slate-900 mb-4">
-            Analyse de Marché & Opportunités
-          </h2>
-          <p class="text-slate-600 max-w-2xl mx-auto">
-            Un marché en forte croissance avec des besoins non satisfaits.
+    <!-- Key Metrics -->
+    <section class="container">
+      <div class="section-header">
+        <div class="section-tag">Indicateurs Clés</div>
+        <h2 class="section-title">Vue d'Ensemble du Projet</h2>
+        <p class="section-subtitle">
+          Métriques principales de la plateforme Bus Bénin Pro
+        </p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon blue">🚌</div>
+          <div class="stat-value">2</div>
+          <div class="stat-label">Plateformes (Web + Mobile)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">📱</div>
+          <div class="stat-value">50+</div>
+          <div class="stat-label">Pages & Écrans</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange">🔧</div>
+          <div class="stat-value">8</div>
+          <div class="stat-label">Modules Principaux</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple">💳</div>
+          <div class="stat-value">FedaPay</div>
+          <div class="stat-label">Intégration Paiement</div>
+        </div>
+      </div>
+
+      <!-- Quick Features -->
+      <div class="cards-grid">
+        <div class="card">
+          <div
+            class="card-icon"
+            style="background: var(--primary-light); color: var(--primary)"
+          >
+            🚌
+          </div>
+          <h3>Réservation de Trajets</h3>
+          <p>
+            Système complet de réservation de billets de bus avec paiement
+            mobile money intégré via FedaPay.
           </p>
         </div>
-
-        <div class="grid lg:grid-cols-2 gap-12 mb-16">
-          <!-- Taille du Marché -->
+        <div class="card">
           <div
-            class="bg-white rounded-2xl p-8 shadow-sm border border-slate-100"
+            class="card-icon"
+            style="background: #d1fae5; color: var(--secondary)"
           >
-            <h3 class="text-xl font-bold text-slate-900 mb-6">
-              📊 Taille du Marché
-            </h3>
-            <div class="space-y-6">
-              <div>
-                <div class="flex items-baseline gap-2 mb-2">
-                  <span class="text-4xl font-bold text-blue-600">12M</span>
-                  <span class="text-slate-600">de voyageurs/an</span>
-                </div>
-                <p class="text-sm text-slate-500">
-                  Estimation du nombre de voyages interurbains au Bénin
-                  annuellement
-                </p>
-              </div>
-              <div>
-                <div class="flex items-baseline gap-2 mb-2">
-                  <span class="text-4xl font-bold text-green-600">65%</span>
-                  <span class="text-slate-600">paient en cash</span>
-                </div>
-                <p class="text-sm text-slate-500">
-                  Part des transactions encore effectuées en espèces aux
-                  guichets
-                </p>
-              </div>
-              <div>
-                <div class="flex items-baseline gap-2 mb-2">
-                  <span class="text-4xl font-bold text-purple-600">35%</span>
-                  <span class="text-slate-600">pénétration mobile money</span>
-                </div>
-                <p class="text-sm text-slate-500">
-                  Pourcentage de la population utilisant les services de
-                  paiement mobile
-                </p>
-              </div>
-            </div>
+            🚗
           </div>
-
-          <!-- Problématiques Actuelles -->
-          <div class="bg-slate-50 rounded-2xl p-8 border border-slate-200">
-            <h3 class="text-xl font-bold text-slate-900 mb-6">
-              ⚠️ Problèmes du Marché Actuel
-            </h3>
-            <ul class="space-y-4 text-sm text-slate-700">
-              <li class="flex gap-3">
-                <span class="text-red-500 font-bold">1.</span>
-                <div>
-                  <strong>Opacité des prix et horaires :</strong> Les voyageurs
-                  doivent se déplacer physiquement ou appeler plusieurs
-                  compagnies pour comparer.
-                </div>
-              </li>
-              <li class="flex gap-3">
-                <span class="text-red-500 font-bold">2.</span>
-                <div>
-                  <strong>Manque de sécurité des paiements :</strong>
-                  Manipulation d'espèces, risques de vol, absence de preuve
-                  d'achat fiable.
-                </div>
-              </li>
-              <li class="flex gap-3">
-                <span class="text-red-500 font-bold">3.</span>
-                <div>
-                  <strong>Faible digitalisation :</strong> Compagnies limitées
-                  par des systèmes manuels, fichiers Excel, perte de données.
-                </div>
-              </li>
-              <li class="flex gap-3">
-                <span class="text-red-500 font-bold">4.</span>
-                <div>
-                  <strong>Location informelle :</strong> Marchéde location
-                  fragmenté, sans plateforme centralisée, risques élevés pour
-                  locataires.
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- Avantages Compétitifs -->
-        <div
-          class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-white"
-        >
-          <h3 class="text-2xl font-bold mb-6 text-center">
-            🎯 Nos Avantages Compétitifs
-          </h3>
-          <div class="grid md:grid-cols-3 gap-8">
-            <div class="text-center">
-              <div
-                class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4"
-              >
-                <span class="text-3xl">⚡</span>
-              </div>
-              <h4 class="font-bold mb-2">Plateforme Unifiée</h4>
-              <p class="text-sm text-blue-100">
-                Première solution regroupant transport ET location en un seul
-                endroit
-              </p>
-            </div>
-            <div class="text-center">
-              <div
-                class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4"
-              >
-                <span class="text-3xl">🔒</span>
-              </div>
-              <h4 class="font-bold mb-2">Sécurité & Traçabilité</h4>
-              <p class="text-sm text-blue-100">
-                Paiements sécurisés, QR codes, historique complet des
-                transactions
-              </p>
-            </div>
-            <div class="text-center">
-              <div
-                class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4"
-              >
-                <span class="text-3xl">📱</span>
-              </div>
-              <h4 class="font-bold mb-2">Mobile-First</h4>
-              <p class="text-sm text-blue-100">
-                Application native performante adaptée aux connexions faibles
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 1. Écosystème & Fonctionnalités -->
-    <section id="ecosysteme" class="py-20 bg-slate-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl font-bold text-slate-900 mb-4">
-            Un Écosystème Complet
-          </h2>
-          <p class="text-slate-600 max-w-2xl mx-auto">
-            Trois interfaces interconnectées pour servir tous les acteurs du
-            marché.
+          <h3>Location de Véhicules</h3>
+          <p>
+            Marketplace de location de véhicules entre particuliers avec système
+            de disponibilité intelligent.
           </p>
         </div>
-
-        <div class="grid md:grid-cols-3 gap-8">
-          <!-- App Voyageur -->
+        <div class="card">
           <div
-            class="bg-white rounded-2xl p-8 shadow-sm border border-slate-100 hover:shadow-md transition-shadow"
+            class="card-icon"
+            style="background: #fef3c7; color: var(--accent)"
           >
-            <div
-              class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 mb-6"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
-                />
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-4">
-              Application Voyageur
-            </h3>
-            <ul class="space-y-3 text-slate-600 text-sm">
-              <li class="flex items-start gap-2">
-                <span class="text-green-500 mt-1">✓</span>
-                <strong>Réservation de billets :</strong> Recherche
-                multi-critères, choix du siège, paiement mobile (FedaPay).
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="text-green-500 mt-1">✓</span>
-                <strong>Location de véhicules :</strong> Catalogue de véhicules
-                avec et sans chauffeur, réservation par jour.
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="text-green-500 mt-1">✓</span>
-                <strong>Wallet intégré :</strong> Rechargement, paiement rapide,
-                historique des transactions.
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="text-green-500 mt-1">✓</span>
-                <strong>Suivi & Billets :</strong> QR Code pour l'embarquement,
-                notifications de départ.
-              </li>
-            </ul>
+            💰
           </div>
-
-          <!-- Portail Compagnie -->
-          <div
-            class="bg-white rounded-2xl p-8 shadow-sm border border-slate-100 hover:shadow-md transition-shadow"
-          >
-            <div
-              class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 mb-6"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                />
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-4">
-              Portail Compagnie
-            </h3>
-            <ul class="space-y-3 text-slate-600 text-sm">
-              <li class="flex items-start gap-2">
-                <span class="text-green-500 mt-1">✓</span>
-                <strong>Gestion de flotte :</strong> Administration des bus,
-                chauffeurs et trajets.
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="text-green-500 mt-1">✓</span>
-                <strong>Validation :</strong> Scan des QR Codes passagers à
-                l'embarquement.
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="text-green-500 mt-1">✓</span>
-                <strong>Planification :</strong> Création de trajets récurrents,
-                gestion des prix et disponibilités.
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="text-green-500 mt-1">✓</span>
-                <strong>Rapports :</strong> Statistiques de vente, taux de
-                remplissage, revenus en temps réel.
-              </li>
-            </ul>
-          </div>
-
-          <!-- Dashboard Admin -->
-          <div
-            class="bg-white rounded-2xl p-8 shadow-sm border border-slate-100 hover:shadow-md transition-shadow"
-          >
-            <div
-              class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600 mb-6"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                />
-              </svg>
-            </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-4">Super Admin</h3>
-            <ul class="space-y-3 text-slate-600 text-sm">
-              <li class="flex items-start gap-2">
-                <span class="text-green-500 mt-1">✓</span>
-                <strong>Vue Globale :</strong> Supervision de toutes les
-                activités (réservations, locations).
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="text-green-500 mt-1">✓</span>
-                <strong>Gestion Utilisateurs :</strong> Validation des comptes
-                compagnies et partenaires.
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="text-green-500 mt-1">✓</span>
-                <strong>Finances :</strong> Suivi des commissions, paiements et
-                retraits.
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="text-green-500 mt-1">✓</span>
-                <strong>Configuration :</strong> Gestion des villes, gares, et
-                paramètres système.
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 2. Plan Financier -->
-    <section id="financier" class="py-20 bg-white border-y border-slate-100">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid lg:grid-cols-2 gap-16 items-center">
-          <div>
-            <h2 class="text-3xl font-bold text-slate-900 mb-6">
-              Modèle Économique & Revenus
-            </h2>
-            <p class="text-slate-600 mb-8 leading-relaxed">
-              BusPro repose sur un modèle hybride transactionnel et récurrent,
-              assurant une rentabilité à chaque étape de la croissance.
-            </p>
-
-            <div class="space-y-6">
-              <div class="flex gap-4">
-                <div
-                  class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold shrink-0"
-                >
-                  1
-                </div>
-                <div>
-                  <h4 class="font-bold text-slate-900">
-                    Commissions sur Billets (B2C)
-                  </h4>
-                  <p class="text-sm text-slate-600">
-                    Prélèvement de <strong>5% à 10%</strong> sur chaque billet
-                    vendu via la plateforme.
-                  </p>
-                </div>
-              </div>
-              <div class="flex gap-4">
-                <div
-                  class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold shrink-0"
-                >
-                  2
-                </div>
-                <div>
-                  <h4 class="font-bold text-slate-900">
-                    Commissions sur Locations (B2C/B2B)
-                  </h4>
-                  <p class="text-sm text-slate-600">
-                    Commission de <strong>10% à 15%</strong> sur chaque jour de
-                    location de véhicule.
-                  </p>
-                </div>
-              </div>
-              <div class="flex gap-4">
-                <div
-                  class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold shrink-0"
-                >
-                  3
-                </div>
-                <div>
-                  <h4 class="font-bold text-slate-900">
-                    Abonnements SaaS (B2B)
-                  </h4>
-                  <p class="text-sm text-slate-600">
-                    Offre Premium pour les compagnies : outils d'analyse
-                    avancés, marketing dédié, support prioritaire.
-                  </p>
-                </div>
-              </div>
-              <div class="flex gap-4">
-                <div
-                  class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold shrink-0"
-                >
-                  4
-                </div>
-                <div>
-                  <h4 class="font-bold text-slate-900">Publicité & Data</h4>
-                  <p class="text-sm text-slate-600">
-                    Espaces publicitaires ciblés pour partenaires (hôtels,
-                    assurances) et valorisation des données de mobilité.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-slate-50 rounded-2xl p-8 border border-slate-200">
-            <h3 class="text-xl font-bold text-slate-900 mb-6">
-              Objectifs de Revenus
-            </h3>
-
-            <div class="space-y-8">
-              <div class="relative pl-8 border-l-2 border-slate-200">
-                <div
-                  class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-500 border-2 border-white"
-                ></div>
-                <h4 class="font-bold text-slate-900">Court Terme (0-6 mois)</h4>
-                <p class="text-xs text-slate-500 uppercase tracking-wide mb-2">
-                  Phase de Lancement
-                </p>
-                <ul class="text-sm text-slate-600 space-y-1">
-                  <li>• 5 Compagnies partenaires</li>
-                  <li>• 20 Véhicules en location</li>
-                  <li>• 100 Billets / jour</li>
-                  <li>
-                    •
-                    <strong>Revenu mensuel estimé : 2 - 5 Millions FCFA</strong>
-                  </li>
-                </ul>
-              </div>
-
-              <div class="relative pl-8 border-l-2 border-slate-200">
-                <div
-                  class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-indigo-500 border-2 border-white"
-                ></div>
-                <h4 class="font-bold text-slate-900">
-                  Moyen Terme (6-18 mois)
-                </h4>
-                <p class="text-xs text-slate-500 uppercase tracking-wide mb-2">
-                  Phase d'Expansion
-                </p>
-                <ul class="text-sm text-slate-600 space-y-1">
-                  <li>• 20 Compagnies partenaires (Couverture nationale)</li>
-                  <li>• 100+ Véhicules en location</li>
-                  <li>• 1000 Billets / jour</li>
-                  <li>• Lancement des abonnements B2B</li>
-                  <li>
-                    •
-                    <strong
-                      >Revenu mensuel estimé : 15 - 30 Millions FCFA</strong
-                    >
-                  </li>
-                </ul>
-              </div>
-
-              <div class="relative pl-8 border-l-2 border-slate-200">
-                <div
-                  class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-purple-500 border-2 border-white"
-                ></div>
-                <h4 class="font-bold text-slate-900">Long Terme (2-5 ans)</h4>
-                <p class="text-xs text-slate-500 uppercase tracking-wide mb-2">
-                  Dominance & International
-                </p>
-                <ul class="text-sm text-slate-600 space-y-1">
-                  <li>• Leader au Bénin, expansion Togo/Nigéria</li>
-                  <li>• Écosystème complet (Logistique colis, Tourisme)</li>
-                  <li>• 5000+ Billets / jour</li>
-                  <li>
-                    •
-                    <strong>Revenu mensuel estimé : 100+ Millions FCFA</strong>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 2.5 KPIs & Métriques de Succès -->
-    <section id="kpis" class="py-20 bg-slate-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl font-bold text-slate-900 mb-4">
-            KPIs & Métriques de Succès
-          </h2>
-          <p class="text-slate-600 max-w-2xl mx-auto">
-            Indicateurs clés pour mesurer notre croissance et notre impact.
+          <h3>Portefeuille Numérique</h3>
+          <p>
+            Système de wallet intégré permettant les transactions, retraits et
+            historique financier.
           </p>
         </div>
-
-        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <!-- KPI Card 1 -->
-          <div
-            class="bg-white rounded-xl p-6 shadow-sm border border-slate-100"
-          >
-            <div class="text-blue-600 text-2xl mb-2">📈</div>
-            <h4 class="font-bold text-slate-900 mb-2">GMV Mensuel</h4>
-            <p class="text-3xl font-bold text-slate-900 mb-1">$50K</p>
-            <p class="text-xs text-slate-500">
-              Gross Merchandise Value (Objectif M6)
-            </p>
+        <div class="card">
+          <div class="card-icon" style="background: #ede9fe; color: #7c3aed">
+            🏢
           </div>
-
-          <!-- KPI Card 2 -->
-          <div
-            class="bg-white rounded-xl p-6 shadow-sm border border-slate-100"
-          >
-            <div class="text-green-600 text-2xl mb-2">👥</div>
-            <h4 class="font-bold text-slate-900 mb-2">Utilisateurs Actifs</h4>
-            <p class="text-3xl font-bold text-slate-900 mb-1">5000</p>
-            <p class="text-xs text-slate-500">
-              Utilisateurs mensuels actifs (MAU)
-            </p>
-          </div>
-
-          <!-- KPI Card 3 -->
-          <div
-            class="bg-white rounded-xl p-6 shadow-sm border border-slate-100"
-          >
-            <div class="text-purple-600 text-2xl mb-2">🎯</div>
-            <h4 class="font-bold text-slate-900 mb-2">Taux Conversion</h4>
-            <p class="text-3xl font-bold text-slate-900 mb-1">8%</p>
-            <p class="text-xs text-slate-500">De visiteur à client payant</p>
-          </div>
-
-          <!-- KPI Card 4 -->
-          <div
-            class="bg-white rounded-xl p-6 shadow-sm border border-slate-100"
-          >
-            <div class="text-orange-600 text-2xl mb-2">💰</div>
-            <h4 class="font-bold text-slate-900 mb-2">CAC</h4>
-            <p class="text-3xl font-bold text-slate-900 mb-1">$3</p>
-            <p class="text-xs text-slate-500">Coût d'Acquisition Client</p>
-          </div>
-        </div>
-
-        <!-- Métriques Détaillées -->
-        <div class="grid lg:grid-cols-3 gap-8">
-          <div class="bg-white rounded- p-6 shadow-sm border border-slate-100">
-            <h4 class="font-bold text-slate-900 mb-4">🚌 Transport</h4>
-            <ul class="space-y-3 text-sm">
-              <li class="flex justify-between">
-                <span class="text-slate-600">Taux remplissage moyen</span>
-                <strong>75%</strong>
-              </li>
-              <li class="flex justify-between">
-                <span class="text-slate-600">Compagnies partenaires</span>
-                <strong>15</strong>
-              </li>
-              <li class="flex justify-between">
-                <span class="text-slate-600">Trajets quotidiens</span>
-                <strong>200</strong>
-              </li>
-              <li class="flex justify-between">
-                <span class="text-slate-600">Commission moyenne</span>
-                <strong>7.5%</strong>
-              </li>
-            </ul>
-          </div>
-
-          <div
-            class="bg-white rounded-xl p-6 shadow-sm border border-slate-100"
-          >
-            <h4 class="font-bold text-slate-900 mb-4">🚗 Location</h4>
-            <ul class="space-y-3 text-sm">
-              <li class="flex justify-between">
-                <span class="text-slate-600">Véhicules actifs</span>
-                <strong>80</strong>
-              </li>
-              <li class="flex justify-between">
-                <span class="text-slate-600">Taux utilisation</span>
-                <strong>60%</strong>
-              </li>
-              <li class="flex justify-between">
-                <span class="text-slate-600">Durée moy. location</span>
-                <strong>3.5j</strong>
-              </li>
-              <li class="flex justify-between">
-                <span class="text-slate-600">Prix moyen/jour</span>
-                <strong>25K F</strong>
-              </li>
-            </ul>
-          </div>
-
-          <div
-            class="bg-white rounded-xl p-6 shadow-sm border border-slate-100"
-          >
-            <h4 class="font-bold text-slate-900 mb-4">💎 Rétention</h4>
-            <ul class="space-y-3 text-sm">
-              <li class="flex justify-between">
-                <span class="text-slate-600">Taux rétention M1</span>
-                <strong>45%</strong>
-              </li>
-              <li class="flex justify-between">
-                <span class="text-slate-600">Voyages/utilisateur</span>
-                <strong>2.3</strong>
-              </li>
-              <li class="flex justify-between">
-                <span class="text-slate-600">NPS Score</span>
-                <strong>+42</strong>
-              </li>
-              <li class="flex justify-between">
-                <span class="text-slate-600">LTV Client</span>
-                <strong>$45</strong>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 3. Stratégie Opérationnelle -->
-    <section id="operations" class="py-20 bg-slate-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl font-bold text-slate-900 mb-4">
-            Stratégie Opérationnelle
-          </h2>
-          <p class="text-slate-600 max-w-2xl mx-auto">
-            Comment nous allons peupler la plateforme et acquérir nos
-            utilisateurs.
+          <h3>Gestion Compagnies</h3>
+          <p>
+            Interface dédiée pour les compagnies de transport avec dashboard et
+            gestion des trajets.
           </p>
         </div>
-
-        <div class="grid md:grid-cols-3 gap-8">
-          <div class="bg-white p-6 rounded-xl border border-slate-100">
-            <h3
-              class="font-bold text-lg text-slate-900 mb-4 flex items-center gap-2"
-            >
-              <span class="bg-blue-100 text-blue-700 p-1 rounded">🏢</span>
-              Acquisition Compagnies
-            </h3>
-            <ul class="space-y-3 text-sm text-slate-600">
-              <li class="flex gap-2">
-                <span class="font-bold text-slate-900"
-                  >1. Prospection Directe :</span
-                >
-                Équipes commerciales sur le terrain (gares routières) pour
-                démarcher les gérants.
-              </li>
-              <li class="flex gap-2">
-                <span class="font-bold text-slate-900">2. Offre Pilote :</span>
-                3 mois sans commission ou avec commission réduite pour les
-                premiers partenaires.
-              </li>
-              <li class="flex gap-2">
-                <span class="font-bold text-slate-900">3. Formation :</span>
-                Sessions de formation pour les guichetiers et chauffeurs à
-                l'utilisation de l'app Pro.
-              </li>
-              <li class="flex gap-2">
-                <span class="font-bold text-slate-900">4. Matériel :</span>
-                Fourniture optionnelle de terminaux ou smartphones pour la
-                validation QR.
-              </li>
-            </ul>
+        <div class="card">
+          <div class="card-icon" style="background: #fce7f3; color: #ec4899">
+            ⭐
           </div>
-
-          <div class="bg-white p-6 rounded-xl border border-slate-100">
-            <h3
-              class="font-bold text-lg text-slate-900 mb-4 flex items-center gap-2"
-            >
-              <span class="bg-orange-100 text-orange-700 p-1 rounded">🚗</span>
-              Acquisition Véhicules
-            </h3>
-            <ul class="space-y-3 text-sm text-slate-600">
-              <li class="flex gap-2">
-                <span class="font-bold text-slate-900"
-                  >1. Partenariats Loueurs :</span
-                >
-                Accords avec les agences de location locales existantes.
-              </li>
-              <li class="flex gap-2">
-                <span class="font-bold text-slate-900"
-                  >2. Propriétaires Particuliers :</span
-                >
-                Programme "Rent Your Car" permettant aux particuliers de
-                rentabiliser leur véhicule (avec vérification stricte).
-              </li>
-              <li class="flex gap-2">
-                <span class="font-bold text-slate-900">3. Vérification :</span>
-                Processus d'audit physique des véhicules (état, assurance,
-                papiers) avant mise en ligne.
-              </li>
-            </ul>
+          <h3>Système d'Avis</h3>
+          <p>
+            Évaluations et commentaires des utilisateurs avec système de
+            satisfaction post-service.
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-icon" style="background: #cffafe; color: #0891b2">
+            🗺️
           </div>
-
-          <div class="bg-white p-6 rounded-xl border border-slate-100">
-            <h3
-              class="font-bold text-lg text-slate-900 mb-4 flex items-center gap-2"
-            >
-              <span class="bg-green-100 text-green-700 p-1 rounded">👥</span>
-              Acquisition Clients
-            </h3>
-            <ul class="space-y-3 text-sm text-slate-600">
-              <li class="flex gap-2">
-                <span class="font-bold text-slate-900"
-                  >1. Marketing Digital :</span
-                >
-                Campagnes Facebook/TikTok ciblées sur les voyageurs fréquents et
-                étudiants.
-              </li>
-              <li class="flex gap-2">
-                <span class="font-bold text-slate-900"
-                  >2. Partenariats Physiques :</span
-                >
-                Kiosques d'information dans les universités et grands marchés.
-              </li>
-              <li class="flex gap-2">
-                <span class="font-bold text-slate-900">3. Parrainage :</span>
-                Programme "Voyagez Gratuitement" en invitant des amis (crédit
-                wallet).
-              </li>
-              <li class="flex gap-2">
-                <span class="font-bold text-slate-900"
-                  >4. Promo Lancement :</span
-                >
-                Codes promo "PREMIERVOYAGE" pour inciter au premier
-                téléchargement.
-              </li>
-            </ul>
-          </div>
+          <h3>Cartographie Intégrée</h3>
+          <p>
+            Affichage des itinéraires sur carte interactive avec calcul de
+            distance et durée estimée.
+          </p>
         </div>
       </div>
     </section>
 
-    <!-- 3.5 Map des Flux Utilisateurs (User Flow) -->
+    <!-- Table of Contents -->
     <section
-      id="userflow"
-      class="py-20 bg-white border-y border-slate-100 overflow-hidden"
+      class="container"
+      style="
+        background: white;
+        margin: 0 auto 60px;
+        border-radius: 24px;
+        padding: 48px;
+      "
     >
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl font-bold text-slate-900 mb-4">
-            Map des Flux Utilisateurs
-          </h2>
-          <p class="text-slate-600 max-w-2xl mx-auto">
-            Visualisation complète du parcours utilisateur, de l'accueil jusqu'à
-            la conversion finale.
-          </p>
-        </div>
-
-        <div class="relative overflow-x-auto pb-12">
-          <div class="min-w-[1000px] flex flex-col items-center gap-12">
-            <!-- Niveau 1 : Entrée -->
-            <div class="relative z-10">
-              <div
-                class="bg-slate-900 text-white px-8 py-4 rounded-2xl shadow-lg font-bold text-lg border-4 border-blue-500"
-              >
-                🏠 Accueil / Home
-              </div>
-              <!-- Connecteur vertical -->
-              <div
-                class="absolute left-1/2 -translate-x-1/2 top-full h-12 w-1 bg-slate-300"
-              ></div>
-            </div>
-
-            <!-- Niveau 2 : Branches Principales -->
-            <div class="relative w-full flex justify-center gap-16 z-10">
-              <!-- Barre horizontale connecteur -->
-              <div
-                class="absolute top-[-24px] left-[15%] right-[15%] h-1 bg-slate-300 rounded-full"
-              ></div>
-              <div
-                class="absolute top-[-24px] left-1/2 -translate-x-1/2 h-6 w-1 bg-slate-300"
-              ></div>
-
-              <!-- Branche 1 : Transport -->
-              <div class="flex flex-col items-center relative">
-                <div
-                  class="absolute top-[-24px] left-1/2 -translate-x-1/2 h-6 w-1 bg-slate-300"
-                ></div>
-                <div
-                  class="bg-blue-100 text-blue-800 px-6 py-3 rounded-xl font-bold shadow-sm border border-blue-200 mb-8 w-48 text-center"
-                >
-                  🚌 Transport
-                </div>
-                <!-- Sous-branches Transport -->
-                <div
-                  class="flex flex-col gap-6 relative pl-8 border-l-2 border-slate-200 ml-4"
-                >
-                  <div class="flex items-center gap-4">
-                    <div class="w-4 h-0.5 bg-slate-200"></div>
-                    <div
-                      class="bg-white px-4 py-2 rounded-lg border border-slate-200 text-sm shadow-sm w-48"
-                    >
-                      🔍 Recherche Trajet
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-4">
-                    <div class="w-4 h-0.5 bg-slate-200"></div>
-                    <div
-                      class="bg-white px-4 py-2 rounded-lg border border-slate-200 text-sm shadow-sm w-48"
-                    >
-                      📋 Liste Résultats
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-4">
-                    <div class="w-4 h-0.5 bg-slate-200"></div>
-                    <div
-                      class="bg-white px-4 py-2 rounded-lg border border-slate-200 text-sm shadow-sm w-48"
-                    >
-                      📄 Détails Trajet
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-4">
-                    <div class="w-4 h-0.5 bg-slate-200"></div>
-                    <div
-                      class="bg-green-50 px-4 py-2 rounded-lg border border-green-200 text-sm font-bold text-green-700 shadow-sm w-48"
-                    >
-                      💳 Paiement
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-4">
-                    <div class="w-4 h-0.5 bg-slate-200"></div>
-                    <div
-                      class="bg-slate-800 text-white px-4 py-2 rounded-lg border border-slate-800 text-sm shadow-sm w-48"
-                    >
-                      🎟️ Billet QR Code
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Branche 2 : Location -->
-              <div class="flex flex-col items-center relative">
-                <div
-                  class="absolute top-[-24px] left-1/2 -translate-x-1/2 h-6 w-1 bg-slate-300"
-                ></div>
-                <div
-                  class="bg-orange-100 text-orange-800 px-6 py-3 rounded-xl font-bold shadow-sm border border-orange-200 mb-8 w-48 text-center"
-                >
-                  🚗 Location
-                </div>
-                <!-- Sous-branches Location -->
-                <div
-                  class="flex flex-col gap-6 relative pl-8 border-l-2 border-slate-200 ml-4"
-                >
-                  <div class="flex items-center gap-4">
-                    <div class="w-4 h-0.5 bg-slate-200"></div>
-                    <div
-                      class="bg-white px-4 py-2 rounded-lg border border-slate-200 text-sm shadow-sm w-48"
-                    >
-                      📋 Catalogue Véhicules
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-4">
-                    <div class="w-4 h-0.5 bg-slate-200"></div>
-                    <div
-                      class="bg-white px-4 py-2 rounded-lg border border-slate-200 text-sm shadow-sm w-48"
-                    >
-                      📄 Détails Véhicule
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-4">
-                    <div class="w-4 h-0.5 bg-slate-200"></div>
-                    <div
-                      class="bg-white px-4 py-2 rounded-lg border border-slate-200 text-sm shadow-sm w-48"
-                    >
-                      📅 Choix Dates
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-4">
-                    <div class="w-4 h-0.5 bg-slate-200"></div>
-                    <div
-                      class="bg-green-50 px-4 py-2 rounded-lg border border-green-200 text-sm font-bold text-green-700 shadow-sm w-48"
-                    >
-                      💳 Paiement / Acompte
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-4">
-                    <div class="w-4 h-0.5 bg-slate-200"></div>
-                    <div
-                      class="bg-slate-800 text-white px-4 py-2 rounded-lg border border-slate-800 text-sm shadow-sm w-48"
-                    >
-                      ✅ Confirmation
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Branche 3 : Compte -->
-              <div class="flex flex-col items-center relative">
-                <div
-                  class="absolute top-[-24px] left-1/2 -translate-x-1/2 h-6 w-1 bg-slate-300"
-                ></div>
-                <div
-                  class="bg-purple-100 text-purple-800 px-6 py-3 rounded-xl font-bold shadow-sm border border-purple-200 mb-8 w-48 text-center"
-                >
-                  👤 Compte
-                </div>
-                <!-- Sous-branches Compte -->
-                <div
-                  class="flex flex-col gap-6 relative pl-8 border-l-2 border-slate-200 ml-4"
-                >
-                  <div class="flex items-center gap-4">
-                    <div class="w-4 h-0.5 bg-slate-200"></div>
-                    <div
-                      class="bg-white px-4 py-2 rounded-lg border border-slate-200 text-sm shadow-sm w-48"
-                    >
-                      🔐 Login / Inscription
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-4">
-                    <div class="w-4 h-0.5 bg-slate-200"></div>
-                    <div
-                      class="bg-white px-4 py-2 rounded-lg border border-slate-200 text-sm shadow-sm w-48"
-                    >
-                      🎫 Mes Réservations
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-4">
-                    <div class="w-4 h-0.5 bg-slate-200"></div>
-                    <div
-                      class="bg-white px-4 py-2 rounded-lg border border-slate-200 text-sm shadow-sm w-48"
-                    >
-                      💰 Wallet
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-4">
-                    <div class="w-4 h-0.5 bg-slate-200"></div>
-                    <div
-                      class="bg-white px-4 py-2 rounded-lg border border-slate-200 text-sm shadow-sm w-48"
-                    >
-                      ❤️ Favoris
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-4">
-                    <div class="w-4 h-0.5 bg-slate-200"></div>
-                    <div
-                      class="bg-white px-4 py-2 rounded-lg border border-slate-200 text-sm shadow-sm w-48"
-                    >
-                      ⚙️ Paramètres
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div class="section-header">
+        <div class="section-tag">Navigation</div>
+        <h2 class="section-title">Table des Matières</h2>
+        <p class="section-subtitle">
+          Accédez rapidement aux différentes sections de la documentation
+        </p>
       </div>
-    </section>
 
-    <!-- 4. Map du Projet & Roadmap Technique -->
-    <section id="roadmap" class="py-20 bg-slate-900 text-white">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-bold mb-12 text-center">
-          Map du Projet & Architecture
-        </h2>
-
-        <div class="grid lg:grid-cols-2 gap-12">
-          <!-- Architecture -->
-          <div>
-            <h3 class="text-xl font-bold mb-6 text-blue-400">
-              Architecture Technique
-            </h3>
-            <div class="bg-slate-800 rounded-xl p-6 space-y-4">
-              <div
-                class="flex items-center justify-between border-b border-slate-700 pb-4"
-              >
-                <span class="font-medium">Frontend Mobile</span>
-                <span
-                  class="text-sm bg-slate-700 px-3 py-1 rounded text-slate-300"
-                  >React Native / Expo</span
-                >
-              </div>
-              <div
-                class="flex items-center justify-between border-b border-slate-700 pb-4"
-              >
-                <span class="font-medium">Frontend Web</span>
-                <span
-                  class="text-sm bg-slate-700 px-3 py-1 rounded text-slate-300"
-                  >React.js / Vite</span
-                >
-              </div>
-              <div
-                class="flex items-center justify-between border-b border-slate-700 pb-4"
-              >
-                <span class="font-medium">Backend & Base de données</span>
-                <span
-                  class="text-sm bg-slate-700 px-3 py-1 rounded text-slate-300"
-                  >Supabase (PostgreSQL)</span
-                >
-              </div>
-              <div
-                class="flex items-center justify-between border-b border-slate-700 pb-4"
-              >
-                <span class="font-medium">Paiement</span>
-                <span
-                  class="text-sm bg-slate-700 px-3 py-1 rounded text-slate-300"
-                  >FedaPay / Mobile Money</span
-                >
-              </div>
-              <div class="flex items-center justify-between">
-                <span class="font-medium">Cartographie</span>
-                <span
-                  class="text-sm bg-slate-700 px-3 py-1 rounded text-slate-300"
-                  >Google Maps API / Mapbox</span
-                >
-              </div>
-            </div>
-          </div>
-
-          <!-- Roadmap -->
-          <div>
-            <h3 class="text-xl font-bold mb-6 text-green-400">
-              État d'Avancement
-            </h3>
-            <div class="space-y-6">
-              <div class="flex gap-4">
-                <div class="flex flex-col items-center">
-                  <div class="w-4 h-4 bg-green-500 rounded-full"></div>
-                  <div class="w-0.5 h-full bg-slate-700 my-1"></div>
-                </div>
-                <div class="pb-6">
-                  <h4 class="font-bold text-lg">
-                    MVP (Produit Minimum Viable) -
-                    <span class="text-green-400 text-sm">Terminé</span>
-                  </h4>
-                  <p class="text-slate-400 text-sm mt-1">
-                    Authentification, Recherche de trajets, Réservation basique,
-                    Intégration Supabase.
-                  </p>
-                </div>
-              </div>
-
-              <div class="flex gap-4">
-                <div class="flex flex-col items-center">
-                  <div
-                    class="w-4 h-4 bg-blue-500 rounded-full animate-pulse"
-                  ></div>
-                  <div class="w-0.5 h-full bg-slate-700 my-1"></div>
-                </div>
-                <div class="pb-6">
-                  <h4 class="font-bold text-lg">
-                    V1.0 (Lancement) -
-                    <span class="text-blue-400 text-sm">En cours</span>
-                  </h4>
-                  <p class="text-slate-400 text-sm mt-1">
-                    Paiement réel FedaPay, Module Location de véhicules,
-                    Dashboard Admin complet, Notifications Push.
-                  </p>
-                </div>
-              </div>
-
-              <div class="flex gap-4">
-                <div class="flex flex-col items-center">
-                  <div class="w-4 h-4 bg-slate-600 rounded-full"></div>
-                </div>
-                <div>
-                  <h4 class="font-bold text-lg">
-                    V2.0 (Évolution) -
-                    <span class="text-slate-500 text-sm">Planifié</span>
-                  </h4>
-                  <p class="text-slate-400 text-sm mt-1">
-                    Suivi GPS temps réel des bus, Programme de fidélité avancé,
-                    Version multilingue (Anglais/Fon), Application Chauffeur
-                    dédiée.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 5. Risques & Mitigations -->
-    <section class="py-20 bg-white">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl font-bold text-slate-900 mb-4">
-            Risques & Stratégies de Mitigation
-          </h2>
-          <p class="text-slate-600 max-w-2xl mx-auto">
-            Analyse des risques majeurs et nos plans pour les gérer.
-          </p>
-        </div>
-
-        <div class="grid md:grid-cols-2 gap-8">
-          <div class="bg-red-50 rounded-xl p-6 border-l-4 border-red-500">
-            <div class="flex items-start gap-4">
-              <div class="text-red-500 text-2xl">⚠️</div>
-              <div>
-                <h4 class="font-bold text-slate-900 mb-2">
-                  Résistance au Changement (Compagnies)
-                </h4>
-                <p class="text-sm text-slate-700 mb-3">
-                  Les compagnies habituées au cash peuvent être réticentes à
-                  adopter une plateforme digitale.
-                </p>
-                <div class="bg-white rounded-lg p-3">
-                  <strong class="text-xs text-green-700">✓ Mitigation :</strong>
-                  <p class="text-xs text-slate-600 mt-1">
-                    Formation gratuite, support dédié, période d'essai sans
-                    commission, démonstration ROI.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-red-50 rounded-xl p-6 border-l-4 border-red-500">
-            <div class="flex items-start gap-4">
-              <div class="text-red-500 text-2xl">📱</div>
-              <div>
-                <h4 class="font-bold text-slate-900 mb-2">
-                  Connectivité Internet Limitée
-                </h4>
-                <p class="text-sm text-slate-700 mb-3">
-                  Zones rurales avec faible couverture réseau.
-                </p>
-                <div class="bg-white rounded-lg p-3">
-                  <strong class="text-xs text-green-700">✓ Mitigation :</strong>
-                  <p class="text-xs text-slate-600 mt-1">
-                    Mode hors-ligne, synchronisation intelligente, app légère,
-                    compatibilité 2G/3G.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-red-50 rounded-xl p-6 border-l-4 border-red-500">
-            <div class="flex items-start gap-4">
-              <div class="text-red-500 text-2xl">💳</div>
-              <div>
-                <h4 class="font-bold text-slate-900 mb-2">
-                  Fraude & Paiements
-                </h4>
-                <p class="text-sm text-slate-700 mb-3">
-                  Risques de fraude sur transactions, chargebacks, fausses
-                  réservations.
-                </p>
-                <div class="bg-white rounded-lg p-3">
-                  <strong class="text-xs text-green-700">✓ Mitigation :</strong>
-                  <p class="text-xs text-slate-600 mt-1">
-                    Vérification KYC, QR codes uniques, système anti-fraude,
-                    partenariat FedaPay sécurisé.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-red-50 rounded-xl p-6 border-l-4 border-red-500">
-            <div class="flex items-start gap-4">
-              <div class="text-red-500 text-2xl">🏢</div>
-              <div>
-                <h4 class="font-bold text-slate-900 mb-2">
-                  Concurrence & "Copycats"
-                </h4>
-                <p class="text-sm text-slate-700 mb-3">
-                  Risque d'arrivée de concurrents ou copie du modèle.
-                </p>
-                <div class="bg-white rounded-lg p-3">
-                  <strong class="text-xs text-green-700">✓ Mitigation :</strong>
-                  <p class="text-xs text-slate-600 mt-1">
-                    Effet réseau fort, partenariats exclusifs, innovation
-                    continue, barrières à l'entrée (data, trust).
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-red-50 rounded-xl p-6 border-l-4 border-red-500">
-            <div class="flex items-start gap-4">
-              <div class="text-red-500 text-2xl">⚖️</div>
-              <div>
-                <h4 class="font-bold text-slate-900 mb-2">
-                  Régulation & Licences
-                </h4>
-                <p class="text-sm text-slate-700 mb-3">
-                  Évolutions réglementaires transport et paiements digitaux.
-                </p>
-                <div class="bg-white rounded-lg p-3">
-                  <strong class="text-xs text-green-700">✓ Mitigation :</strong>
-                  <p class="text-xs text-slate-600 mt-1">
-                    Veille juridique, conformité BCEAO, dialogue avec ministère
-                    des Transports.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-red-50 rounded-xl p-6 border-l-4 border-red-500">
-            <div class="flex items-start gap-4">
-              <div class="text-red-500 text-2xl">💸</div>
-              <div>
-                <h4 class="font-bold text-slate-900 mb-2">
-                  Liquidité & Cash-Flow
-                </h4>
-                <p class="text-sm text-slate-700 mb-3">
-                  Délais de paiement entre collections et reversements.
-                </p>
-                <div class="bg-white rounded-lg p-3">
-                  <strong class="text-xs text-green-700">✓ Mitigation :</strong>
-                  <p class="text-xs text-slate-600 mt-1">
-                    Automatisation paiements, cycles courts (hebdomadaires),
-                    fonds de roulement, lignes crédit.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div class="toc">
+        <a href="presentation.html" class="toc-item">
+          <div class="toc-number">01</div>
+          <span>Présentation du Projet</span>
+        </a>
+        <a href="fonctionnalites.html" class="toc-item">
+          <div class="toc-number">02</div>
+          <span>Fonctionnalités Détaillées</span>
+        </a>
+        <a href="architecture.html" class="toc-item">
+          <div class="toc-number">03</div>
+          <span>Architecture Technique</span>
+        </a>
+        <a href="business.html" class="toc-item">
+          <div class="toc-number">04</div>
+          <span>Business Model & Revenus</span>
+        </a>
+        <a href="roadmap.html" class="toc-item">
+          <div class="toc-number">05</div>
+          <span>Roadmap & Évolutions</span>
+        </a>
+        <a href="equipe.html" class="toc-item">
+          <div class="toc-number">06</div>
+          <span>Équipe & Contacts</span>
+        </a>
       </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-slate-200 py-12">
-      <div
-        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6"
-      >
-        <div class="text-center md:text-left">
-          <div
-            class="flex items-center gap-2 justify-center md:justify-start mb-2"
-          >
-            <div
-              class="w-6 h-6 bg-blue-600 rounded flex items-center justify-center text-white text-xs font-bold"
-            >
-              B
-            </div>
-            <span class="font-bold text-lg">BusPro</span>
-          </div>
-          <p class="text-sm text-slate-500">
-            La référence du transport digital au Bénin.
-          </p>
-        </div>
-        <div class="text-sm text-slate-500">
-          &copy; <span id="year"></span> BusPro Project. Tous droits réservés.
-          Document confidentiel.
-        </div>
-      </div>
+    <footer class="footer">
+      <div class="footer-logo">Bus Bénin Pro</div>
+      <p class="footer-text">
+        Documentation Officielle • Version 2.0 • Décembre 2025
+      </p>
+      <p class="footer-text" style="margin-top: 8px">
+        © 2025 Bus Bénin Pro. Tous droits réservés.
+      </p>
     </footer>
-
-    <script>
-      document.getElementById("year").textContent = new Date().getFullYear();
-    </script>
   </body>
 </html>
