@@ -8,7 +8,8 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=2.1" />
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
   </head>
   <body>
     <!-- Navigation -->
@@ -46,7 +47,13 @@
     <main class="container">
       <!-- Vision Section -->
       <section class="content-section">
-        <div class="section-icon">🎯</div>
+        <div class="section-icon">
+          <span
+            class="iconify"
+            data-icon="mdi:target"
+            style="font-size: 28px"
+          ></span>
+        </div>
         <h2>Notre Vision</h2>
         <div class="highlight-box blue">
           <p class="highlight-text">
@@ -62,7 +69,13 @@
       <section class="two-columns">
         <div class="column-card problem">
           <div class="column-header">
-            <span class="column-icon">❌</span>
+            <div class="column-icon error">
+              <span
+                class="iconify"
+                data-icon="mdi:close"
+                style="font-size: 24px"
+              ></span>
+            </div>
             <h3>Le Problème</h3>
           </div>
           <ul class="problem-list">
@@ -97,7 +110,13 @@
         </div>
         <div class="column-card solution">
           <div class="column-header">
-            <span class="column-icon">✅</span>
+            <div class="column-icon success">
+              <span
+                class="iconify"
+                data-icon="mdi:check"
+                style="font-size: 24px"
+              ></span>
+            </div>
             <h3>Notre Solution</h3>
           </div>
           <ul class="solution-list">
@@ -126,7 +145,14 @@
 
       <!-- Market Opportunity -->
       <section class="content-section">
-        <h2>Opportunité de Marché</h2>
+        <h2>
+          <span
+            class="iconify"
+            data-icon="mdi:chart-line"
+            style="font-size: 32px; color: var(--primary)"
+          ></span>
+          Opportunité de Marché
+        </h2>
         <div class="market-grid">
           <div class="market-card">
             <div class="market-value">12M+</div>
@@ -149,10 +175,23 @@
 
       <!-- Target Audience -->
       <section class="content-section">
-        <h2>Cibles Utilisateurs</h2>
+        <h2>
+          <span
+            class="iconify"
+            data-icon="mdi:account-group"
+            style="font-size: 32px; color: var(--primary)"
+          ></span>
+          Cibles Utilisateurs
+        </h2>
         <div class="targets-grid">
           <div class="target-card">
-            <div class="target-icon">🧑‍💼</div>
+            <div class="target-icon">
+              <span
+                class="iconify"
+                data-icon="mdi:account-tie"
+                style="font-size: 32px"
+              ></span>
+            </div>
             <h4>Voyageurs</h4>
             <p>
               Particuliers et professionnels qui voyagent régulièrement entre
@@ -166,7 +205,13 @@
             </div>
           </div>
           <div class="target-card">
-            <div class="target-icon">🏢</div>
+            <div class="target-icon green">
+              <span
+                class="iconify"
+                data-icon="mdi:domain"
+                style="font-size: 32px"
+              ></span>
+            </div>
             <h4>Compagnies de Transport</h4>
             <p>
               Entreprises de transport souhaitant digitaliser leurs opérations,
@@ -179,7 +224,13 @@
             </div>
           </div>
           <div class="target-card">
-            <div class="target-icon">🚗</div>
+            <div class="target-icon orange">
+              <span
+                class="iconify"
+                data-icon="mdi:car"
+                style="font-size: 32px"
+              ></span>
+            </div>
             <h4>Propriétaires de Véhicules</h4>
             <p>
               Particuliers possédant des véhicules qu'ils souhaitent mettre en
@@ -192,7 +243,13 @@
             </div>
           </div>
           <div class="target-card">
-            <div class="target-icon">🎓</div>
+            <div class="target-icon purple">
+              <span
+                class="iconify"
+                data-icon="mdi:school"
+                style="font-size: 32px"
+              ></span>
+            </div>
             <h4>Étudiants</h4>
             <p>
               Étudiants voyageant entre leur ville universitaire et leur région
@@ -209,7 +266,14 @@
 
       <!-- Key Differentiators -->
       <section class="content-section">
-        <h2>Nos Avantages Compétitifs</h2>
+        <h2>
+          <span
+            class="iconify"
+            data-icon="mdi:trophy"
+            style="font-size: 32px; color: var(--primary)"
+          ></span>
+          Nos Avantages Compétitifs
+        </h2>
         <div class="differentiators-grid">
           <div class="diff-card">
             <div class="diff-number">01</div>
@@ -262,11 +326,24 @@
 
       <!-- Platforms Preview -->
       <section class="content-section">
-        <h2>Nos Plateformes</h2>
+        <h2>
+          <span
+            class="iconify"
+            data-icon="mdi:devices"
+            style="font-size: 32px; color: var(--primary)"
+          ></span>
+          Nos Plateformes
+        </h2>
         <div class="platforms-grid">
           <div class="platform-card">
             <div class="platform-header web">
-              <span class="platform-icon">🌐</span>
+              <div class="platform-icon">
+                <span
+                  class="iconify"
+                  data-icon="mdi:web"
+                  style="font-size: 32px"
+                ></span>
+              </div>
               <h4>Application Web</h4>
             </div>
             <div class="platform-body">
@@ -289,7 +366,13 @@
           </div>
           <div class="platform-card">
             <div class="platform-header mobile">
-              <span class="platform-icon">📱</span>
+              <div class="platform-icon">
+                <span
+                  class="iconify"
+                  data-icon="mdi:cellphone"
+                  style="font-size: 32px"
+                ></span>
+              </div>
               <h4>Application Mobile</h4>
             </div>
             <div class="platform-body">
@@ -315,12 +398,20 @@
       <!-- Navigation -->
       <div class="page-navigation">
         <a href="index.html" class="nav-btn prev">
-          <span class="nav-btn-icon">←</span>
+          <span
+            class="iconify"
+            data-icon="mdi:arrow-left"
+            style="font-size: 20px"
+          ></span>
           <span class="nav-btn-text">Accueil</span>
         </a>
         <a href="fonctionnalites.html" class="nav-btn next">
           <span class="nav-btn-text">Fonctionnalités</span>
-          <span class="nav-btn-icon">→</span>
+          <span
+            class="iconify"
+            data-icon="mdi:arrow-right"
+            style="font-size: 20px"
+          ></span>
         </a>
       </div>
     </main>

@@ -8,7 +8,8 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=2.1">
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
     <style>
       /* Additional styles for team page */
       .team-grid {
@@ -40,7 +41,7 @@
         align-items: center;
         justify-content: center;
         margin: 0 auto 20px;
-        font-size: 48px;
+        color: white;
       }
 
       .team-name {
@@ -107,26 +108,31 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 24px;
       }
 
       .contact-icon.email {
         background: #dbeafe;
+        color: var(--primary);
       }
       .contact-icon.phone {
         background: #d1fae5;
+        color: var(--secondary);
       }
       .contact-icon.whatsapp {
         background: #d1fae5;
+        color: var(--secondary);
       }
       .contact-icon.location {
         background: #fef3c7;
+        color: var(--accent);
       }
       .contact-icon.linkedin {
         background: #dbeafe;
+        color: var(--primary);
       }
       .contact-icon.website {
         background: #ede9fe;
+        color: #7c3aed;
       }
 
       .contact-title {
@@ -276,7 +282,14 @@
     <main class="container">
       <!-- Core Team -->
       <section class="content-section">
-        <h2>👥 Équipe Fondatrice</h2>
+        <h2>
+          <span
+            class="iconify"
+            data-icon="mdi:account-group"
+            style="font-size: 32px; color: #ec4899"
+          ></span>
+          Équipe Fondatrice
+        </h2>
         <p style="color: var(--gray-500); margin-bottom: 32px">
           Une équipe passionnée par la technologie et le développement de
           solutions locales pour l'Afrique.
@@ -284,7 +297,13 @@
 
         <div class="team-grid">
           <div class="team-card">
-            <div class="team-avatar">👨‍💻</div>
+            <div class="team-avatar">
+              <span
+                class="iconify"
+                data-icon="mdi:account-circle"
+                style="font-size: 64px"
+              ></span>
+            </div>
             <div class="team-name">FAEL</div>
             <div class="team-role">Fondateur & CTO</div>
             <p class="team-bio">
@@ -306,7 +325,11 @@
                 background: linear-gradient(135deg, #10b981 0%, #059669 100%);
               "
             >
-              🎨
+              <span
+                class="iconify"
+                data-icon="mdi:palette"
+                style="font-size: 64px"
+              ></span>
             </div>
             <div class="team-name">[À définir]</div>
             <div class="team-role">UI/UX Designer</div>
@@ -328,7 +351,11 @@
                 background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
               "
             >
-              📊
+              <span
+                class="iconify"
+                data-icon="mdi:chart-line"
+                style="font-size: 64px"
+              ></span>
             </div>
             <div class="team-name">[À définir]</div>
             <div class="team-role">Business Developer</div>
@@ -347,7 +374,14 @@
 
       <!-- Advisory Board -->
       <section class="content-section">
-        <h2>🎓 Conseillers & Mentors</h2>
+        <h2>
+          <span
+            class="iconify"
+            data-icon="mdi:school"
+            style="font-size: 32px; color: #ec4899"
+          ></span>
+          Conseillers & Mentors
+        </h2>
 
         <div class="highlight-box blue">
           <p class="highlight-text">
@@ -361,12 +395,25 @@
 
       <!-- Contact Information -->
       <section class="content-section">
-        <h2>📞 Nous Contacter</h2>
+        <h2>
+          <span
+            class="iconify"
+            data-icon="mdi:phone"
+            style="font-size: 32px; color: #ec4899"
+          ></span>
+          Nous Contacter
+        </h2>
 
         <div class="contact-grid">
           <div class="contact-card">
             <div class="contact-header">
-              <div class="contact-icon email">📧</div>
+              <div class="contact-icon email">
+                <span
+                  class="iconify"
+                  data-icon="mdi:email"
+                  style="font-size: 24px"
+                ></span>
+              </div>
               <div>
                 <div class="contact-title">Email</div>
                 <div class="contact-subtitle">
@@ -381,7 +428,13 @@
 
           <div class="contact-card">
             <div class="contact-header">
-              <div class="contact-icon whatsapp">💬</div>
+              <div class="contact-icon whatsapp">
+                <span
+                  class="iconify"
+                  data-icon="mdi:whatsapp"
+                  style="font-size: 24px"
+                ></span>
+              </div>
               <div>
                 <div class="contact-title">WhatsApp</div>
                 <div class="contact-subtitle">
@@ -396,7 +449,13 @@
 
           <div class="contact-card">
             <div class="contact-header">
-              <div class="contact-icon phone">📱</div>
+              <div class="contact-icon phone">
+                <span
+                  class="iconify"
+                  data-icon="mdi:phone"
+                  style="font-size: 24px"
+                ></span>
+              </div>
               <div>
                 <div class="contact-title">Téléphone</div>
                 <div class="contact-subtitle">Appels directs</div>
@@ -407,7 +466,13 @@
 
           <div class="contact-card">
             <div class="contact-header">
-              <div class="contact-icon location">📍</div>
+              <div class="contact-icon location">
+                <span
+                  class="iconify"
+                  data-icon="mdi:map-marker"
+                  style="font-size: 24px"
+                ></span>
+              </div>
               <div>
                 <div class="contact-title">Localisation</div>
                 <div class="contact-subtitle">Siège de l'entreprise</div>
@@ -421,14 +486,25 @@
       <!-- For Investors -->
       <section class="content-section">
         <div class="investors-section">
-          <h3>🚀 Investisseurs & Partenaires</h3>
+          <h3>
+            <span
+              class="iconify"
+              data-icon="mdi:rocket-launch"
+              style="font-size: 32px; margin-right: 12px"
+            ></span>
+            Investisseurs & Partenaires
+          </h3>
           <p>
             Vous êtes investisseur, fonds de capital-risque ou partenaire
             stratégique intéressé par Bus Bénin Pro ? Nous serions ravis
             d'échanger sur les opportunités de collaboration.
           </p>
           <a href="mailto:invest@busbenin.pro" class="cta-button">
-            <span>📩</span>
+            <span
+              class="iconify"
+              data-icon="mdi:email-arrow-right"
+              style="font-size: 20px"
+            ></span>
             <span>Contactez-nous</span>
           </a>
         </div>
@@ -436,7 +512,14 @@
 
       <!-- Legal Information -->
       <section class="content-section">
-        <h2>⚖️ Informations Légales</h2>
+        <h2>
+          <span
+            class="iconify"
+            data-icon="mdi:scale-balance"
+            style="font-size: 32px; color: #ec4899"
+          ></span>
+          Informations Légales
+        </h2>
 
         <div class="legal-section">
           <h3>Mention Légales</h3>
@@ -491,12 +574,25 @@
 
       <!-- Version Info -->
       <section class="content-section">
-        <h2>📦 Informations de Version</h2>
+        <h2>
+          <span
+            class="iconify"
+            data-icon="mdi:package-variant-closed"
+            style="font-size: 32px; color: #ec4899"
+          ></span>
+          Informations de Version
+        </h2>
 
         <div class="features-grid">
           <div class="feature-card">
             <div class="feature-header">
-              <span class="feature-icon">📱</span>
+              <div class="feature-icon">
+                <span
+                  class="iconify"
+                  data-icon="mdi:cellphone"
+                  style="font-size: 28px"
+                ></span>
+              </div>
               <h3>Application Mobile</h3>
             </div>
             <div class="feature-body">
@@ -511,7 +607,13 @@
 
           <div class="feature-card">
             <div class="feature-header green">
-              <span class="feature-icon">🌐</span>
+              <div class="feature-icon">
+                <span
+                  class="iconify"
+                  data-icon="mdi:web"
+                  style="font-size: 28px"
+                ></span>
+              </div>
               <h3>Application Web</h3>
             </div>
             <div class="feature-body">
@@ -529,12 +631,20 @@
       <!-- Navigation -->
       <div class="page-navigation">
         <a href="roadmap.html" class="nav-btn prev">
-          <span class="nav-btn-icon">←</span>
+          <span
+            class="iconify"
+            data-icon="mdi:arrow-left"
+            style="font-size: 20px"
+          ></span>
           <span class="nav-btn-text">Roadmap</span>
         </a>
         <a href="index.html" class="nav-btn next">
           <span class="nav-btn-text">Retour à l'accueil</span>
-          <span class="nav-btn-icon">→</span>
+          <span
+            class="iconify"
+            data-icon="mdi:arrow-right"
+            style="font-size: 20px"
+          ></span>
         </a>
       </div>
     </main>

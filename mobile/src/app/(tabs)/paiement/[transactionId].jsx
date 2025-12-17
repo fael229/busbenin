@@ -41,12 +41,12 @@ export default function PaiementScreen() {
     if (!hasOpened || hasStartedPolling || !transactionId) return;
 
     setHasStartedPolling(true);
-    
-    console.log('🚀 Démarrage du polling automatique dans 5 secondes...');
-    
+
+    console.log("🚀 Démarrage du polling automatique dans 5 secondes...");
+
     // Attendre 5 secondes pour laisser le temps à l'utilisateur de payer
     setTimeout(() => {
-      console.log('▶️ Début de la vérification automatique du paiement');
+      console.log("▶️ Début de la vérification automatique du paiement");
       verifierPaiement(true, 1, 10); // Active le mode auto-retry avec 10 tentatives max
     }, 5000);
   }, [hasOpened, hasStartedPolling, transactionId]);
@@ -236,17 +236,16 @@ export default function PaiementScreen() {
         <Text style={styles.resultTitle}>Paiement Mobile Money en cours</Text>
         <Text style={styles.resultMessage}>
           Une demande de paiement a été envoyée à votre opérateur Mobile Money.
-          {"\n\n"}
-          ✅ Validez l'opération sur votre téléphone
+          {"\n\n"}✅ Validez l'opération sur votre téléphone
           {"\n\n"}
           🔄 Le statut sera vérifié automatiquement toutes les 3 secondes
           {"\n\n"}
           Vous pouvez aussi vérifier manuellement ci-dessous.
         </Text>
         {checking && (
-          <View style={{ marginTop: 20, alignItems: 'center' }}>
+          <View style={{ marginTop: 20, alignItems: "center" }}>
             <ActivityIndicator size="large" color="#1E88E5" />
-            <Text style={{ marginTop: 10, color: '#6B7280', fontSize: 14 }}>
+            <Text style={{ marginTop: 10, color: "#6B7280", fontSize: 14 }}>
               Vérification en cours...
             </Text>
           </View>

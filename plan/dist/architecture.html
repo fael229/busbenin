@@ -8,7 +8,8 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=2.1" />
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
   </head>
   <body>
     <!-- Navigation -->
@@ -46,7 +47,14 @@
     <main class="container">
       <!-- Architecture Overview -->
       <section class="content-section">
-        <h2>🏗️ Vue d'ensemble de l'Architecture</h2>
+        <h2>
+          <span
+            class="iconify"
+            data-icon="mdi:view-quilt"
+            style="font-size: 32px; color: var(--primary)"
+          ></span>
+          Vue d'ensemble de l'Architecture
+        </h2>
 
         <div class="architecture-diagram">
           <div class="diagram-title">Architecture en Couches</div>
@@ -55,11 +63,23 @@
               <div class="layer-label">Clients</div>
               <div class="layer-content">
                 <div class="layer-box blue">
-                  🌐 Application Web<br />
+                  <span
+                    class="iconify"
+                    data-icon="mdi:web"
+                    style="font-size: 24px"
+                  ></span
+                  ><br />
+                  Application Web<br />
                   <small>React + Vite</small>
                 </div>
                 <div class="layer-box green">
-                  📱 Application Mobile<br />
+                  <span
+                    class="iconify"
+                    data-icon="mdi:cellphone"
+                    style="font-size: 24px"
+                  ></span
+                  ><br />
+                  Application Mobile<br />
                   <small>React Native + Expo</small>
                 </div>
               </div>
@@ -68,11 +88,23 @@
               <div class="layer-label">API</div>
               <div class="layer-content">
                 <div class="layer-box purple">
-                  ⚡ Supabase API<br />
+                  <span
+                    class="iconify"
+                    data-icon="mdi:lightning-bolt"
+                    style="font-size: 24px"
+                  ></span
+                  ><br />
+                  Supabase API<br />
                   <small>REST + Realtime</small>
                 </div>
                 <div class="layer-box orange">
-                  💳 FedaPay API<br />
+                  <span
+                    class="iconify"
+                    data-icon="mdi:credit-card"
+                    style="font-size: 24px"
+                  ></span
+                  ><br />
+                  FedaPay API<br />
                   <small>Paiements</small>
                 </div>
               </div>
@@ -81,7 +113,12 @@
               <div class="layer-label">Backend</div>
               <div class="layer-content">
                 <div class="layer-box dark">
-                  🗄️ Supabase (PostgreSQL + Auth + Storage + Edge Functions)
+                  <span
+                    class="iconify"
+                    data-icon="mdi:database"
+                    style="font-size: 24px"
+                  ></span>
+                  Supabase (PostgreSQL + Auth + Storage + Edge Functions)
                 </div>
               </div>
             </div>
@@ -89,19 +126,43 @@
               <div class="layer-label">Services Tiers</div>
               <div class="layer-content">
                 <div class="layer-box blue">
-                  🗺️ OpenStreetMap<br />
+                  <span
+                    class="iconify"
+                    data-icon="mdi:map"
+                    style="font-size: 20px"
+                  ></span
+                  ><br />
+                  OpenStreetMap<br />
                   <small>Cartographie</small>
                 </div>
                 <div class="layer-box green">
-                  📍 Nominatim<br />
+                  <span
+                    class="iconify"
+                    data-icon="mdi:map-marker"
+                    style="font-size: 20px"
+                  ></span
+                  ><br />
+                  Nominatim<br />
                   <small>Géocodage</small>
                 </div>
                 <div class="layer-box purple">
-                  🛤️ OSRM<br />
+                  <span
+                    class="iconify"
+                    data-icon="mdi:road"
+                    style="font-size: 20px"
+                  ></span
+                  ><br />
+                  OSRM<br />
                   <small>Routage</small>
                 </div>
                 <div class="layer-box orange">
-                  🖼️ ImgBB<br />
+                  <span
+                    class="iconify"
+                    data-icon="mdi:image"
+                    style="font-size: 20px"
+                  ></span
+                  ><br />
+                  ImgBB<br />
                   <small>Images</small>
                 </div>
               </div>
@@ -112,11 +173,24 @@
 
       <!-- Tech Stack -->
       <section class="content-section">
-        <h2>🛠️ Stack Technologique</h2>
+        <h2>
+          <span
+            class="iconify"
+            data-icon="mdi:wrench"
+            style="font-size: 32px; color: var(--primary)"
+          ></span>
+          Stack Technologique
+        </h2>
 
         <div class="tech-grid">
           <div class="tech-card">
-            <div class="tech-card-icon">⚛️</div>
+            <div class="tech-card-icon">
+              <span
+                class="iconify"
+                data-icon="mdi:react"
+                style="font-size: 32px"
+              ></span>
+            </div>
             <h4>React 18</h4>
             <p>
               Framework frontend pour l'application web, avec hooks et Context
@@ -124,47 +198,110 @@
             </p>
           </div>
           <div class="tech-card">
-            <div class="tech-card-icon">📱</div>
+            <div
+              class="tech-card-icon"
+              style="background: #d1fae5; color: var(--secondary)"
+            >
+              <span
+                class="iconify"
+                data-icon="mdi:cellphone"
+                style="font-size: 32px"
+              ></span>
+            </div>
             <h4>React Native</h4>
             <p>
               Framework cross-platform pour l'application mobile iOS et Android
             </p>
           </div>
           <div class="tech-card">
-            <div class="tech-card-icon">🚀</div>
+            <div
+              class="tech-card-icon"
+              style="background: #ede9fe; color: #7c3aed"
+            >
+              <span
+                class="iconify"
+                data-icon="mdi:rocket-launch"
+                style="font-size: 32px"
+              ></span>
+            </div>
             <h4>Expo SDK 54</h4>
             <p>
               Plateforme de développement pour React Native avec outils intégrés
             </p>
           </div>
           <div class="tech-card">
-            <div class="tech-card-icon">⚡</div>
+            <div
+              class="tech-card-icon"
+              style="background: #fef3c7; color: var(--accent)"
+            >
+              <span
+                class="iconify"
+                data-icon="mdi:lightning-bolt"
+                style="font-size: 32px"
+              ></span>
+            </div>
             <h4>Vite 7</h4>
             <p>
               Bundler ultra-rapide pour le développement et la production web
             </p>
           </div>
           <div class="tech-card">
-            <div class="tech-card-icon">🎨</div>
+            <div
+              class="tech-card-icon"
+              style="background: #cffafe; color: #0891b2"
+            >
+              <span
+                class="iconify"
+                data-icon="mdi:palette"
+                style="font-size: 32px"
+              ></span>
+            </div>
             <h4>TailwindCSS 3</h4>
             <p>Framework CSS utilitaire pour un styling rapide et cohérent</p>
           </div>
           <div class="tech-card">
-            <div class="tech-card-icon">🗄️</div>
+            <div
+              class="tech-card-icon"
+              style="background: #d1fae5; color: var(--secondary)"
+            >
+              <span
+                class="iconify"
+                data-icon="mdi:database"
+                style="font-size: 32px"
+              ></span>
+            </div>
             <h4>Supabase</h4>
             <p>
               Backend-as-a-Service avec PostgreSQL, Auth, Storage et Realtime
             </p>
           </div>
           <div class="tech-card">
-            <div class="tech-card-icon">💳</div>
+            <div
+              class="tech-card-icon"
+              style="background: #fef3c7; color: var(--accent)"
+            >
+              <span
+                class="iconify"
+                data-icon="mdi:credit-card"
+                style="font-size: 32px"
+              ></span>
+            </div>
             <h4>FedaPay</h4>
             <p>
               Gateway de paiement africain supportant Mobile Money et cartes
             </p>
           </div>
           <div class="tech-card">
-            <div class="tech-card-icon">🗺️</div>
+            <div
+              class="tech-card-icon"
+              style="background: #d1fae5; color: var(--secondary)"
+            >
+              <span
+                class="iconify"
+                data-icon="mdi:map"
+                style="font-size: 32px"
+              ></span>
+            </div>
             <h4>Leaflet</h4>
             <p>Bibliothèque JavaScript open-source pour cartes interactives</p>
           </div>
@@ -173,7 +310,14 @@
 
       <!-- Database Schema -->
       <section class="content-section">
-        <h2>🗃️ Schéma de Base de Données</h2>
+        <h2>
+          <span
+            class="iconify"
+            data-icon="mdi:database"
+            style="font-size: 32px; color: var(--primary)"
+          ></span>
+          Schéma de Base de Données
+        </h2>
 
         <div class="highlight-box blue">
           <p class="highlight-text">
@@ -187,7 +331,13 @@
         <div class="features-grid">
           <div class="feature-card">
             <div class="feature-header">
-              <span class="feature-icon">👤</span>
+              <div class="feature-icon">
+                <span
+                  class="iconify"
+                  data-icon="mdi:account"
+                  style="font-size: 28px"
+                ></span>
+              </div>
               <h3>Utilisateurs & Auth</h3>
             </div>
             <div class="feature-body">
@@ -204,7 +354,13 @@
 
           <div class="feature-card">
             <div class="feature-header green">
-              <span class="feature-icon">🚌</span>
+              <div class="feature-icon">
+                <span
+                  class="iconify"
+                  data-icon="mdi:bus"
+                  style="font-size: 28px"
+                ></span>
+              </div>
               <h3>Transport</h3>
             </div>
             <div class="feature-body">
@@ -219,7 +375,13 @@
 
           <div class="feature-card">
             <div class="feature-header orange">
-              <span class="feature-icon">🎫</span>
+              <div class="feature-icon">
+                <span
+                  class="iconify"
+                  data-icon="mdi:ticket"
+                  style="font-size: 28px"
+                ></span>
+              </div>
               <h3>Réservations Bus</h3>
             </div>
             <div class="feature-body">
@@ -234,7 +396,13 @@
 
           <div class="feature-card">
             <div class="feature-header purple">
-              <span class="feature-icon">🚗</span>
+              <div class="feature-icon">
+                <span
+                  class="iconify"
+                  data-icon="mdi:car"
+                  style="font-size: 28px"
+                ></span>
+              </div>
               <h3>Location Véhicules</h3>
             </div>
             <div class="feature-body">
@@ -249,7 +417,13 @@
 
           <div class="feature-card">
             <div class="feature-header pink">
-              <span class="feature-icon">💰</span>
+              <div class="feature-icon">
+                <span
+                  class="iconify"
+                  data-icon="mdi:cash"
+                  style="font-size: 28px"
+                ></span>
+              </div>
               <h3>Finance</h3>
             </div>
             <div class="feature-body">
@@ -264,7 +438,13 @@
 
           <div class="feature-card">
             <div class="feature-header cyan">
-              <span class="feature-icon">⭐</span>
+              <div class="feature-icon">
+                <span
+                  class="iconify"
+                  data-icon="mdi:star"
+                  style="font-size: 28px"
+                ></span>
+              </div>
               <h3>Interactions</h3>
             </div>
             <div class="feature-body">
@@ -281,12 +461,28 @@
 
       <!-- Project Structure -->
       <section class="content-section">
-        <h2>📁 Structure du Projet</h2>
+        <h2>
+          <span
+            class="iconify"
+            data-icon="mdi:folder-outline"
+            style="font-size: 32px; color: var(--primary)"
+          ></span>
+          Structure du Projet
+        </h2>
 
         <div class="two-columns">
           <div class="column-card">
             <div class="column-header">
-              <span class="column-icon">🌐</span>
+              <div
+                class="column-icon"
+                style="background: var(--primary); color: white"
+              >
+                <span
+                  class="iconify"
+                  data-icon="mdi:web"
+                  style="font-size: 24px"
+                ></span>
+              </div>
               <h3>Application Web</h3>
             </div>
             <pre
@@ -330,7 +526,16 @@ web/
 
           <div class="column-card">
             <div class="column-header">
-              <span class="column-icon">📱</span>
+              <div
+                class="column-icon"
+                style="background: var(--secondary); color: white"
+              >
+                <span
+                  class="iconify"
+                  data-icon="mdi:cellphone"
+                  style="font-size: 24px"
+                ></span>
+              </div>
               <h3>Application Mobile</h3>
             </div>
             <pre
@@ -374,12 +579,25 @@ mobile/
 
       <!-- Security -->
       <section class="content-section">
-        <h2>🔒 Sécurité</h2>
+        <h2>
+          <span
+            class="iconify"
+            data-icon="mdi:shield-lock"
+            style="font-size: 32px; color: #ec4899"
+          ></span>
+          Sécurité
+        </h2>
 
         <div class="features-grid">
           <div class="feature-card">
             <div class="feature-header pink">
-              <span class="feature-icon">🛡️</span>
+              <div class="feature-icon">
+                <span
+                  class="iconify"
+                  data-icon="mdi:shield-check"
+                  style="font-size: 28px"
+                ></span>
+              </div>
               <h3>Row Level Security (RLS)</h3>
             </div>
             <div class="feature-body">
@@ -395,7 +613,13 @@ mobile/
 
           <div class="feature-card">
             <div class="feature-header pink">
-              <span class="feature-icon">🔐</span>
+              <div class="feature-icon">
+                <span
+                  class="iconify"
+                  data-icon="mdi:lock"
+                  style="font-size: 28px"
+                ></span>
+              </div>
               <h3>Authentification</h3>
             </div>
             <div class="feature-body">
@@ -411,7 +635,13 @@ mobile/
 
           <div class="feature-card">
             <div class="feature-header pink">
-              <span class="feature-icon">🚧</span>
+              <div class="feature-icon">
+                <span
+                  class="iconify"
+                  data-icon="mdi:gate"
+                  style="font-size: 28px"
+                ></span>
+              </div>
               <h3>Routes Protégées</h3>
             </div>
             <div class="feature-body">
@@ -427,7 +657,13 @@ mobile/
 
           <div class="feature-card">
             <div class="feature-header pink">
-              <span class="feature-icon">💳</span>
+              <div class="feature-icon">
+                <span
+                  class="iconify"
+                  data-icon="mdi:credit-card-lock"
+                  style="font-size: 28px"
+                ></span>
+              </div>
               <h3>Paiements Sécurisés</h3>
             </div>
             <div class="feature-body">
@@ -445,12 +681,25 @@ mobile/
 
       <!-- APIs and Integrations -->
       <section class="content-section">
-        <h2>🔌 APIs & Intégrations</h2>
+        <h2>
+          <span
+            class="iconify"
+            data-icon="mdi:power-plug"
+            style="font-size: 32px; color: var(--primary)"
+          ></span>
+          APIs & Intégrations
+        </h2>
 
         <div class="features-grid">
           <div class="feature-card">
             <div class="feature-header">
-              <span class="feature-icon">🗄️</span>
+              <div class="feature-icon">
+                <span
+                  class="iconify"
+                  data-icon="mdi:database"
+                  style="font-size: 28px"
+                ></span>
+              </div>
               <h3>Supabase</h3>
             </div>
             <div class="feature-body">
@@ -467,7 +716,13 @@ mobile/
 
           <div class="feature-card">
             <div class="feature-header green">
-              <span class="feature-icon">💳</span>
+              <div class="feature-icon">
+                <span
+                  class="iconify"
+                  data-icon="mdi:credit-card"
+                  style="font-size: 28px"
+                ></span>
+              </div>
               <h3>FedaPay</h3>
             </div>
             <div class="feature-body">
@@ -484,7 +739,13 @@ mobile/
 
           <div class="feature-card">
             <div class="feature-header orange">
-              <span class="feature-icon">🗺️</span>
+              <div class="feature-icon">
+                <span
+                  class="iconify"
+                  data-icon="mdi:map"
+                  style="font-size: 28px"
+                ></span>
+              </div>
               <h3>OpenStreetMap Stack</h3>
             </div>
             <div class="feature-body">
@@ -500,7 +761,13 @@ mobile/
 
           <div class="feature-card">
             <div class="feature-header purple">
-              <span class="feature-icon">🖼️</span>
+              <div class="feature-icon">
+                <span
+                  class="iconify"
+                  data-icon="mdi:image"
+                  style="font-size: 28px"
+                ></span>
+              </div>
               <h3>ImgBB</h3>
             </div>
             <div class="feature-body">
@@ -519,12 +786,20 @@ mobile/
       <!-- Navigation -->
       <div class="page-navigation">
         <a href="fonctionnalites.html" class="nav-btn prev">
-          <span class="nav-btn-icon">←</span>
+          <span
+            class="iconify"
+            data-icon="mdi:arrow-left"
+            style="font-size: 20px"
+          ></span>
           <span class="nav-btn-text">Fonctionnalités</span>
         </a>
         <a href="business.html" class="nav-btn next">
           <span class="nav-btn-text">Business Model</span>
-          <span class="nav-btn-icon">→</span>
+          <span
+            class="iconify"
+            data-icon="mdi:arrow-right"
+            style="font-size: 20px"
+          ></span>
         </a>
       </div>
     </main>

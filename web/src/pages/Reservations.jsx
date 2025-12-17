@@ -30,7 +30,7 @@ export default function Reservations() {
   const [loading, setLoading] = useState(true);
   const [verifying, setVerifying] = useState(null); // ID de la réservation en cours de vérification
   const [filter, setFilter] = useState("all"); // 'all', 'trajets', 'locations'
-  
+
   // État pour le modal de validation
   const [validationModalOpen, setValidationModalOpen] = useState(false);
   const [selectedReservation, setSelectedReservation] = useState(null);
@@ -550,14 +550,14 @@ export default function Reservations() {
 
                     {/* Bouton télécharger reçu si payé */}
                     {reservation.statut_paiement === "approved" && (
-                        <button
-                          onClick={() => downloadReceipt(reservation)}
-                          className="flex items-center space-x-1 px-3 py-2 rounded-lg bg-green-50 hover:bg-green-100 dark:bg-green-900/30 dark:hover:bg-green-900/50 text-green-700 dark:text-green-300 text-xs font-semibold transition-colors"
-                        >
-                          <Download className="h-3 w-3" />
-                          <span>Télécharger reçu</span>
-                        </button>
-                      )}
+                      <button
+                        onClick={() => downloadReceipt(reservation)}
+                        className="flex items-center space-x-1 px-3 py-2 rounded-lg bg-green-50 hover:bg-green-100 dark:bg-green-900/30 dark:hover:bg-green-900/50 text-green-700 dark:text-green-300 text-xs font-semibold transition-colors"
+                      >
+                        <Download className="h-3 w-3" />
+                        <span>Télécharger reçu</span>
+                      </button>
+                    )}
 
                     {/* Bouton annuler si en attente */}
                     {reservation.statut === "en_attente" && (
