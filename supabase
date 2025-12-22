@@ -1,0 +1,150 @@
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
+
+CREATE TABLE public.avis (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL,
+  trajet_id uuid NOT NULL,
+  note integer NOT NULL CHECK (note >= 1 AND note <= 5),
+  commentaire text,
+  created_at timestamp with time zone NOT NULL DEFAULT timezone('utc'::text, now()),
+  reponse text,
+  reponse_par uuid,
+  reponse_at timestamp with time zone,
+  CONSTRAINT avis_pkey PRIMARY KEY (id),
+  CONSTRAINT avis_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id),
+  CONSTRAINT avis_trajet_id_fkey FOREIGN KEY (trajet_id) REFERENCES public.trajets(id),
+  CONSTRAINT avis_reponse_par_fkey FOREIGN KEY (reponse_par) REFERENCES auth.users(id)
+);
+CREATE TABLE public.avis_location (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  reservation_id uuid NOT NULL UNIQUE,
+  user_id uuid NOT NULL,
+  vehicule_id uuid NOT NULL,
+  note integer NOT NULL CHECK (note >= 1 AND note <= 5),
+  commentaire text,
+  created_at timestamp with time zone NOT NULL DEFAULT timezone('utc'::text, now()),
+  CONSTRAINT avis_location_pkey PRIMARY KEY (id),
+  CONSTRAINT avis_location_reservation_id_fkey FOREIGN KEY (reservation_id) REFERENCES public.reservations_location(id),
+  CONSTRAINT avis_location_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id),
+  CONSTRAINT avis_location_vehicule_id_fkey FOREIGN KEY (vehicule_id) REFERENCES public.vehicules_location(id)
+);
+CREATE TABLE public.compagnies (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  nom text NOT NULL,
+  logo_url text,
+  created_at timestamp with time zone NOT NULL DEFAULT timezone('utc'::text, now()),
+  telephone text,
+  adresse text,
+  CONSTRAINT compagnies_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.demandes_retrait (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL,
+  montant numeric NOT NULL,
+  statut text DEFAULT 'en_attente'::text CHECK (statut = ANY (ARRAY['en_attente'::text, 'validee'::text, 'refusee'::text])),
+  created_at timestamp with time zone NOT NULL DEFAULT timezone('utc'::text, now()),
+  updated_at timestamp with time zone NOT NULL DEFAULT timezone('utc'::text, now()),
+  CONSTRAINT demandes_retrait_pkey PRIMARY KEY (id),
+  CONSTRAINT demandes_retrait_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id)
+);
+CREATE TABLE public.destinations (
+  id bigint GENERATED ALWAYS AS IDENTITY NOT NULL,
+  nom text NOT NULL UNIQUE,
+  CONSTRAINT destinations_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.favoris (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL,
+  trajet_id uuid NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT timezone('utc'::text, now()),
+  CONSTRAINT favoris_pkey PRIMARY KEY (id),
+  CONSTRAINT favoris_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id),
+  CONSTRAINT favoris_trajet_id_fkey FOREIGN KEY (trajet_id) REFERENCES public.trajets(id)
+);
+CREATE TABLE public.profiles (
+  id uuid NOT NULL,
+  username text DEFAULT (gen_random_uuid())::text UNIQUE CHECK (char_length(username) >= 3),
+  avatar_url text,
+  full_name text,
+  updated_at timestamp with time zone NOT NULL DEFAULT timezone('utc'::text, now()),
+  email text,
+  admin boolean DEFAULT false,
+  compagnie_id uuid,
+  role text DEFAULT 'user'::text,
+  phone text,
+  CONSTRAINT profiles_pkey PRIMARY KEY (id),
+  CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id),
+  CONSTRAINT profiles_compagnie_id_fkey FOREIGN KEY (compagnie_id) REFERENCES public.compagnies(id)
+);
+CREATE TABLE public.reservations (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL,
+  trajet_id uuid NOT NULL,
+  nb_places integer NOT NULL DEFAULT 1 CHECK (nb_places > 0 AND nb_places <= 10),
+  horaire text NOT NULL,
+  montant_total numeric NOT NULL,
+  nom_passager text NOT NULL,
+  telephone_passager text NOT NULL,
+  email_passager text,
+  statut text NOT NULL DEFAULT 'en_attente'::text CHECK (statut = ANY (ARRAY['en_attente'::text, 'confirmee'::text, 'annulee'::text, 'expiree'::text])),
+  fedapay_transaction_id text,
+  fedapay_token text,
+  statut_paiement text DEFAULT 'pending'::text CHECK (statut_paiement = ANY (ARRAY['pending'::text, 'approved'::text, 'declined'::text, 'canceled'::text])),
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  date_expiration timestamp with time zone,
+  date_voyage date,
+  CONSTRAINT reservations_pkey PRIMARY KEY (id),
+  CONSTRAINT reservations_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id),
+  CONSTRAINT reservations_trajet_id_fkey FOREIGN KEY (trajet_id) REFERENCES public.trajets(id)
+);
+CREATE TABLE public.reservations_location (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  vehicule_id uuid,
+  user_id uuid,
+  date_debut date NOT NULL,
+  date_fin date NOT NULL,
+  montant_total numeric NOT NULL,
+  statut text DEFAULT 'en_attente'::text CHECK (statut = ANY (ARRAY['en_attente'::text, 'confirmee'::text, 'terminee'::text, 'annulee'::text])),
+  transaction_id text,
+  created_at timestamp with time zone NOT NULL DEFAULT timezone('utc'::text, now()),
+  nom_locataire text,
+  telephone_locataire text,
+  email_locataire text,
+  statut_paiement text DEFAULT 'pending'::text,
+  livraison_validee boolean DEFAULT false,
+  livraison_validee_at timestamp with time zone,
+  CONSTRAINT reservations_location_pkey PRIMARY KEY (id),
+  CONSTRAINT reservations_location_vehicule_id_fkey FOREIGN KEY (vehicule_id) REFERENCES public.vehicules_location(id),
+  CONSTRAINT reservations_location_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id)
+);
+CREATE TABLE public.trajets (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  depart text NOT NULL,
+  arrivee text NOT NULL,
+  prix numeric NOT NULL,
+  horaires jsonb,
+  gare text,
+  note numeric DEFAULT 0.0,
+  nb_avis integer DEFAULT 0,
+  compagnie_id uuid,
+  created_at timestamp with time zone NOT NULL DEFAULT timezone('utc'::text, now()),
+  CONSTRAINT trajets_pkey PRIMARY KEY (id),
+  CONSTRAINT trajets_compagnie_id_fkey FOREIGN KEY (compagnie_id) REFERENCES public.compagnies(id)
+);
+CREATE TABLE public.vehicules_location (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  user_id uuid,
+  marque text NOT NULL,
+  modele text NOT NULL,
+  annee integer,
+  immatriculation text,
+  prix_par_jour numeric NOT NULL,
+  description text,
+  photo_url text,
+  disponible boolean DEFAULT true,
+  created_at timestamp with time zone NOT NULL DEFAULT timezone('utc'::text, now()),
+  CONSTRAINT vehicules_location_pkey PRIMARY KEY (id),
+  CONSTRAINT vehicules_location_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id)
+);
